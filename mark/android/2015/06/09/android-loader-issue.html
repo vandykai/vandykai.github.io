@@ -6,11 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Blog</title>
-  <meta name="description" content="">
+  <title>Android 自定义 AsyncLoader loadInBackground  不被调用</title>
+  <meta name="description" content="这是因为Android内部的运行方法中并不会主动调用loadInBackground()方法，所以需要手动调用forceLoad()方法，forceLoad()方法中会去调用loadInBackground()方法。">
 
   <link rel="stylesheet" href="/mark/css/main.css">
-  <link rel="canonical" href="http://www.dosrc.com/mark/">
+  <link rel="canonical" href="http://www.dosrc.com/mark/android/2015/06/09/android-loader-issue.html">
   <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
 </head>
 
@@ -54,39 +54,88 @@
 
     <div class="page-content">
       <div class="wrapper">
-        <div class="home">
+        <div class="post">
 
-  <h1 class="page-heading">Article</h1>
+  <header class="post-header">
+    <h1 class="post-title">Android 自定义 AsyncLoader loadInBackground  不被调用</h1>
+    <p class="post-meta">Jun 9, 2015</p>
+  </header>
 
-  <ul class="post-list">
-    
-      <li>
-        <span class="post-meta">Jun 9, 2015</span>
+  <article class="post-content">
+    <p>这是因为Android内部的运行方法中并不会主动调用loadInBackground()方法，所以需要手动调用forceLoad()方法，forceLoad()方法中会去调用loadInBackground()方法。</p>
 
-        <h2>
-          <a class="post-link" href="/mark/android/2015/06/09/android-loader-issue.html">Android 自定义 AsyncLoader loadInBackground  不被调用</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Jun 5, 2015</span>
+<p>所以正确的实现应该是应该重载AsyncLoader中的onStartLoading()方法,并调用forceLoad()方法。</p>
 
-        <h2>
-          <a class="post-link" href="/mark/html5/2015/06/05/html5-drag-event.html">Html拖放事件</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Jun 1, 2015</span>
+<pre><code>@Override
+protected void onStartLoading() {
+    forceLoad();
+    super.onStartLoading();
+}
+</code></pre>
 
-        <h2>
-          <a class="post-link" href="/mark/essay/2015/06/01/programmer-sentiment.html">程序员感悟</a>
-        </h2>
-      </li>
-    
-  </ul>
+<p>完整代码如下：</p>
 
-  <p class="rss-subscribe">subscribe <a href="/mark/feed.xml">via RSS</a></p>
+<pre><code>import android.content.AsyncTaskLoader;
+import android.content.Context;
+
+public class MyLoader extends AsyncTaskLoader&lt;String&gt; {
+
+    public MyLoader(Context context) {
+        super(context);
+    }
+
+    @Override
+    public String loadInBackground() {
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return new String("data");
+    }
+
+    @Override
+    protected void onStartLoading() {
+        forceLoad();
+        super.onStartLoading();
+    }
+
+}
+</code></pre>
+
+<pre><code>import android.app.Activity;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Loader;
+import android.os.Bundle;
+import android.util.Log;
+
+public class MainActivity extends Activity implements LoaderCallbacks&lt;String&gt; {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    public Loader&lt;String&gt; onCreateLoader(int id, Bundle args) {
+        return new MyLoader(this);
+    }
+
+    @Override
+    public void onLoadFinished(Loader&lt;String&gt; loader, String data) {
+        Log.d("MainActivity", data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader&lt;String&gt; loader) {
+    }
+
+}
+</code></pre>
+
+  </article>
 
 </div>
 

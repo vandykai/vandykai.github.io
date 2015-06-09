@@ -5,9 +5,129 @@
     <description></description>
     <link>http://www.dosrc.com/mark/</link>
     <atom:link href="http://www.dosrc.com/mark/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 03 Jun 2015 14:31:40 +0800</pubDate>
-    <lastBuildDate>Wed, 03 Jun 2015 14:31:40 +0800</lastBuildDate>
+    <pubDate>Tue, 09 Jun 2015 22:01:23 +0800</pubDate>
+    <lastBuildDate>Tue, 09 Jun 2015 22:01:23 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>Android 自定义 AsyncLoader loadInBackground  不被调用</title>
+        <description>&lt;p&gt;这是因为Android内部的运行方法中并不会主动调用loadInBackground()方法，所以需要手动调用forceLoad()方法，forceLoad()方法中会去调用loadInBackground()方法。&lt;/p&gt;
+
+&lt;p&gt;所以正确的实现应该是应该重载AsyncLoader中的onStartLoading()方法,并调用forceLoad()方法。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;@Override
+protected void onStartLoading() {
+    forceLoad();
+    super.onStartLoading();
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;完整代码如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import android.content.AsyncTaskLoader;
+import android.content.Context;
+
+public class MyLoader extends AsyncTaskLoader&amp;lt;String&amp;gt; {
+
+    public MyLoader(Context context) {
+        super(context);
+    }
+
+    @Override
+    public String loadInBackground() {
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return new String(&quot;data&quot;);
+    }
+
+    @Override
+    protected void onStartLoading() {
+        forceLoad();
+        super.onStartLoading();
+    }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;import android.app.Activity;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Loader;
+import android.os.Bundle;
+import android.util.Log;
+
+public class MainActivity extends Activity implements LoaderCallbacks&amp;lt;String&amp;gt; {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    public Loader&amp;lt;String&amp;gt; onCreateLoader(int id, Bundle args) {
+        return new MyLoader(this);
+    }
+
+    @Override
+    public void onLoadFinished(Loader&amp;lt;String&amp;gt; loader, String data) {
+        Log.d(&quot;MainActivity&quot;, data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader&amp;lt;String&amp;gt; loader) {
+    }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        <pubDate>Tue, 09 Jun 2015 05:16:00 +0800</pubDate>
+        <link>http://www.dosrc.com/mark/android/2015/06/09/android-loader-issue.html</link>
+        <guid isPermaLink="true">http://www.dosrc.com/mark/android/2015/06/09/android-loader-issue.html</guid>
+        
+        
+        <category>android</category>
+        
+      </item>
+    
+      <item>
+        <title>Html拖放事件</title>
+        <description>&lt;p&gt;为了使得元素能够被拖放首先要设置被拖动元素的 draggable=”true”&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;被拖动对象&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;被拖动对象会触发三个事件如下，分别触发三个事件所指定的回调函数&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;ondragstart——–&amp;gt;开始拖动时被触发&lt;/li&gt;
+  &lt;li&gt;drag—————&amp;gt;拖动过程中一直被触发&lt;/li&gt;
+  &lt;li&gt;ondragend———-&amp;gt;松开拖动鼠标后被触发&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;目标对象&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;目标对象即被拖动对象所拖动到的对象，会触发如下事件&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;dragenter———-&amp;gt;被拖动对象进入目标对象后被触发&lt;/li&gt;
+  &lt;li&gt;dragover———–&amp;gt;被拖动对象在目标对象上时一直被触发&lt;/li&gt;
+  &lt;li&gt;dragleave或drop—-&amp;gt;dragleave事件在被拖动对象离开目标对象后被触发，drop事件在被拖动对象拖动到目标对象上松开鼠标后被触发，drop事件和dragleave事件为互斥事件，不能同时发生。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://www.w3school.com.cn/tiy/t.asp?f=html5_draganddrop&quot;&gt;&lt;strong&gt;代码示例&lt;/strong&gt;&lt;/a&gt;&lt;/p&gt;
+
+</description>
+        <pubDate>Fri, 05 Jun 2015 01:17:00 +0800</pubDate>
+        <link>http://www.dosrc.com/mark/html5/2015/06/05/html5-drag-event.html</link>
+        <guid isPermaLink="true">http://www.dosrc.com/mark/html5/2015/06/05/html5-drag-event.html</guid>
+        
+        
+        <category>html5</category>
+        
+      </item>
     
       <item>
         <title>程序员感悟</title>
@@ -28,9 +148,12 @@ I don’t want to call myself as a programmer, in my opinion， I am a artist. �
     &lt;/ul&gt;
   &lt;/li&gt;
   &lt;li&gt;使命：&lt;br /&gt;
-集体荣誉感往大了说就是民族责任感&lt;br /&gt;
-&amp;gt; 年轻人应该有宏伟的志向，用别人的产品做自己的东西，你永远只是个“高级客户”，成不了真正的开发者。不管你用他国的系统软件开发出多少好的产品，挣了多少钱，只要人家一升级、或一推出新产品，你口袋里的银子连同最后一条小裤衩也会被剥夺的一干二净。你，只不过是一个高级打工仔。&lt;/li&gt;
+集体荣誉感往大了说就是民族责任感&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;年轻人应该有宏伟的志向，用别人的产品做自己的东西，你永远只是个“高级客户”，成不了真正的开发者。不管你用他国的系统软件开发出多少好的产品，挣了多少钱，只要人家一升级、或一推出新产品，你口袋里的银子连同最后一条小裤衩也会被剥夺的一干二净。你，只不过是一个高级打工仔。&lt;/p&gt;
+&lt;/blockquote&gt;
 
 &lt;p&gt;本文中的观点切勿全盘接受，全盘相信，因为就连笔者本人也不能保证观点的正确。之所以写这些，是因为想引起思考，也仅仅是这一个目的罢了。&lt;/p&gt;
 </description>
