@@ -5,9 +5,93 @@
     <description></description>
     <link>http://www.dosrc.com/mark/</link>
     <atom:link href="http://www.dosrc.com/mark/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 09 Jun 2015 22:01:23 +0800</pubDate>
-    <lastBuildDate>Tue, 09 Jun 2015 22:01:23 +0800</lastBuildDate>
+    <pubDate>Tue, 30 Jun 2015 12:52:45 +0800</pubDate>
+    <lastBuildDate>Tue, 30 Jun 2015 12:52:45 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>Java 连接 MySQL</title>
+        <description>&lt;ol&gt;
+  &lt;li&gt;下载对应Java的MySQL驱动包，在&lt;a href=&quot;http://dev.mysql.com/downloads/connector/&quot; target=&quot;_blank&quot;&gt;官方下载地址&lt;/a&gt;页面上选择Java对应的 Connector/J。进入下载页面，选择Platform为Platform Independent，下载压缩包，压缩包下的mysql-connector-java-XXX.jar即为我们需要的jar包。&lt;/li&gt;
+  &lt;li&gt;添加jar包&lt;/li&gt;
+  &lt;li&gt;完整代码如下&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;pre&gt;&lt;code&gt;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class TestConnectMySQL {
+
+    /**
+     * Database URL        ---&amp;gt; &quot;localhost&quot;
+     * Port                ---&amp;gt; &quot;3306&quot;
+     * Schema(database)    ---&amp;gt; &quot;test&quot;
+     * User                ---&amp;gt; &quot;root&quot; 
+     * Password            ---&amp;gt; &quot;&quot;
+     *                     
+     * @param sql
+     */
+    public static void querySQL(String sql) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            // Load driver
+            Class.forName(&quot;com.mysql.jdbc.Driver&quot;);
+
+            // Connect and get connection
+            String url = &quot;jdbc:mysql://localhost:3306/test&quot;;
+            connection = DriverManager.getConnection(url, &quot;root&quot;, &quot;&quot;);
+
+            // Prepare for the compiled sql statement
+            preparedStatement = connection.prepareCall(sql);
+            // preparedStatement.setString(1, &quot;paramter&quot;);
+
+            // Execute and get the resultSet
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                // int id = resultSet.getInt(0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    public static void main(String[] args) {
+        String sql = &quot;SELECT * FROM &#39;user&#39;&quot;;
+        TestConnectMySQL.querySQL(sql);
+    }
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+</description>
+        <pubDate>Tue, 09 Jun 2015 05:16:00 +0800</pubDate>
+        <link>http://www.dosrc.com/mark/j2ee/2015/06/09/java-connect-mysql.html</link>
+        <guid isPermaLink="true">http://www.dosrc.com/mark/j2ee/2015/06/09/java-connect-mysql.html</guid>
+        
+        
+        <category>j2ee</category>
+        
+      </item>
     
       <item>
         <title>Android 自定义 AsyncLoader loadInBackground  不被调用</title>
@@ -117,7 +201,7 @@ public class MainActivity extends Activity implements LoaderCallbacks&amp;lt;Str
   &lt;li&gt;dragleave或drop—-&amp;gt;dragleave事件在被拖动对象离开目标对象后被触发，drop事件在被拖动对象拖动到目标对象上松开鼠标后被触发，drop事件和dragleave事件为互斥事件，不能同时发生。&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;&lt;a href=&quot;http://www.w3school.com.cn/tiy/t.asp?f=html5_draganddrop&quot;&gt;&lt;strong&gt;代码示例&lt;/strong&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;http://www.w3school.com.cn/tiy/t.asp?f=html5_draganddrop&quot; target=&quot;_blank&quot;&gt;&lt;strong&gt;代码示例&lt;/strong&gt;&lt;/a&gt;&lt;/p&gt;
 
 </description>
         <pubDate>Fri, 05 Jun 2015 01:17:00 +0800</pubDate>

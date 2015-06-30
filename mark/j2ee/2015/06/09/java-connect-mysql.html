@@ -6,11 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Html拖放事件</title>
-  <meta name="description" content="为了使得元素能够被拖放首先要设置被拖动元素的 draggable=”true”">
+  <title>Java 连接 MySQL</title>
+  <meta name="description" content="  下载对应Java的MySQL驱动包，在官方下载地址页面上选择Java对应的 Connector/J。进入下载页面，选择Platform为Platform Independent，下载压缩包，压缩包下的mysql-connector-java-XXX.jar即为我们需要的jar包。  添加jar包  完整代码如下">
 
   <link rel="stylesheet" href="/mark/css/main.css">
-  <link rel="canonical" href="http://www.dosrc.com/mark/html5/2015/06/05/html5-drag-event.html">
+  <link rel="canonical" href="http://www.dosrc.com/mark/j2ee/2015/06/09/java-connect-mysql.html">
   <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
 </head>
 
@@ -57,34 +57,82 @@
         <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">Html拖放事件</h1>
-    <p class="post-meta">Jun 5, 2015</p>
+    <h1 class="post-title">Java 连接 MySQL</h1>
+    <p class="post-meta">Jun 9, 2015</p>
   </header>
 
   <article class="post-content">
-    <p>为了使得元素能够被拖放首先要设置被拖动元素的 draggable=”true”</p>
-
-<p><strong>被拖动对象</strong></p>
-
-<p>被拖动对象会触发三个事件如下，分别触发三个事件所指定的回调函数</p>
-
-<ol>
-  <li>ondragstart——–&gt;开始拖动时被触发</li>
-  <li>drag—————&gt;拖动过程中一直被触发</li>
-  <li>ondragend———-&gt;松开拖动鼠标后被触发</li>
+    <ol>
+  <li>下载对应Java的MySQL驱动包，在<a href="http://dev.mysql.com/downloads/connector/" target="_blank">官方下载地址</a>页面上选择Java对应的 Connector/J。进入下载页面，选择Platform为Platform Independent，下载压缩包，压缩包下的mysql-connector-java-XXX.jar即为我们需要的jar包。</li>
+  <li>添加jar包</li>
+  <li>完整代码如下</li>
 </ol>
 
-<p><strong>目标对象</strong></p>
+<pre><code>
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-<p>目标对象即被拖动对象所拖动到的对象，会触发如下事件</p>
+public class TestConnectMySQL {
 
-<ol>
-  <li>dragenter———-&gt;被拖动对象进入目标对象后被触发</li>
-  <li>dragover———–&gt;被拖动对象在目标对象上时一直被触发</li>
-  <li>dragleave或drop—-&gt;dragleave事件在被拖动对象离开目标对象后被触发，drop事件在被拖动对象拖动到目标对象上松开鼠标后被触发，drop事件和dragleave事件为互斥事件，不能同时发生。</li>
-</ol>
+    /**
+     * Database URL        ---&gt; "localhost"
+     * Port                ---&gt; "3306"
+     * Schema(database)    ---&gt; "test"
+     * User                ---&gt; "root" 
+     * Password            ---&gt; ""
+     *                     
+     * @param sql
+     */
+    public static void querySQL(String sql) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            // Load driver
+            Class.forName("com.mysql.jdbc.Driver");
 
-<p><a href="http://www.w3school.com.cn/tiy/t.asp?f=html5_draganddrop" target="_blank"><strong>代码示例</strong></a></p>
+            // Connect and get connection
+            String url = "jdbc:mysql://localhost:3306/test";
+            connection = DriverManager.getConnection(url, "root", "");
+
+            // Prepare for the compiled sql statement
+            preparedStatement = connection.prepareCall(sql);
+            // preparedStatement.setString(1, "paramter");
+
+            // Execute and get the resultSet
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                // int id = resultSet.getInt(0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    public static void main(String[] args) {
+        String sql = "SELECT * FROM 'user'";
+        TestConnectMySQL.querySQL(sql);
+    }
+}
+
+</code></pre>
 
 
   </article>
