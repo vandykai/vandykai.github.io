@@ -1,0 +1,21 @@
+body {
+    background-color: #818182;
+}
+
+a {
+    width: auto;
+    font-size: 20px;
+    line-height: 1.5;
+    font-weight: 300;
+    color: #111;
+}
+
+.post-link {
+    position: relative;
+}
+
+.inverse-color-font {
+    font-size: 20px;
+    position: absolute;
+    color: #818182;
+}
