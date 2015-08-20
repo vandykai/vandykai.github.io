@@ -2,7 +2,7 @@
 
 layout: post
 title:  Java 连接 MySQL
-date:   2015-06-08 21:16:00
+date:   2015-06-30 22:10:00
 categories: J2EE
 
 ---
@@ -48,7 +48,7 @@ public class TestConnectMySQL {
             // Execute and get the resultSet
             resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                // int id = resultSet.getInt(0);
+                // int id = resultSet.getInt(1);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -70,7 +70,7 @@ public class TestConnectMySQL {
     }
     
     public static void main(String[] args) {
-        String sql = "SELECT * FROM 'user'";
+        String sql = "SELECT * FROM `user`"; // 其中`为反引号，字段和表名都应该加上
         TestConnectMySQL.querySQL(sql);
     }
 }
