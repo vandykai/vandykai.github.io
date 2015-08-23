@@ -5,8 +5,8 @@
     <description></description>
     <link>http://www.dosrc.com/mark/</link>
     <atom:link href="http://www.dosrc.com/mark/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 30 Jun 2015 13:07:07 +0800</pubDate>
-    <lastBuildDate>Tue, 30 Jun 2015 13:07:07 +0800</lastBuildDate>
+    <pubDate>Thu, 20 Aug 2015 14:20:20 +0800</pubDate>
+    <lastBuildDate>Thu, 20 Aug 2015 14:20:20 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -54,7 +54,7 @@ public class TestConnectMySQL {
             // Execute and get the resultSet
             resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                // int id = resultSet.getInt(0);
+                // int id = resultSet.getInt(1);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -76,7 +76,7 @@ public class TestConnectMySQL {
     }
     
     public static void main(String[] args) {
-        String sql = &quot;SELECT * FROM &#39;user&#39;&quot;;
+        String sql = &quot;SELECT * FROM `user`&quot;; // 其中`为反引号，字段和表名都应该加上
         TestConnectMySQL.querySQL(sql);
     }
 }
