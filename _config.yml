@@ -6,7 +6,8 @@ baseurl: "/mark" # the subpath of your site, e.g. /blog/
 url: "http://www.dosrc.com" # the base hostname & protocol for your site
 #twitter_username: vandykai
 github_username:  vandykai
-
+encoding: utf-8
+timezone: Asia/Chongqing
 # Build settings
 destination: ./_site/mark
 markdown: kramdown

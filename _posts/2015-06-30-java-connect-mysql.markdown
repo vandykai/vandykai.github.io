@@ -3,8 +3,8 @@
 layout: post
 title:  Java 连接 MySQL
 date:   2015-06-30 22:10:00
-categories: J2EE
-
+categories: [J2EE]
+tags: [j2ee, mysql]
 ---
 1. 下载对应Java的MySQL驱动包，在[官方下载地址][MYSQL connector]{:target="_blank"}页面上选择Java对应的 Connector/J。进入下载页面，选择Platform为Platform Independent，下载压缩包，压缩包下的mysql-connector-java-XXX.jar即为我们需要的jar包。
 2. 添加jar包

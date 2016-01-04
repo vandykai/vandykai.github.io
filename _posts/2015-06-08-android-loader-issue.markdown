@@ -3,7 +3,8 @@
 layout: post
 title:  "Android 自定义 AsyncLoader loadInBackground  不被调用"
 date:   2015-06-08 21:16:00
-categories: Android
+categories: [Android]
+tags: [android, loader]
 
 ---
 这是因为Android内部的运行方法中并不会主动调用loadInBackground()方法，所以需要手动调用forceLoad()方法，forceLoad()方法中会去调用loadInBackground()方法。

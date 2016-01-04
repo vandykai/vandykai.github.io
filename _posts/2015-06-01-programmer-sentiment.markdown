@@ -3,7 +3,8 @@
 layout: post
 title:  "程序员感悟"
 date:   2015-06-01 10:13:48
-categories: Essay
+categories: [Essay]
+tags: [mind]
 
 ---
 *  工作态度:  
