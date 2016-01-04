@@ -6,11 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Html拖放事件</title>
-  <meta name="description" content="为了使得元素能够被拖放首先要设置被拖动元素的 draggable=”true”">
+  <title>Design Model - OOP Principles</title>
+  <meta name="description" content="面向对象的原则">
 
   <link rel="stylesheet" href="/mark/css/main.css">
-  <link rel="canonical" href="http://www.dosrc.com/mark/html5/2015/06/05/html5-drag-event.html">
+  <link rel="canonical" href="http://www.dosrc.com/mark/design-model/2016/01/04/design-model-oop-principles.html">
   <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
 </head>
 
@@ -57,35 +57,24 @@
         <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">Html拖放事件</h1>
-    <p class="post-meta">Jun 5, 2015</p>
+    <h1 class="post-title">Design Model - OOP Principles</h1>
+    <p class="post-meta">Jan 4, 2016</p>
   </header>
 
   <article class="post-content">
-    <p>为了使得元素能够被拖放首先要设置被拖动元素的 draggable=”true”</p>
+    <h2 id="section">面向对象的原则</h2>
 
-<p><strong>被拖动对象</strong></p>
-
-<p>被拖动对象会触发三个事件如下，分别触发三个事件所指定的回调函数</p>
+<p><strong>总的原则</strong>-<strong>高内聚，低耦合</strong></p>
 
 <ol>
-  <li>ondragstart——–&gt;开始拖动时被触发</li>
-  <li>drag—————&gt;拖动过程中一直被触发</li>
-  <li>ondragend———-&gt;松开拖动鼠标后被触发</li>
+  <li><strong>单一职责原则（SRP，Single Responsibility Principle）</strong>：一个类实现一种功能，引起类变化的原因只有一种。</li>
+  <li><strong>开闭原则（OCP，Open for Extension，Closed for Modification Principle）</strong>：对扩展（功能拓展）开放，对修改（指修改功能正常运行的代码）关闭。</li>
+  <li><strong>依赖注入原则（DIP，Dependence Inversion Principle）</strong>：要依赖抽象，不要依赖具体，通过注入的方法实现抽象转具体（可参考spring中的配置式注入）。</li>
+  <li><strong>里式替换原则（LSP，Liskov Substitution Principle）</strong>：抽象类出现的地方都可以用实现类来代替。</li>
+  <li><strong>迪米特原则（LOD,Law of Demeter）</strong>：一个对象应该对其他对象尽可能少的了解。</li>
+  <li><strong>接口分离原则（ISP，Interface Segregation Principle）</strong>：一个接口只提供一种对外的功能，典型的违背原则的例子是接口富余，也就是实现类中被强迫实现（或含有）自己不需要的接口中的方法。</li>
+  <li><strong>组合优于继承（CARP，Composite/Aggregate Reuse Principle）</strong>：组合一般能比继承要更能降低依赖关系。</li>
 </ol>
-
-<p><strong>目标对象</strong></p>
-
-<p>目标对象即被拖动对象所拖动到的对象，会触发如下事件</p>
-
-<ol>
-  <li>dragenter———-&gt;被拖动对象进入目标对象后被触发</li>
-  <li>dragover———–&gt;被拖动对象在目标对象上时一直被触发</li>
-  <li>dragleave或drop—-&gt;dragleave事件在被拖动对象离开目标对象后被触发，drop事件在被拖动对象拖动到目标对象上松开鼠标后被触发，drop事件和dragleave事件为互斥事件，不能同时发生。</li>
-</ol>
-
-<p><a href="http://www.w3school.com.cn/tiy/t.asp?f=html5_draganddrop" target="_blank"><strong>代码示例</strong></a></p>
-
 
   </article>
 
