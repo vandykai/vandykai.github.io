@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Design Pattern - Singleton</title>
+  <meta name="description" content="单例模式">
+
+  <link rel="stylesheet" href="/mark/css/main.css">
+  <link rel="canonical" href="http://www.dosrc.com/mark/design-pattern/2016/01/05/design-model-singleton.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/mark/">Blog</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/mark/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Design Pattern - Singleton</h1>
+    <p class="post-meta">Jan 5, 2016</p>
+  </header>
+
+  <article class="post-content">
+    <h2>单例模式</h2>
+
+<ol>
+<li>单例模式可以分为<strong>强制型单例</strong>和<strong>非强制型单例</strong>（也有人叫管理上的单例），这两种单例是我自己命名的，前一种单例是让coder代码上不能轻易（Java中可以通过反射机制创建对象）创建对象，只能使用单例模式提供的获取对象的方法，非强制性单例代码上不对coder做强制性限制，要求自觉。</li>
+<li><p>多线程安全强制型单例的实现方式<br>
+饿汉式：</p>
+<div class="highlight"><pre><code class="language-Java" data-lang="Java"><span class="c1">// 饿汉式</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Singleton</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Singleton</span><span class="o">();</span>
+    <span class="kd">private</span> <span class="nf">Singleton</span><span class="o">()</span> <span class="o">{</span>
+        <span class="c1">// empty</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>双检测锁机制的单例模式：</p>
+<div class="highlight"><pre><code class="language-Java" data-lang="Java"><span class="c1">// 双检测锁机制的单例模式</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Singleton</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="n">instance</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nf">Singleton</span><span class="o">()</span> <span class="o">{</span>
+        <span class="c1">// empty</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">instance</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="kd">synchronized</span> <span class="o">(</span><span class="n">Singleton</span><span class="o">.</span><span class="na">class</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">instance</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Singleton</span><span class="o">();</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>还有一种懒汉式的实现方法，不过不满足多线程安全，只能在单线程下使用</p></li>
+<li><p>多线程安全非强制性单例的实现方式</p>
+<div class="highlight"><pre><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Singleton</span> <span class="o">{</span>
+    <span class="c1">// empty</span>
+<span class="o">}</span>
+</code></pre></div><div class="highlight"><pre><code class="language-Java" data-lang="Java"><span class="kn">import</span> <span class="nn">java.util.HashMap</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">BeanFactory</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">beans</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;();</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">BeanFactory</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">BeanFactory</span><span class="o">();</span>
+
+    <span class="kd">private</span> <span class="nf">BeanFactory</span><span class="o">()</span> <span class="o">{</span>
+        <span class="c1">// empty</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">BeanFactory</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">instance</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">getBean</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">beans</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">id</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">beans</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">id</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">Singleton</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getSimpleName</span><span class="o">()))</span> <span class="o">{</span>
+            <span class="kd">synchronized</span> <span class="o">(</span><span class="n">Singleton</span><span class="o">.</span><span class="na">class</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(!</span><span class="n">beans</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">id</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="n">beans</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="k">new</span> <span class="nf">Singleton</span><span class="o">());</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="k">return</span> <span class="n">beans</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></li>
+<li><p>单例模式还有范围的概念，即在某一范围内才是单例，范围扩大了可能就不是单例了，常见的单例范围有application级别，session级别，request/response级别。<br>
+<strong>小技巧</strong>：可以利用thread的thread号为关键字存入HashMap来实现thread级别的单例。</p></li>
+<li><p>利用单例模式的<strong>通用规则</strong>：并不是所有的类都适合做成单例，如果一个类含有数据（也即是有状态的类），那么将该类做成单例时可能会引发线程安全问题（多个线程同时对数据操作），此时的解决之道是要么将该数据做成只读（创建时写入数据），要么不做成单例，做成单例的类要尽量保证是无状态的。</p></li>
+</ol>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>Blog</li>
+          <li><a href="mailto:wdkrgst@gmail.com">wdkrgst@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/vandykai">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">vandykai</span>
+            </a>
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text"></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

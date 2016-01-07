@@ -5,113 +5,202 @@
     <description></description>
     <link>http://www.dosrc.com/mark/</link>
     <atom:link href="http://www.dosrc.com/mark/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 04 Jan 2016 10:44:34 +0000</pubDate>
-    <lastBuildDate>Mon, 04 Jan 2016 10:44:34 +0000</lastBuildDate>
+    <pubDate>Thu, 07 Jan 2016 02:18:11 +0000</pubDate>
+    <lastBuildDate>Thu, 07 Jan 2016 02:18:11 +0000</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
-        <title>Design Model - OOP Principles</title>
-        <description>&lt;h2 id=&quot;section&quot;&gt;面向对象的原则&lt;/h2&gt;
+        <title>Design Pattern - Singleton</title>
+        <description>&lt;h2&gt;单例模式&lt;/h2&gt;
+
+&lt;ol&gt;
+&lt;li&gt;单例模式可以分为&lt;strong&gt;强制型单例&lt;/strong&gt;和&lt;strong&gt;非强制型单例&lt;/strong&gt;（也有人叫管理上的单例），这两种单例是我自己命名的，前一种单例是让coder代码上不能轻易（Java中可以通过反射机制创建对象）创建对象，只能使用单例模式提供的获取对象的方法，非强制性单例代码上不对coder做强制性限制，要求自觉。&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;多线程安全强制型单例的实现方式&lt;br&gt;
+饿汉式：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// 饿汉式&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Singleton&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Singleton&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Singleton&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Singleton&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// empty&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Singleton&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getInstance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;双检测锁机制的单例模式：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// 双检测锁机制的单例模式&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Singleton&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Singleton&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Singleton&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// empty&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Singleton&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getInstance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;kd&quot;&gt;synchronized&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Singleton&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                    &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Singleton&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;还有一种懒汉式的实现方法，不过不满足多线程安全，只能在单线程下使用&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;多线程安全非强制性单例的实现方式&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Singleton&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// empty&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.HashMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;BeanFactory&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;beans&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HashMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;();&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BeanFactory&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;BeanFactory&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;BeanFactory&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// empty&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BeanFactory&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getInstance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Object&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getBean&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;beans&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;containsKey&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;beans&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;equals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Singleton&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getSimpleName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;kd&quot;&gt;synchronized&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Singleton&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;beans&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;containsKey&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                    &lt;span class=&quot;n&quot;&gt;beans&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;put&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Singleton&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;beans&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;单例模式还有范围的概念，即在某一范围内才是单例，范围扩大了可能就不是单例了，常见的单例范围有application级别，session级别，request/response级别。&lt;br&gt;
+&lt;strong&gt;小技巧&lt;/strong&gt;：可以利用thread的thread号为关键字存入HashMap来实现thread级别的单例。&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;利用单例模式的&lt;strong&gt;通用规则&lt;/strong&gt;：并不是所有的类都适合做成单例，如果一个类含有数据（也即是有状态的类），那么将该类做成单例时可能会引发线程安全问题（多个线程同时对数据操作），此时的解决之道是要么将该数据做成只读（创建时写入数据），要么不做成单例，做成单例的类要尽量保证是无状态的。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+        <pubDate>Tue, 05 Jan 2016 19:50:00 +0000</pubDate>
+        <link>http://www.dosrc.com/mark/design-pattern/2016/01/05/design-model-singleton.html</link>
+        <guid isPermaLink="true">http://www.dosrc.com/mark/design-pattern/2016/01/05/design-model-singleton.html</guid>
+        
+        <category>design-pattern</category>
+        
+        <category>singleton</category>
+        
+        
+        <category>design-pattern</category>
+        
+      </item>
+    
+      <item>
+        <title>Design Pattern - OOP Principles</title>
+        <description>&lt;h2&gt;面向对象的原则&lt;/h2&gt;
 
 &lt;p&gt;&lt;strong&gt;总的原则&lt;/strong&gt;-&lt;strong&gt;高内聚，低耦合&lt;/strong&gt;&lt;/p&gt;
 
 &lt;ol&gt;
-  &lt;li&gt;&lt;strong&gt;单一职责原则（SRP，Single Responsibility Principle）&lt;/strong&gt;：一个类实现一种功能，引起类变化的原因只有一种。&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;开闭原则（OCP，Open for Extension，Closed for Modification Principle）&lt;/strong&gt;：对扩展（功能拓展）开放，对修改（指修改功能正常运行的代码）关闭。&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;依赖注入原则（DIP，Dependence Inversion Principle）&lt;/strong&gt;：要依赖抽象，不要依赖具体，通过注入的方法实现抽象转具体（可参考spring中的配置式注入）。&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;里式替换原则（LSP，Liskov Substitution Principle）&lt;/strong&gt;：抽象类出现的地方都可以用实现类来代替。&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;迪米特原则（LOD,Law of Demeter）&lt;/strong&gt;：一个对象应该对其他对象尽可能少的了解。&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;接口分离原则（ISP，Interface Segregation Principle）&lt;/strong&gt;：一个接口只提供一种对外的功能，典型的违背原则的例子是接口富余，也就是实现类中被强迫实现（或含有）自己不需要的接口中的方法。&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;组合优于继承（CARP，Composite/Aggregate Reuse Principle）&lt;/strong&gt;：组合一般能比继承要更能降低依赖关系。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;单一职责原则（SRP，Single Responsibility Principle）&lt;/strong&gt;：一个类实现一种功能，引起类变化的原因只有一种。&lt;br&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;开闭原则（OCP，Open for Extension，Closed for Modification Principle）&lt;/strong&gt;：对扩展（功能拓展）开放，对修改（指修改功能正常运行的代码）关闭。&lt;br&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;依赖注入原则（DIP，Dependence Inversion Principle）&lt;/strong&gt;：要依赖抽象，不要依赖具体，通过注入的方法实现抽象转具体（可参考spring中的配置式注入）。&lt;br&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;里式替换原则（LSP，Liskov Substitution Principle）&lt;/strong&gt;：抽象类出现的地方都可以用实现类来代替。&lt;br&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;迪米特原则（LOD,Law of Demeter）&lt;/strong&gt;：一个对象应该对其他对象尽可能少的了解。&lt;br&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;接口分离原则（ISP，Interface Segregation Principle）&lt;/strong&gt;：一个接口只提供一种对外的功能，典型的违背原则的例子是接口富余，也就是实现类中被强迫实现（或含有）自己不需要的接口中的方法。&lt;br&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;组合优于继承（CARP，Composite/Aggregate Reuse Principle）&lt;/strong&gt;：组合一般能比继承要更能降低依赖关系。&lt;/li&gt;
 &lt;/ol&gt;
 </description>
         <pubDate>Mon, 04 Jan 2016 17:07:00 +0000</pubDate>
-        <link>http://www.dosrc.com/mark/design-model/2016/01/04/design-model-oop-principles.html</link>
-        <guid isPermaLink="true">http://www.dosrc.com/mark/design-model/2016/01/04/design-model-oop-principles.html</guid>
+        <link>http://www.dosrc.com/mark/design-pattern/2016/01/04/design-model-oop-principles.html</link>
+        <guid isPermaLink="true">http://www.dosrc.com/mark/design-pattern/2016/01/04/design-model-oop-principles.html</guid>
         
-        <category>design-model</category>
+        <category>design-pattern</category>
         
         <category>oop</category>
         
         
-        <category>design-model</category>
+        <category>design-pattern</category>
         
       </item>
     
       <item>
         <title>Java 连接 MySQL</title>
         <description>&lt;ol&gt;
-  &lt;li&gt;下载对应Java的MySQL驱动包，在&lt;a href=&quot;http://dev.mysql.com/downloads/connector/&quot; target=&quot;_blank&quot;&gt;官方下载地址&lt;/a&gt;页面上选择Java对应的 Connector/J。进入下载页面，选择Platform为Platform Independent，下载压缩包，压缩包下的mysql-connector-java-XXX.jar即为我们需要的jar包。&lt;/li&gt;
-  &lt;li&gt;添加jar包&lt;/li&gt;
-  &lt;li&gt;完整代码如下&lt;/li&gt;
+&lt;li&gt;下载对应Java的MySQL驱动包，在&lt;a href=&quot;http://dev.mysql.com/downloads/connector/&quot;&gt;官方下载地址&lt;/a&gt;页面上选择Java对应的 Connector/J。进入下载页面，选择Platform为Platform Independent，下载压缩包，压缩包下的mysql-connector-java-XXX.jar即为我们需要的jar包。&lt;/li&gt;
+&lt;li&gt;添加jar包&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;完整代码如下&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.sql.Connection&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.sql.DriverManager&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.sql.PreparedStatement&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.sql.ResultSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.sql.SQLException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;TestConnectMySQL&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+
+    &lt;span class=&quot;cm&quot;&gt;/**&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * Database URL        ---&amp;gt; &amp;quot;localhost&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * Port                ---&amp;gt; &amp;quot;3306&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * Schema(database)    ---&amp;gt; &amp;quot;test&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * User                ---&amp;gt; &amp;quot;root&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * Password            ---&amp;gt; &amp;quot;&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     *                     &lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * @param sql&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     */&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;querySQL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sql&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Connection&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;connection&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;PreparedStatement&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;preparedStatement&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;ResultSet&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resultSet&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;c1&quot;&gt;// Load driver&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;forName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;com.mysql.jdbc.Driver&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+
+            &lt;span class=&quot;c1&quot;&gt;// Connect and get connection&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;url&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;jdbc:mysql://localhost:3306/test&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;connection&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DriverManager&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getConnection&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;root&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+
+            &lt;span class=&quot;c1&quot;&gt;// Prepare for the compiled sql statement&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;preparedStatement&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;connection&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;prepareCall&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sql&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;c1&quot;&gt;// preparedStatement.setString(1, &amp;quot;paramter&amp;quot;);&lt;/span&gt;
+
+            &lt;span class=&quot;c1&quot;&gt;// Execute and get the resultSet&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;resultSet&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;preparedStatement&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;executeQuery&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;resultSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;c1&quot;&gt;// int id = resultSet.getInt(1);&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;printStackTrace&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;finally&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;resultSet&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                    &lt;span class=&quot;n&quot;&gt;resultSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;close&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;preparedStatement&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                    &lt;span class=&quot;n&quot;&gt;preparedStatement&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;close&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;connection&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                    &lt;span class=&quot;n&quot;&gt;connection&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;close&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SQLException&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;printStackTrace&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sql&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;SELECT * FROM `user`&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 其中`为反引号，字段和表名都应该加上&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;TestConnectMySQL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;querySQL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sql&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
 &lt;/ol&gt;
-
-&lt;pre&gt;&lt;code&gt;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-public class TestConnectMySQL {
-
-    /**
-     * Database URL        ---&amp;gt; &quot;localhost&quot;
-     * Port                ---&amp;gt; &quot;3306&quot;
-     * Schema(database)    ---&amp;gt; &quot;test&quot;
-     * User                ---&amp;gt; &quot;root&quot; 
-     * Password            ---&amp;gt; &quot;&quot;
-     *                     
-     * @param sql
-     */
-    public static void querySQL(String sql) {
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        try {
-            // Load driver
-            Class.forName(&quot;com.mysql.jdbc.Driver&quot;);
-
-            // Connect and get connection
-            String url = &quot;jdbc:mysql://localhost:3306/test&quot;;
-            connection = DriverManager.getConnection(url, &quot;root&quot;, &quot;&quot;);
-
-            // Prepare for the compiled sql statement
-            preparedStatement = connection.prepareCall(sql);
-            // preparedStatement.setString(1, &quot;paramter&quot;);
-
-            // Execute and get the resultSet
-            resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                // int id = resultSet.getInt(1);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-    
-    public static void main(String[] args) {
-        String sql = &quot;SELECT * FROM `user`&quot;; // 其中`为反引号，字段和表名都应该加上
-        TestConnectMySQL.querySQL(sql);
-    }
-}
-
-&lt;/code&gt;&lt;/pre&gt;
-
 </description>
         <pubDate>Tue, 30 Jun 2015 22:10:00 +0000</pubDate>
         <link>http://www.dosrc.com/mark/j2ee/2015/06/30/java-connect-mysql.html</link>
@@ -131,76 +220,70 @@ public class TestConnectMySQL {
         <description>&lt;p&gt;这是因为Android内部的运行方法中并不会主动调用loadInBackground()方法，所以需要手动调用forceLoad()方法，forceLoad()方法中会去调用loadInBackground()方法。&lt;/p&gt;
 
 &lt;p&gt;所以正确的实现应该是应该重载AsyncLoader中的onStartLoading()方法,并调用forceLoad()方法。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;@Override
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;@Override
 protected void onStartLoading() {
     forceLoad();
     super.onStartLoading();
 }
-&lt;/code&gt;&lt;/pre&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;完整代码如下：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;android.content.AsyncTaskLoader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;android.content.Context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
 
-&lt;pre&gt;&lt;code&gt;import android.content.AsyncTaskLoader;
-import android.content.Context;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MyLoader&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AsyncTaskLoader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
 
-public class MyLoader extends AsyncTaskLoader&amp;lt;String&amp;gt; {
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;MyLoader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Context&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;kd&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
 
-    public MyLoader(Context context) {
-        super(context);
-    }
+    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;loadInBackground&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;Thread&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sleep&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3000&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;InterruptedException&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;printStackTrace&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;data&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
 
-    @Override
-    public String loadInBackground() {
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return new String(&quot;data&quot;);
-    }
+    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;protected&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;onStartLoading&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;forceLoad&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;kd&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;onStartLoading&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
 
-    @Override
-    protected void onStartLoading() {
-        forceLoad();
-        super.onStartLoading();
-    }
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;android.app.Activity&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;android.app.LoaderManager.LoaderCallbacks&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;android.content.Loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;android.os.Bundle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;android.util.Log&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
 
-}
-&lt;/code&gt;&lt;/pre&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MainActivity&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Activity&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LoaderCallbacks&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
 
-&lt;pre&gt;&lt;code&gt;import android.app.Activity;
-import android.app.LoaderManager.LoaderCallbacks;
-import android.content.Loader;
-import android.os.Bundle;
-import android.util.Log;
+    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;protected&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;onCreate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Bundle&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;savedInstanceState&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;kd&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;onCreate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;savedInstanceState&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;setContentView&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;layout&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;activity_main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;getLoaderManager&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;initLoader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
 
-public class MainActivity extends Activity implements LoaderCallbacks&amp;lt;String&amp;gt; {
+    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;onCreateLoader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Bundle&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;MyLoader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        getLoaderManager().initLoader(0, null, this);
-    }
+    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;onLoadFinished&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Log&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;d&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;MainActivity&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
 
-    @Override
-    public Loader&amp;lt;String&amp;gt; onCreateLoader(int id, Bundle args) {
-        return new MyLoader(this);
-    }
+    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;onLoaderReset&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
 
-    @Override
-    public void onLoadFinished(Loader&amp;lt;String&amp;gt; loader, String data) {
-        Log.d(&quot;MainActivity&quot;, data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader&amp;lt;String&amp;gt; loader) {
-    }
-
-}
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
         <pubDate>Mon, 08 Jun 2015 21:16:00 +0000</pubDate>
         <link>http://www.dosrc.com/mark/android/2015/06/08/android-loader-issue.html</link>
         <guid isPermaLink="true">http://www.dosrc.com/mark/android/2015/06/08/android-loader-issue.html</guid>
@@ -216,16 +299,16 @@ public class MainActivity extends Activity implements LoaderCallbacks&amp;lt;Str
     
       <item>
         <title>Html拖放事件</title>
-        <description>&lt;p&gt;为了使得元素能够被拖放首先要设置被拖动元素的 draggable=”true”&lt;/p&gt;
+        <description>&lt;p&gt;为了使得元素能够被拖放首先要设置被拖动元素的 draggable=&amp;quot;true&amp;quot;&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;被拖动对象&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;被拖动对象会触发三个事件如下，分别触发三个事件所指定的回调函数&lt;/p&gt;
 
 &lt;ol&gt;
-  &lt;li&gt;ondragstart——–&amp;gt;开始拖动时被触发&lt;/li&gt;
-  &lt;li&gt;drag—————&amp;gt;拖动过程中一直被触发&lt;/li&gt;
-  &lt;li&gt;ondragend———-&amp;gt;松开拖动鼠标后被触发&lt;/li&gt;
+&lt;li&gt;ondragstart--------&amp;gt;开始拖动时被触发&lt;/li&gt;
+&lt;li&gt;drag---------------&amp;gt;拖动过程中一直被触发&lt;/li&gt;
+&lt;li&gt;ondragend----------&amp;gt;松开拖动鼠标后被触发&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;p&gt;&lt;strong&gt;目标对象&lt;/strong&gt;&lt;/p&gt;
@@ -233,13 +316,12 @@ public class MainActivity extends Activity implements LoaderCallbacks&amp;lt;Str
 &lt;p&gt;目标对象即被拖动对象所拖动到的对象，会触发如下事件&lt;/p&gt;
 
 &lt;ol&gt;
-  &lt;li&gt;dragenter———-&amp;gt;被拖动对象进入目标对象后被触发&lt;/li&gt;
-  &lt;li&gt;dragover———–&amp;gt;被拖动对象在目标对象上时一直被触发&lt;/li&gt;
-  &lt;li&gt;dragleave或drop—-&amp;gt;dragleave事件在被拖动对象离开目标对象后被触发，drop事件在被拖动对象拖动到目标对象上松开鼠标后被触发，drop事件和dragleave事件为互斥事件，不能同时发生。&lt;/li&gt;
+&lt;li&gt;dragenter----------&amp;gt;被拖动对象进入目标对象后被触发&lt;/li&gt;
+&lt;li&gt;dragover-----------&amp;gt;被拖动对象在目标对象上时一直被触发&lt;/li&gt;
+&lt;li&gt;dragleave或drop----&amp;gt;dragleave事件在被拖动对象离开目标对象后被触发，drop事件在被拖动对象拖动到目标对象上松开鼠标后被触发，drop事件和dragleave事件为互斥事件，不能同时发生。&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;&lt;a href=&quot;http://www.w3school.com.cn/tiy/t.asp?f=html5_draganddrop&quot; target=&quot;_blank&quot;&gt;&lt;strong&gt;代码示例&lt;/strong&gt;&lt;/a&gt;&lt;/p&gt;
-
+&lt;p&gt;&lt;a href=&quot;http://www.w3school.com.cn/tiy/t.asp?f=html5_draganddrop&quot;&gt;&lt;strong&gt;代码示例&lt;/strong&gt;&lt;/a&gt;&lt;/p&gt;
 </description>
         <pubDate>Thu, 04 Jun 2015 17:17:00 +0000</pubDate>
         <link>http://www.dosrc.com/mark/html5/2015/06/04/html5-drag-event.html</link>
@@ -255,27 +337,27 @@ public class MainActivity extends Activity implements LoaderCallbacks&amp;lt;Str
       <item>
         <title>程序员感悟</title>
         <description>&lt;ul&gt;
-  &lt;li&gt;工作态度:&lt;br /&gt;
-I don’t want to call myself as a programmer, in my opinion， I am a artist. 我们属于艺术界，不属于制造业，at least 我是这么认为的.&lt;br /&gt;
-我们所从事的行业是非常细致入微的，是不容马虎的，连自己这关都过不去的的代码还是趁早丢进垃圾桶把。&lt;/li&gt;
-  &lt;li&gt;方法论:
-    &lt;ul&gt;
-      &lt;li&gt;观点一：&lt;br /&gt;
-物理与数学的关系-物理这门学科是从理论的角度解释物体的实践的一门学科，数学是从抽象的角度提取出物理发现的的规律，数学具有高于物理的抽象性，以及适应广度，数学之所以这么重要是由于人类是生活在大自然中的，我们的智慧也来源于我们所生活的环境，因为我们在向大自然学习模仿，所以作为对大自然物理现象高度概括的数学就好比一部武功心法了。&lt;br /&gt;
-作为程序员fundation的重要性不言而喻，会几门语言，懂点coding并不等于把fundation学好了，学习编程很容易急功近利，追求新框架，追捧新语言，从而容易迷失在无限的追逐游戏中，而忽略了最为重要的fundation。&lt;/li&gt;
-      &lt;li&gt;观点二：&lt;br /&gt;
-程序员要多实践，实践方能出真知，我们要坚持终生学习，问渠那得清如许，为有源头活水来，不学习新知识，就会被时代所淘汰。&lt;/li&gt;
-      &lt;li&gt;观点三：&lt;br /&gt;
-观点一是理论，观点二是实践，理论和实践是辩证统一的关系，二者缺一不可，实践与理论相辅相成。&lt;br /&gt;
-上述三个观点就仁者见仁智者见智了吧。&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;使命：&lt;br /&gt;
-集体荣誉感往大了说就是民族责任感&lt;/li&gt;
+&lt;li&gt; 工作态度:&lt;br&gt;
+I don&amp;#39;t want to call myself as a programmer, in my opinion， I am a artist. 我们属于艺术界，不属于制造业，at least 我是这么认为的.&lt;br&gt;
+我们所从事的行业是非常细致入微的，是不容马虎的，连自己这关都过不去的的代码还是趁早丢进垃圾桶把。&lt;br&gt;&lt;/li&gt;
+&lt;li&gt;方法论:&lt;br&gt;
+
+&lt;ul&gt;
+&lt;li&gt;观点一：&lt;br&gt;
+物理与数学的关系-物理这门学科是从理论的角度解释物体的实践的一门学科，数学是从抽象的角度提取出物理发现的的规律，数学具有高于物理的抽象性，以及适应广度，数学之所以这么重要是由于人类是生活在大自然中的，我们的智慧也来源于我们所生活的环境，因为我们在向大自然学习模仿，所以作为对大自然物理现象高度概括的数学就好比一部武功心法了。&lt;br&gt;
+作为程序员fundation的重要性不言而喻，会几门语言，懂点coding并不等于把fundation学好了，学习编程很容易急功近利，追求新框架，追捧新语言，从而容易迷失在无限的追逐游戏中，而忽略了最为重要的fundation。&lt;br&gt;&lt;/li&gt;
+&lt;li&gt;观点二：&lt;br&gt;
+程序员要多实践，实践方能出真知，我们要坚持终生学习，问渠那得清如许，为有源头活水来，不学习新知识，就会被时代所淘汰。&lt;br&gt;&lt;/li&gt;
+&lt;li&gt;观点三：&lt;br&gt;
+观点一是理论，观点二是实践，理论和实践是辩证统一的关系，二者缺一不可，实践与理论相辅相成。&lt;br&gt;
+上述三个观点就仁者见仁智者见智了吧。&lt;br&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;使命：&lt;br&gt;
+集体荣誉感往大了说就是民族责任感&lt;br&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;blockquote&gt;
-  &lt;p&gt;年轻人应该有宏伟的志向，用别人的产品做自己的东西，你永远只是个“高级客户”，成不了真正的开发者。不管你用他国的系统软件开发出多少好的产品，挣了多少钱，只要人家一升级、或一推出新产品，你口袋里的银子连同最后一条小裤衩也会被剥夺的一干二净。你，只不过是一个高级打工仔。&lt;/p&gt;
+&lt;p&gt;年轻人应该有宏伟的志向，用别人的产品做自己的东西，你永远只是个“高级客户”，成不了真正的开发者。不管你用他国的系统软件开发出多少好的产品，挣了多少钱，只要人家一升级、或一推出新产品，你口袋里的银子连同最后一条小裤衩也会被剥夺的一干二净。你，只不过是一个高级打工仔。&lt;/p&gt;
 &lt;/blockquote&gt;
 
 &lt;p&gt;本文中的观点切勿全盘接受，全盘相信，因为就连笔者本人也不能保证观点的正确。之所以写这些，是因为想引起思考，也仅仅是这一个目的罢了。&lt;/p&gt;
