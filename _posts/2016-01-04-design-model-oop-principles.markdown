@@ -1,10 +1,10 @@
 ---
 
 layout: post
-title:  Design Model - OOP Principles
+title:  Design Pattern - OOP Principles
 date:   2016-01-04 17:07:00
-categories: [Design-Model]
-tags: [design-model, oop]
+categories: [Design-Pattern]
+tags: [design-pattern, oop]
 
 ---
 ##面向对象的原则

@@ -10,4 +10,4 @@ encoding: utf-8
 timezone: Asia/Chongqing
 # Build settings
 destination: ./_site/mark
-markdown: kramdown
+markdown: redcarpet

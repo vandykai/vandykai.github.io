@@ -24,9 +24,7 @@ tags: [html5]
   1. dragenter---------->被拖动对象进入目标对象后被触发
   2. dragover----------->被拖动对象在目标对象上时一直被触发
   3. dragleave或drop---->dragleave事件在被拖动对象离开目标对象后被触发，drop事件在被拖动对象拖动到目标对象上松开鼠标后被触发，drop事件和dragleave事件为互斥事件，不能同时发生。
-  
-[**代码示例**][w3cschool demo]{:target="_blank"}
+
+[**代码示例**][w3cschool demo]
 
 [w3cschool demo]: http://www.w3school.com.cn/tiy/t.asp?f=html5_draganddrop
-
-

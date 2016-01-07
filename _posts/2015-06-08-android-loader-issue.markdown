@@ -21,7 +21,7 @@ protected void onStartLoading() {
 
 完整代码如下：
 
-~~~
+~~~ Java
 import android.content.AsyncTaskLoader;
 import android.content.Context;
 
@@ -50,7 +50,7 @@ public class MyLoader extends AsyncTaskLoader<String> {
 }
 ~~~
 
-~~~
+~~~ Java
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Loader;
