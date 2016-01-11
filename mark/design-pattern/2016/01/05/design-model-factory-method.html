@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Design Pattern - Factory Method</title>
+  <meta name="description" content="工厂方法模式">
+
+  <link rel="stylesheet" href="/mark/css/main.css">
+  <link rel="canonical" href="http://www.dosrc.com/mark/design-pattern/2016/01/05/design-model-factory-method.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/mark/">Blog</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/mark/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Design Pattern - Factory Method</h1>
+    <p class="post-meta">Jan 5, 2016</p>
+  </header>
+
+  <article class="post-content">
+    <h2>工厂方法模式</h2>
+
+<ol>
+<li><strong>适用范围</strong>：当一个对象的创建和初始化工作比较复杂或者一个对象会被反复创建时，采用工厂方法模式是一个很好的选择。</li>
+<li><p>工厂方法模式的思想是每个产品的创建都有一个具体的工厂类来实现，由此可能会想到为什么不在产品类里面提供一个创建自己的方法，这是由于不同的使用者可能创建时需要的参数不同，这时用工厂方法模式就可以直接再新建（符合开闭原则，只增加不修改）一些工厂来区分不同的参数，而由产品类自己创建就势必要提供很多创建方法，不符合开闭原则。</p></li>
+<li><p>工厂方法模式的实现方式  </p>
+<div class="highlight"><pre><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Product</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">commonMethod</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</code></pre></div><div class="highlight"><pre><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ProductOne</span> <span class="kd">extends</span> <span class="n">Product</span><span class="o">{</span>
+    <span class="c1">// empty</span>
+<span class="o">}</span>
+</code></pre></div><div class="highlight"><pre><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ProductTwo</span> <span class="kd">extends</span> <span class="n">Product</span><span class="o">{</span>
+    <span class="c1">//empty</span>
+<span class="o">}</span>
+</code></pre></div><div class="highlight"><pre><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Creator</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">abstract</span> <span class="n">Product</span> <span class="nf">getProduct</span><span class="o">();</span>
+
+<span class="o">}</span>
+</code></pre></div><div class="highlight"><pre><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ProductOneCreator</span> <span class="kd">extends</span> <span class="n">Creator</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">ProductOne</span> <span class="nf">getProduct</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">ProductOne</span> <span class="n">productOne</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ProductOne</span><span class="o">();</span>
+        <span class="c1">// Initial productOne here</span>
+        <span class="k">return</span> <span class="n">productOne</span><span class="o">;</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</code></pre></div><div class="highlight"><pre><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ProductTwoCreator</span> <span class="kd">extends</span> <span class="n">Creator</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">ProductTwo</span> <span class="nf">getProduct</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">ProductTwo</span> <span class="n">productTwo</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ProductTwo</span><span class="o">();</span>
+        <span class="c1">// Initial productTwo here</span>
+        <span class="k">return</span> <span class="n">productTwo</span><span class="o">;</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</code></pre></div><div class="highlight"><pre><code class="language-Java" data-lang="Java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Client</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span> <span class="n">args</span><span class="o">[])</span> <span class="o">{</span>
+        <span class="n">Product</span> <span class="n">productOne</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ProductOneCreator</span><span class="o">().</span><span class="na">getProduct</span><span class="o">();</span>
+        <span class="n">Product</span> <span class="n">productTwo</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">ProductTwoCreator</span><span class="o">().</span><span class="na">getProduct</span><span class="o">();</span>
+        <span class="n">productOne</span><span class="o">.</span><span class="na">commonMethod</span><span class="o">();</span>
+        <span class="n">productTwo</span><span class="o">.</span><span class="na">commonMethod</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>
+<p>窃以为实现工厂方法模式时如需要则可以把工厂做成单例，或工厂中产生对象的方法做成静态方法，当然静态方法可能是不妥的，待以后想到再来修改此处。</p></li>
+<li><p>与工厂方法模式类似的还有一种叫做简单工厂的模式，这种模式通过一个工厂类来根据传入的参数来选择生成不同的产品对象，所有的产品都继承一个公共的产品抽象类，这种模式的缺点是当生产的产品过多时，将导致工厂类较复杂，不利于后期维护，这种模式不属于经典的二十三种模式之一。工厂方法模式就是把简单工厂的一个大工厂创建所有的类的形式拆分成许多小工厂，并抽象出一个抽象工厂类，这个抽象工厂类只负责定义创建的方式，具体创建的内容有继承它的小工厂类来实现。</p></li>
+</ol>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>Blog</li>
+          <li><a href="mailto:wdkrgst@gmail.com">wdkrgst@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/vandykai">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">vandykai</span>
+            </a>
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text"></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
