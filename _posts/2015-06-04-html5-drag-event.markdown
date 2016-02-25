@@ -3,8 +3,8 @@
 layout: post
 title:  "Html拖放事件"
 date:   2015-06-04 17:17:00
-categories: [Html5]
-tags: [html5]
+categories: [J2EE]
+tags: [j2ee, html5]
 
 ---
 为了使得元素能够被拖放首先要设置被拖动元素的 draggable="true"

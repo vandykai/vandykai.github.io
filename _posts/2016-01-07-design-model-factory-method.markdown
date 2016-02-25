@@ -2,7 +2,7 @@
 
 layout: post
 title:  Design Pattern - Factory Method
-date:   2016-01-05 19:50:00
+date:   2016-01-07 19:50:00
 categories: [Design-Pattern]
 tags: [design-pattern, factory-method]
 
