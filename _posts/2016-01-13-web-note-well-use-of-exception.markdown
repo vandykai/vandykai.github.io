@@ -4,7 +4,7 @@ layout: post
 title:  Web Note - Well Use Of Exception
 date:   2016-01-12 17:10:00
 categories: [j2ee]
-tags: [j2ee, web-note， web-]
+tags: [j2ee, web-note, exception]
 
 ---
 ## 用好异常
