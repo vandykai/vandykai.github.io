@@ -5,9 +5,82 @@
     <description></description>
     <link>http://www.dosrc.com/mark/</link>
     <atom:link href="http://www.dosrc.com/mark/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 25 Feb 2016 11:07:27 +0000</pubDate>
-    <lastBuildDate>Thu, 25 Feb 2016 11:07:27 +0000</lastBuildDate>
+    <pubDate>Fri, 26 Feb 2016 09:06:20 +0000</pubDate>
+    <lastBuildDate>Fri, 26 Feb 2016 09:06:20 +0000</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>linux-kernel-working-process-of-assembly-code</title>
+        <description>&lt;h3&gt;重点知识总结&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;CS(code segment register)是代码段寄存器,CPU在实际取指令时根据cs:eip来准确定位一个指令。&lt;/li&gt;
+&lt;li&gt;b，w，l，p，分别指8位，16位，32位，64位，如movl指移动32位的数据。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;AT&amp;amp;T&lt;/strong&gt;汇编格式与&lt;strong&gt;Intel&lt;/strong&gt;汇编格式略有不同，Linux使用的是&lt;strong&gt;AT&amp;amp;T&lt;/strong&gt;汇编格式。&lt;/li&gt;
+&lt;li&gt;eip寄存器不能被直接修改，只能通过特殊指令间接修改，如通过call与ret指令。&lt;/li&gt;
+&lt;li&gt;函数的返回值默认使用eax寄存器存储返回给上一级函数&lt;/li&gt;
+&lt;li&gt;汇编中对应的方法过程如下&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;nl&quot;&gt;method&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;enter&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// Real Code Here&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;leave&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;指令实际做的事情列表：&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span class=&quot;n&quot;&gt;push&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;eax&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;subl&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;$4&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;esp&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;movl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;eax&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;esp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;pop&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;eax&lt;/span&gt;
+    &lt;span class=&quot;nf&quot;&gt;movl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;esp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;eax&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;addl&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;$4&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;esp&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;call&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x12345&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;pushl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;eip&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;movl&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;$0x12345&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;eip&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;popl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;eip&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;enter&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;pushl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ebp&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;movl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;esp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ebp&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;leave&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;movl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ebp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;esp&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;popl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ebp&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;实验分析&lt;/h3&gt;
+
+&lt;p&gt;C程序源代码如下图
+&lt;img src=&quot;/mark/assets/images/2016-02-25-linux-kernel-working-process-of-assembly-code/main-c.png&quot; alt=&quot;main.c&quot;&gt;
+汇编源代码如下图
+&lt;img src=&quot;/mark/assets/images/2016-02-25-linux-kernel-working-process-of-assembly-code/main-s.png&quot; alt=&quot;main.s&quot;&gt;
+从图中可以看出，C程序方法对应的汇编方法一般过程如下：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;nl&quot;&gt;method&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;enter&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// Real Code Here&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;leave&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;若方法中不再调用另一方法也即汇编代码中不调用call语句，那么&lt;code&gt;leave&lt;/code&gt;语句可优化为&lt;code&gt;popl %ebp&lt;/code&gt;
+参数传递通过堆栈完成，一个参数，则通过&lt;code&gt;8(%ebp)&lt;/code&gt;取参数，两个参数则通过&lt;code&gt;12(%ebp)&lt;/code&gt;, &lt;code&gt;8(*ebp)&lt;/code&gt;分别取出第一和第二个参数。&lt;/p&gt;
+
+&lt;p&gt;wdk 原创作品转载请注明出处&lt;br&gt;
+相关链接 &lt;a href=&quot;http://mooc.study.163.com/course/USTC-1000029000&quot;&gt;《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Thu, 25 Feb 2016 10:42:00 +0000</pubDate>
+        <link>http://www.dosrc.com/mark/linux/2016/02/25/linux-kernel-working-process-of-assembly-code.html</link>
+        <guid isPermaLink="true">http://www.dosrc.com/mark/linux/2016/02/25/linux-kernel-working-process-of-assembly-code.html</guid>
+        
+        <category>linux</category>
+        
+        <category>linux-kernel</category>
+        
+        <category>experiment</category>
+        
+        
+        <category>linux</category>
+        
+      </item>
     
       <item>
         <title>Web Note - Well Use Of Exception</title>
@@ -74,7 +147,9 @@
         
         <category>j2ee</category>
         
-        <category>web-note， web-</category>
+        <category>web-note</category>
+        
+        <category>exception</category>
         
         
         <category>j2ee</category>
