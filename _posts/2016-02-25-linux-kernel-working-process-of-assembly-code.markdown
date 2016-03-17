@@ -1,7 +1,7 @@
 ---
 
 layout: post
-title:  linux-kernel-working-process-of-assembly-code
+title:  Linux Kernel Working Process Of Assembly Code
 date:   2016-02-25 10:42:00
 categories: [linux]
 tags: [linux, linux-kernel, experiment]
@@ -16,35 +16,36 @@ tags: [linux, linux-kernel, experiment]
 - 函数的返回值默认使用eax寄存器存储返回给上一级函数
 - 汇编中对应的方法过程如下
 
-``` C
-method:
-    enter
-    // Real Code Here
-    leave
-    ret
-```
+    ``` C
+    method:
+        enter
+        // Real Code Here
+        leave
+        ret
+    ```
 
 - 指令实际做的事情列表：
 
-~~~ Java
-push %eax
-    subl $4, %esp
-    movl %eax, (%esp)
-pop %eax
-    movl (%esp), %eax
-    addl $4, %esp
-call 0x12345
-    pushl %eip*
-    movl $0x12345, %eip*
-ret
-    popl %eip*
-enter
-    pushl %ebp
-    movl %esp, %ebp
-leave
-    movl %ebp, %esp
-    popl %ebp
-~~~
+    ~~~ Java
+    push %eax
+        subl $4, %esp
+        movl %eax, (%esp)
+    pop %eax
+        movl (%esp), %eax
+        addl $4, %esp
+    call 0x12345
+        pushl %eip*
+        movl $0x12345, %eip*
+    ret
+        popl %eip*
+    enter
+        pushl %ebp
+        movl %esp, %ebp
+    leave
+        movl %ebp, %esp
+        popl %ebp
+    ~~~
+
 ###实验分析
 C程序源代码如下图
 ![main.c][1]
