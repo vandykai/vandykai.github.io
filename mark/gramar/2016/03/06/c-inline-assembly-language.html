@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>C Inline Assembly Language</title>
+  <meta name="description" content="C语言内嵌汇编语法">
+
+  <link rel="stylesheet" href="/mark/css/main.css">
+  <link rel="canonical" href="http://www.dosrc.com/mark/gramar/2016/03/06/c-inline-assembly-language.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/mark/">Blog</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/mark/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">C Inline Assembly Language</h1>
+    <p class="post-meta">Mar 6, 2016</p>
+  </header>
+
+  <article class="post-content">
+    <h2>C语言内嵌汇编语法</h2>
+
+<h3>GCC</h3>
+<div class="highlight"><pre><code class="language-C" data-lang="C"> <span class="n">__asm__</span><span class="p">(</span>
+    <span class="err">汇编语句模版：</span>
+    <span class="err">输出部分：</span>
+    <span class="err">输入部分：</span>
+    <span class="err">破坏描述部分</span>
+<span class="p">);</span>
+</code></pre></div>
+<p>即格式为<code>asm(&quot;statements&quot;:output_regs:input_regs:clobbered_regs);</code></p>
+
+<p><code>__asm__</code>表示后面的代码为内嵌汇编，同时<code>__asm__</code>也可由<code>asm</code>来代替，<code>asm</code>是<code>__asm__</code>的别名。</p>
+
+<p>在<code>__asm__</code>后面有时也会加上<code>__volatile__</code>表示编译器不要优化代码，后面的指令保留原样，同样<code>volatile</code>是它的别名，在这里值得注意的是无论<code>__asm__</code>还是&quot;<code>__volatile__</code>&quot;中的每个下划线都不是一个单独的下划线，而是两个短的下划线拼成的。再后面括号里面的便是汇编指令。</p>
+
+<h3>Visual C++</h3>
+<div class="highlight"><pre><code class="language-text" data-lang="text">__asm 汇编指令 [ ; ]
+__asm { 汇编指令 } [ ; ]
+</code></pre></div>
+<p>同样asm前面是两条下划线，后面的方括号内容表示分号可有可无。</p>
+
+<ol>
+<li><p>组成一块地用</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">__asm {
+   mov al, 2
+   mov dx, 0xD007
+   out dx, al
+}
+</code></pre></div></li>
+<li><p>分条的使用</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">__asm mov al, 2
+__asm mov dx, 0xD007
+__asm out dx, al
+</code></pre></div>
+<p>也可以写在同一行</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">__asm mov al, 2   __asm mov dx, 0xD007   __asm out dx, al
+</code></pre></div></li>
+</ol>
+
+<h3>Turbo C</h3>
+
+<ol>
+<li><p>使用预处理程序的伪指令#asm和#endasm,#asm用来开始一个汇编程序块，而#endasm指令用于该块的结
+束。</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">mul(a,b)
+int a,b;
+{
+   #asm
+       mov ax,word ptr 8[bp]
+       imul ax word ptr 10[bp]
+   #endasm
+}
+</code></pre></div></li>
+<li><p>使用asm语句
+格式：asm&lt;汇编语句&gt;</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">mul(a,b)
+int a,b;
+{
+    asm   mov ax,word ptr 8[bp]
+    asm   imul ax word ptr 10[bp]
+}
+</code></pre></div></li>
+</ol>
+
+<blockquote>
+<p>Visual C++ 和 Turbo C语法转自<a href="http://bbs.51cto.com/thread-652061-1.html">http://bbs.51cto.com/thread-652061-1.html</a></p>
+</blockquote>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>Blog</li>
+          <li><a href="mailto:wdkrgst@gmail.com">wdkrgst@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text"></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

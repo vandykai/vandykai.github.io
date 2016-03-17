@@ -5,12 +5,194 @@
     <description></description>
     <link>http://www.dosrc.com/mark/</link>
     <atom:link href="http://www.dosrc.com/mark/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 29 Feb 2016 03:03:58 +0000</pubDate>
-    <lastBuildDate>Mon, 29 Feb 2016 03:03:58 +0000</lastBuildDate>
+    <pubDate>Thu, 17 Mar 2016 03:13:00 +0000</pubDate>
+    <lastBuildDate>Thu, 17 Mar 2016 03:13:00 +0000</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
-        <title>linux-kernel-working-process-of-assembly-code</title>
+        <title>Linux Kernel Working Process Of Operating System</title>
+        <description>&lt;h2&gt;重点知识总结&lt;/h2&gt;
+
+&lt;h3&gt;C语言内嵌汇编语法&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&quot;/mark/gramar/2016/03/06/c-inline-assembly-language.html&quot;&gt;C Inline Assembly Language&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2&gt;实验分析&lt;/h2&gt;
+
+&lt;h3&gt;进程定义的代码如下&lt;/h3&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;#define MAX_TASK_NUM        4
+#define KERNEL_STACK_SIZE   1024*8
+
+/* CPU-specific state of this task */
+struct Thread {
+    unsigned long       ip;
+    unsigned long       sp;
+};
+
+typedef struct PCB{
+    int pid;
+    volatile long state;    /* -1 unrunnable, 0 runnable, &amp;gt;0 stopped */
+    char stack[KERNEL_STACK_SIZE];
+    /* CPU-specific state of this task */
+    struct Thread thread;
+    unsigned long   task_entry;
+    struct PCB *next;
+}tPCB;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;进程切换的核心代码如下&lt;/h3&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;if(next-&amp;gt;state == 0) {
+    /* -1 unrunnable, 0 runnable, &amp;gt;0 stopped */
+    my_current_task = next;
+    printk(KERN_NOTICE &amp;quot;&amp;gt;&amp;gt;&amp;gt;switch %d to %d&amp;lt;&amp;lt;&amp;lt;\n&amp;quot;,prev-&amp;gt;pid,next-&amp;gt;pid);
+    /* switch to next process */
+    asm volatile(
+            &amp;quot;pushl %%ebp\n\t&amp;quot; /* save ebp */
+            &amp;quot;movl %%esp,%0\n\t&amp;quot; /* save esp */
+            &amp;quot;movl %2,%%esp\n\t&amp;quot; /* restore  esp */
+            &amp;quot;movl $1f,%1\n\t&amp;quot; /* save eip */
+            &amp;quot;pushl %3\n\t&amp;quot;
+            &amp;quot;ret\n\t&amp;quot; /* restore  eip */
+            &amp;quot;1:\t&amp;quot; /* next process start here */
+            &amp;quot;popl %%ebp\n\t&amp;quot;
+            : &amp;quot;=m&amp;quot; (prev-&amp;gt;thread.sp),&amp;quot;=m&amp;quot; (prev-&amp;gt;thread.ip)
+            : &amp;quot;m&amp;quot; (next-&amp;gt;thread.sp),&amp;quot;m&amp;quot; (next-&amp;gt;thread.ip)
+    );
+} else {
+    next-&amp;gt;state = 0;
+    my_current_task = next;
+    printk(KERN_NOTICE &amp;quot;&amp;gt;&amp;gt;&amp;gt;switch %d to %d&amp;lt;&amp;lt;&amp;lt;\n&amp;quot;,prev-&amp;gt;pid,next-&amp;gt;pid);
+    /* switch to new process */
+    asm volatile(
+            &amp;quot;pushl %%ebp\n\t&amp;quot; /* save ebp */
+            &amp;quot;movl %%esp,%0\n\t&amp;quot; /* save esp */
+            &amp;quot;movl %2,%%esp\n\t&amp;quot; /* restore  esp */
+            &amp;quot;movl %2,%%ebp\n\t&amp;quot; /* restore  ebp */
+            &amp;quot;movl $1f,%1\n\t&amp;quot; /* save eip */
+            &amp;quot;pushl %3\n\t&amp;quot;
+            &amp;quot;ret\n\t&amp;quot; /* restore  eip */
+            : &amp;quot;=m&amp;quot; (prev-&amp;gt;thread.sp),&amp;quot;=m&amp;quot; (prev-&amp;gt;thread.ip)
+            : &amp;quot;m&amp;quot; (next-&amp;gt;thread.sp),&amp;quot;m&amp;quot; (next-&amp;gt;thread.ip)
+    );
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;进程切换代码简析&lt;/h3&gt;
+
+&lt;p&gt;计算机硬件三大法宝，存储程序计算机，函数调用堆栈，中断
+操作系统的“两把剑”：中断上下文和进程上下文切换&lt;/p&gt;
+
+&lt;p&gt;这里进程切换主要是保存当前进程的运行栈和准备好下一个进程的运行栈。&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;若下一个进程是可运行的,即状态码是0
+先保存当前进程的运行栈，把当前进程的栈底ebp压入到该进程自己的堆栈，再将栈顶指针esp用该进程的sp指针保存，接着把下一个进程的sp指针恢复到保存栈顶的寄存器esp中去，保存当前进程运行的下一条指令的地址到该进程的ip指针中去，其中$1f是指接下来的标号1：的位置，接着再恢复下一个进程的ip指针到eip寄存器中去，由于eip寄存器不能被直接修改，只能通过ret，call等指令间接修改，于是便通过&lt;code&gt;&amp;quot;pushl %3\n\t&amp;quot; &amp;quot;ret\n\t&amp;quot;&lt;/code&gt;两条指令间接修改，ret相当于&lt;code&gt;popl %eip*&lt;/code&gt;,最后一条语句是当前进程下次再获得cpu运行时的第一条语句，也是下一进程需要运行的指令，用来恢复之前被压入各个进程自己的栈的ebp，这里巧妙地共用了这条指令。&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;若下一个进程不是可运行的,即状态码不是0
+同样先保存当前进程的运行栈，把当前进程的栈底ebp压入到该进程自己的堆栈，再将栈顶指针esp用该进程的sp指针保存，接着把下一个进程的sp指针恢复到保存栈顶的寄存器esp中去，由于下一个进程是不可运行的，所以下一个进程的原先栈里什么也没有，是空栈，所以esp和ebp相等，接着保存当前进程运行的下一条指令的地址到该进程的ip指针中去，同样是用两条语句恢复下一个进程的ip指针到eip寄存器中去。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;wdk 原创作品转载请注明出处&lt;br&gt;
+相关链接 [《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000][3]&lt;/p&gt;
+</description>
+        <pubDate>Sun, 06 Mar 2016 10:45:00 +0000</pubDate>
+        <link>http://www.dosrc.com/mark/linux/2016/03/06/linux-kernel-working-process-of-operating-system.html</link>
+        <guid isPermaLink="true">http://www.dosrc.com/mark/linux/2016/03/06/linux-kernel-working-process-of-operating-system.html</guid>
+        
+        <category>linux</category>
+        
+        <category>linux-kernel</category>
+        
+        <category>experiment</category>
+        
+        
+        <category>linux</category>
+        
+      </item>
+    
+      <item>
+        <title>C Inline Assembly Language</title>
+        <description>&lt;h2&gt;C语言内嵌汇编语法&lt;/h2&gt;
+
+&lt;h3&gt;GCC&lt;/h3&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt; &lt;span class=&quot;n&quot;&gt;__asm__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;err&quot;&gt;汇编语句模版：&lt;/span&gt;
+    &lt;span class=&quot;err&quot;&gt;输出部分：&lt;/span&gt;
+    &lt;span class=&quot;err&quot;&gt;输入部分：&lt;/span&gt;
+    &lt;span class=&quot;err&quot;&gt;破坏描述部分&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;即格式为&lt;code&gt;asm(&amp;quot;statements&amp;quot;:output_regs:input_regs:clobbered_regs);&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;__asm__&lt;/code&gt;表示后面的代码为内嵌汇编，同时&lt;code&gt;__asm__&lt;/code&gt;也可由&lt;code&gt;asm&lt;/code&gt;来代替，&lt;code&gt;asm&lt;/code&gt;是&lt;code&gt;__asm__&lt;/code&gt;的别名。&lt;/p&gt;
+
+&lt;p&gt;在&lt;code&gt;__asm__&lt;/code&gt;后面有时也会加上&lt;code&gt;__volatile__&lt;/code&gt;表示编译器不要优化代码，后面的指令保留原样，同样&lt;code&gt;volatile&lt;/code&gt;是它的别名，在这里值得注意的是无论&lt;code&gt;__asm__&lt;/code&gt;还是&amp;quot;&lt;code&gt;__volatile__&lt;/code&gt;&amp;quot;中的每个下划线都不是一个单独的下划线，而是两个短的下划线拼成的。再后面括号里面的便是汇编指令。&lt;/p&gt;
+
+&lt;h3&gt;Visual C++&lt;/h3&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;__asm 汇编指令 [ ; ]
+__asm { 汇编指令 } [ ; ]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;同样asm前面是两条下划线，后面的方括号内容表示分号可有可无。&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;组成一块地用&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;__asm {
+   mov al, 2
+   mov dx, 0xD007
+   out dx, al
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;分条的使用&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;__asm mov al, 2
+__asm mov dx, 0xD007
+__asm out dx, al
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;也可以写在同一行&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;__asm mov al, 2   __asm mov dx, 0xD007   __asm out dx, al
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3&gt;Turbo C&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;使用预处理程序的伪指令#asm和#endasm,#asm用来开始一个汇编程序块，而#endasm指令用于该块的结
+束。&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;mul(a,b)
+int a,b;
+{
+   #asm
+       mov ax,word ptr 8[bp]
+       imul ax word ptr 10[bp]
+   #endasm
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;使用asm语句
+格式：asm&amp;lt;汇编语句&amp;gt;&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;mul(a,b)
+int a,b;
+{
+    asm   mov ax,word ptr 8[bp]
+    asm   imul ax word ptr 10[bp]
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Visual C++ 和 Turbo C语法转自&lt;a href=&quot;http://bbs.51cto.com/thread-652061-1.html&quot;&gt;http://bbs.51cto.com/thread-652061-1.html&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+        <pubDate>Sun, 06 Mar 2016 08:45:00 +0000</pubDate>
+        <link>http://www.dosrc.com/mark/gramar/2016/03/06/c-inline-assembly-language.html</link>
+        <guid isPermaLink="true">http://www.dosrc.com/mark/gramar/2016/03/06/c-inline-assembly-language.html</guid>
+        
+        <category>gramar</category>
+        
+        <category>c</category>
+        
+        
+        <category>gramar</category>
+        
+      </item>
+    
+      <item>
+        <title>Linux Kernel Working Process Of Assembly Code</title>
         <description>&lt;h3&gt;重点知识总结&lt;/h3&gt;
 
 &lt;ul&gt;
@@ -19,17 +201,14 @@
 &lt;li&gt;&lt;strong&gt;AT&amp;amp;T&lt;/strong&gt;汇编格式与&lt;strong&gt;Intel&lt;/strong&gt;汇编格式略有不同，Linux使用的是&lt;strong&gt;AT&amp;amp;T&lt;/strong&gt;汇编格式。&lt;/li&gt;
 &lt;li&gt;eip寄存器不能被直接修改，只能通过特殊指令间接修改，如通过call与ret指令。&lt;/li&gt;
 &lt;li&gt;函数的返回值默认使用eax寄存器存储返回给上一级函数&lt;/li&gt;
-&lt;li&gt;汇编中对应的方法过程如下&lt;/li&gt;
-&lt;/ul&gt;
+&lt;li&gt;&lt;p&gt;汇编中对应的方法过程如下&lt;/p&gt;
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;nl&quot;&gt;method&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;enter&lt;/span&gt;
     &lt;span class=&quot;c1&quot;&gt;// Real Code Here&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;leave&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;ul&gt;
-&lt;li&gt;指令实际做的事情列表：&lt;/li&gt;
-&lt;/ul&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;指令实际做的事情列表：&lt;/p&gt;
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span class=&quot;n&quot;&gt;push&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;eax&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;subl&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;$4&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;esp&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;movl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;eax&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;esp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
@@ -47,7 +226,9 @@
 &lt;span class=&quot;n&quot;&gt;leave&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;movl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ebp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;esp&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;popl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ebp&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
 &lt;h3&gt;实验分析&lt;/h3&gt;
 
 &lt;p&gt;C程序源代码如下图
@@ -563,84 +744,6 @@ protected void onStartLoading() {
         
         
         <category>android</category>
-        
-      </item>
-    
-      <item>
-        <title>Html拖放事件</title>
-        <description>&lt;p&gt;为了使得元素能够被拖放首先要设置被拖动元素的 draggable=&amp;quot;true&amp;quot;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;被拖动对象&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;被拖动对象会触发三个事件如下，分别触发三个事件所指定的回调函数&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;ondragstart--------&amp;gt;开始拖动时被触发&lt;/li&gt;
-&lt;li&gt;drag---------------&amp;gt;拖动过程中一直被触发&lt;/li&gt;
-&lt;li&gt;ondragend----------&amp;gt;松开拖动鼠标后被触发&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;&lt;strong&gt;目标对象&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;目标对象即被拖动对象所拖动到的对象，会触发如下事件&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;dragenter----------&amp;gt;被拖动对象进入目标对象后被触发&lt;/li&gt;
-&lt;li&gt;dragover-----------&amp;gt;被拖动对象在目标对象上时一直被触发&lt;/li&gt;
-&lt;li&gt;dragleave或drop----&amp;gt;dragleave事件在被拖动对象离开目标对象后被触发，drop事件在被拖动对象拖动到目标对象上松开鼠标后被触发，drop事件和dragleave事件为互斥事件，不能同时发生。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://www.w3school.com.cn/tiy/t.asp?f=html5_draganddrop&quot;&gt;&lt;strong&gt;代码示例&lt;/strong&gt;&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Thu, 04 Jun 2015 17:17:00 +0000</pubDate>
-        <link>http://www.dosrc.com/mark/j2ee/2015/06/04/html5-drag-event.html</link>
-        <guid isPermaLink="true">http://www.dosrc.com/mark/j2ee/2015/06/04/html5-drag-event.html</guid>
-        
-        <category>j2ee</category>
-        
-        <category>html5</category>
-        
-        
-        <category>j2ee</category>
-        
-      </item>
-    
-      <item>
-        <title>程序员感悟</title>
-        <description>&lt;ul&gt;
-&lt;li&gt; 工作态度:&lt;br&gt;
-I don&amp;#39;t want to call myself as a programmer, in my opinion， I am a artist. 我们属于艺术界，不属于制造业，at least 我是这么认为的.&lt;br&gt;
-我们所从事的行业是非常细致入微的，是不容马虎的，连自己这关都过不去的的代码还是趁早丢进垃圾桶把。&lt;br&gt;&lt;/li&gt;
-&lt;li&gt;方法论:&lt;br&gt;
-
-&lt;ul&gt;
-&lt;li&gt;观点一：&lt;br&gt;
-物理与数学的关系-物理这门学科是从理论的角度解释物体的实践的一门学科，数学是从抽象的角度提取出物理发现的的规律，数学具有高于物理的抽象性，以及适应广度，数学之所以这么重要是由于人类是生活在大自然中的，我们的智慧也来源于我们所生活的环境，因为我们在向大自然学习模仿，所以作为对大自然物理现象高度概括的数学就好比一部武功心法了。&lt;br&gt;
-作为程序员fundation的重要性不言而喻，会几门语言，懂点coding并不等于把fundation学好了，学习编程很容易急功近利，追求新框架，追捧新语言，从而容易迷失在无限的追逐游戏中，而忽略了最为重要的fundation。&lt;br&gt;&lt;/li&gt;
-&lt;li&gt;观点二：&lt;br&gt;
-程序员要多实践，实践方能出真知，我们要坚持终生学习，问渠那得清如许，为有源头活水来，不学习新知识，就会被时代所淘汰。&lt;br&gt;&lt;/li&gt;
-&lt;li&gt;观点三：&lt;br&gt;
-观点一是理论，观点二是实践，理论和实践是辩证统一的关系，二者缺一不可，实践与理论相辅相成。&lt;br&gt;
-上述三个观点就仁者见仁智者见智了吧。&lt;br&gt;&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;li&gt;使命：&lt;br&gt;
-集体荣誉感往大了说就是民族责任感&lt;br&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;年轻人应该有宏伟的志向，用别人的产品做自己的东西，你永远只是个“高级客户”，成不了真正的开发者。不管你用他国的系统软件开发出多少好的产品，挣了多少钱，只要人家一升级、或一推出新产品，你口袋里的银子连同最后一条小裤衩也会被剥夺的一干二净。你，只不过是一个高级打工仔。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;本文中的观点切勿全盘接受，全盘相信，因为就连笔者本人也不能保证观点的正确。之所以写这些，是因为想引起思考，也仅仅是这一个目的罢了。&lt;/p&gt;
-</description>
-        <pubDate>Mon, 01 Jun 2015 10:13:48 +0000</pubDate>
-        <link>http://www.dosrc.com/mark/essay/2015/06/01/programmer-sentiment.html</link>
-        <guid isPermaLink="true">http://www.dosrc.com/mark/essay/2015/06/01/programmer-sentiment.html</guid>
-        
-        <category>mind</category>
-        
-        
-        <category>essay</category>
         
       </item>
     
