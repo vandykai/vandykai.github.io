@@ -1,7 +1,7 @@
 ---
 
 layout: post
-title:  Linux Kernel Working Process Of Operating System
+title:  Linux Kernel-Working Process Of Operating System
 date:   2016-03-06 10:45:00
 categories: [linux]
 tags: [linux, linux-kernel, experiment]
@@ -14,29 +14,29 @@ tags: [linux, linux-kernel, experiment]
 
 [C Inline Assembly Language][1]
 
-##实验分析
-### 进程定义的代码如下
+## 实验分析
+### 自定义进程定义的代码如下
 ```
 #define MAX_TASK_NUM        4
 #define KERNEL_STACK_SIZE   1024*8
 
 /* CPU-specific state of this task */
 struct Thread {
-    unsigned long		ip;
-    unsigned long		sp;
+    unsigned long        ip;
+    unsigned long        sp;
 };
 
 typedef struct PCB{
     int pid;
-    volatile long state;	/* -1 unrunnable, 0 runnable, >0 stopped */
+    volatile long state;    /* -1 unrunnable, 0 runnable, >0 stopped */
     char stack[KERNEL_STACK_SIZE];
     /* CPU-specific state of this task */
     struct Thread thread;
-    unsigned long	task_entry;
+    unsigned long    task_entry;
     struct PCB *next;
 }tPCB;
 ```
-###进程切换的核心代码如下
+### 自定义进程切换的核心代码如下
 ```
 if(next->state == 0) {
     /* -1 unrunnable, 0 runnable, >0 stopped */
@@ -73,7 +73,7 @@ if(next->state == 0) {
     );
 }
 ```
-###进程切换代码简析
+### 自定义进程切换代码简析
 计算机硬件三大法宝，存储程序计算机，函数调用堆栈，中断
 操作系统的“两把剑”：中断上下文和进程上下文切换
 

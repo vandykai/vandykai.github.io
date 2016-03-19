@@ -1,14 +1,14 @@
 ---
 
 layout: post
-title:  Linux Kernel Working Process Of Assembly Code
+title:  Linux Kernel-Working Process Of Assembly Code
 date:   2016-02-25 10:42:00
 categories: [linux]
 tags: [linux, linux-kernel, experiment]
 
 ---
 
-### 重点知识总结
+## 重点知识总结
 - CS(code segment register)是代码段寄存器,CPU在实际取指令时根据cs:eip来准确定位一个指令。
 - b，w，l，p，分别指8位，16位，32位，64位，如movl指移动32位的数据。
 - **AT&T**汇编格式与**Intel**汇编格式略有不同，Linux使用的是**AT&T**汇编格式。
@@ -48,8 +48,10 @@ tags: [linux, linux-kernel, experiment]
 
 ###实验分析
 C程序源代码如下图
+
 ![main.c][1]
 汇编源代码如下图
+
 ![main.s][2]
 从图中可以看出，C程序方法对应的汇编方法一般过程如下：
 
