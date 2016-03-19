@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Linux Kernel Working Process Of Operating System</title>
+  <title>Linux Kernel-Working Process Of Operating System</title>
   <meta name="description" content="重点知识总结">
 
   <link rel="stylesheet" href="/mark/css/main.css">
@@ -57,7 +57,7 @@
         <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">Linux Kernel Working Process Of Operating System</h1>
+    <h1 class="post-title">Linux Kernel-Working Process Of Operating System</h1>
     <p class="post-meta">Mar 6, 2016</p>
   </header>
 
@@ -70,14 +70,14 @@
 
 <h2>实验分析</h2>
 
-<h3>进程定义的代码如下</h3>
+<h3>自定义进程定义的代码如下</h3>
 <div class="highlight"><pre><code class="language-text" data-lang="text">#define MAX_TASK_NUM        4
 #define KERNEL_STACK_SIZE   1024*8
 
 /* CPU-specific state of this task */
 struct Thread {
-    unsigned long       ip;
-    unsigned long       sp;
+    unsigned long        ip;
+    unsigned long        sp;
 };
 
 typedef struct PCB{
@@ -86,11 +86,11 @@ typedef struct PCB{
     char stack[KERNEL_STACK_SIZE];
     /* CPU-specific state of this task */
     struct Thread thread;
-    unsigned long   task_entry;
+    unsigned long    task_entry;
     struct PCB *next;
 }tPCB;
 </code></pre></div>
-<h3>进程切换的核心代码如下</h3>
+<h3>自定义进程切换的核心代码如下</h3>
 <div class="highlight"><pre><code class="language-text" data-lang="text">if(next-&gt;state == 0) {
     /* -1 unrunnable, 0 runnable, &gt;0 stopped */
     my_current_task = next;
@@ -126,7 +126,7 @@ typedef struct PCB{
     );
 }
 </code></pre></div>
-<h3>进程切换代码简析</h3>
+<h3>自定义进程切换代码简析</h3>
 
 <p>计算机硬件三大法宝，存储程序计算机，函数调用堆栈，中断
 操作系统的“两把剑”：中断上下文和进程上下文切换</p>

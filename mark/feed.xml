@@ -5,12 +5,298 @@
     <description></description>
     <link>http://www.dosrc.com/mark/</link>
     <atom:link href="http://www.dosrc.com/mark/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 17 Mar 2016 03:13:00 +0000</pubDate>
-    <lastBuildDate>Thu, 17 Mar 2016 03:13:00 +0000</lastBuildDate>
+    <pubDate>Sat, 19 Mar 2016 06:45:18 +0000</pubDate>
+    <lastBuildDate>Sat, 19 Mar 2016 06:45:18 +0000</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
-        <title>Linux Kernel Working Process Of Operating System</title>
+        <title>Linux Kernel-System Call</title>
+        <description>&lt;h2&gt;重点知识总结&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Intel X86 CPU 有四种不同的执行级别0-3，Linux只使用了其中的0级和3级，分别来表示内核态和用户态。&lt;/li&gt;
+&lt;li&gt;一般来说在32位X86机器上，Linux系统中，地址空间是一个显著的标志：0XC0000000以上的地址空间只能在内核态下访问，0X00000000-0XBFFFFFFF的地址空间在两种状态下都可以访问，这里所说的是逻辑地址而不是物理地址。所以寄存器的最低两位表明了当前代码所需的特权级。11代表需要内核态级别，否则只需要用户态级别。&lt;/li&gt;
+&lt;li&gt;中断处理是从用户态进入内核态主要的方式。系统调用是一种特殊的中断。&lt;/li&gt;
+&lt;li&gt;从用户态切换到内核态时，必须保存用户态的寄存器上下文。&lt;/li&gt;
+&lt;li&gt;中断/int指令会在堆栈上保存一些寄存器的值，如用户态栈顶指针，当时的状态字，当时的cs:eip的值，并恢复内核态的对应寄存器的值。&lt;/li&gt;
+&lt;li&gt;中断发生后第一件事就是保存现场到自己（内核态)的堆栈中,这就正好衔接了之前保存和恢复栈顶指针的动作，保护现场就是进入中断程序保存需要用到的寄存器的数据，也可以简单保存其他所有寄存器的值即定义一个SAVE_ALL的代码块供调用。恢复现场同理。&lt;/li&gt;
+&lt;li&gt;iret指令与中断信号（包括int指令）发生时CPU做的动作正好相反&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;中断一般模版&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;;进入中断
+int指令进入到中断/系统调用
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;;中断处理程序一般步骤
+SAVE_ALL调用
+中断处理程序
+RESTORE_ALL调用
+iret指令
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Libc库定义的一些API引用了封装例程（wrapper routine，唯一的目的就是发布系统调用），一般每个系统调用对应一个封装例程，库再用这些封装例程定义出给用户的API&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;系统调用的三层皮xyz、system&lt;em&gt;call和sys&lt;/em&gt;xyz,库函数中一般有trap指令或int指令，类似于一个系统中断，而系统调用是一个特殊的中断处理函数（inerrupt handler）。&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;在Linux中是通过执行&lt;code&gt;int $0x80&lt;/code&gt;来执行系统调用的，这条汇编指令产生向量为128的编程异常，使用eax来传递系统调用号。Intel Pentium II中引入了sysenter指令（快速系统调用）。&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;寄存器传递参数具有如下限制：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;每个参数的长度不能超过寄存器的长度，即32位&lt;/li&gt;
+&lt;li&gt;系统调用传递第一个参数用ebx，系统调用的返回值使用eax存储，和普通函数一样，在系统调用号（eax）之外，参数的个数不能超过6个（ebx，ecx，edx，esi，edi，ebp），超过6个可通过传递指向一块内存区域的指针的方法减少参数传递。&lt;/li&gt;
+&lt;/ol&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;实验分析&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;实验目的：&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;实验选取某个系统调用，编码实现两种调用方法——C语言库函数调用和汇编中断达，并到相同的效果。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;实验步骤：&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;系统调用列表&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/arch/x86/syscalls/syscall_32.tbl&quot;&gt;&lt;strong&gt;链接&lt;/strong&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;本次实验选取mkdir系统调用&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;首先查看mkdir的库函数用法&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;执行&lt;code&gt;man -f mkdir&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/mark/assets/images/2016-03-18-linux-kernel-system-call/man--f-mkdir.png&quot; alt=&quot;man--f-mkdir&quot;&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;发现有两种文档，执行&lt;code&gt;man 1 mkdir&lt;/code&gt;查看第一种文档&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/mark/assets/images/2016-03-18-linux-kernel-system-call/man-1-mkdir.png&quot; alt=&quot;man-1-mkdir&quot;&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;发现是mkdir命令相关的文档，不是我们要的库函数&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;执行&lt;code&gt;man 2 mkdir&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/mark/assets/images/2016-03-18-linux-kernel-system-call/man-2-mkdir.png&quot; alt=&quot;man-2-mkdir&quot;&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;正是我们需要的文档，查看用法,开始编程。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;源代码如下&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;mkdir.c&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;#include &amp;lt;sys/stat.h&amp;gt;
+#include &amp;lt;sys/types.h&amp;gt;
+#include &amp;lt;stdio.h&amp;gt;
+int main() {
+   int result =  mkdir(&amp;quot;test&amp;quot;, 0777);
+   if (result == 0) {
+       printf(&amp;quot;dirtory test make success&amp;quot;);
+   } else {
+       printf(&amp;quot;dirtory test make failture&amp;quot;);
+   }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;mkdir-asm.c&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;#include &amp;lt;sys/stat.h&amp;gt;
+#include &amp;lt;sys/types.h&amp;gt;
+#include &amp;lt;stdio.h&amp;gt;
+int main() {
+    int result = 0;
+    const char *filePath = &amp;quot;test&amp;quot;;
+    mode_t mode = 0777;
+    asm volatile(
+            &amp;quot;movl $0X27,%%eax\n\t&amp;quot;
+            &amp;quot;movl %1,%%ebx\n\t&amp;quot;
+            &amp;quot;movl %2,%%ecx\n\t&amp;quot;
+            &amp;quot;int $0X80\n\t&amp;quot;
+            &amp;quot;movl %%eax,%0\n\t&amp;quot;
+            :&amp;quot;=m&amp;quot;(result)
+            :&amp;quot;r&amp;quot;(filePath),&amp;quot;r&amp;quot;(mode)
+            :&amp;quot;%eax&amp;quot;,&amp;quot;%ebx&amp;quot;,&amp;quot;%ecx&amp;quot;
+            );
+   if (result == 0) {
+       printf(&amp;quot;dirtory test make success&amp;quot;);
+   } else {
+       printf(&amp;quot;dirtory test make failture&amp;quot;);
+   }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;mkdir.c 和 mkdir-asm.c 功能一致都是在当前目录下创建test文件夹，mkdir.c是通过调用库函数&lt;code&gt;int mkdir(const char *pathname,mode_t mode);&lt;/code&gt;创建test文件夹，而mkdir-asm.c是通过中断程序创建test文件夹。&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2&gt;后记&lt;/h2&gt;
+
+&lt;p&gt;在查找系统调用列表时发现了fork系统调用，fork系统调用是用来创建一个与本进程基本相同的子进程。&lt;/p&gt;
+
+&lt;p&gt;分析下面的代码&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;fork-test.c&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;#include &amp;lt;unistd.h&amp;gt;
+#include &amp;lt;stdio.h&amp;gt;
+int main() {
+    pid_t sonPid = 0;
+    sonPid = fork();
+    if (sonPid == 0) {
+        printf(&amp;quot;process %d -&amp;gt; parent pid: %d\n&amp;quot;, getpid(), getppid());
+        printf(&amp;quot;process %d -&amp;gt; before excute fork&amp;#39;s fork pid: %d\n&amp;quot;, getpid(), sonPid);
+        sonPid = fork();
+        if (sonPid == 0) {
+            sleep(5);
+            printf(&amp;quot;process %d -&amp;gt; parent pid: %d\n&amp;quot;, getpid(), getppid());
+            printf(&amp;quot;process %d -&amp;gt; fork pid: %d\n&amp;quot;, getpid(), sonPid);
+        } else {
+            printf(&amp;quot;process %d -&amp;gt; after excute fork&amp;#39;s fork pid: %d\n&amp;quot;, getpid(), sonPid);
+        }
+    } else {
+        printf(&amp;quot;process %d -&amp;gt; parent pid: %d\n&amp;quot;, getpid(), getppid());
+        printf(&amp;quot;process %d -&amp;gt; fork pid: %d\n&amp;quot;, getpid(), sonPid);
+        while(1);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;运行结果为&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/mark/assets/images/2016-03-18-linux-kernel-system-call/fork-test-result.png&quot; alt=&quot;fork-test-result&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;分析&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;pid_t fork(void);&lt;/code&gt;库函数会创建一个与当前进程相同的子进程并返回子进程的pid，从这一行开始（包括），会有两个进程执行相同的后续代码，变量不共享，分别保持着自己的变量，子进程在&lt;code&gt;pid_t fork(void);&lt;/code&gt;这行代码的结果与父进程不同，返回的是0，表示没有自己的子进程。也就是说父进程和子进程在&lt;code&gt;pid_t fork(void);&lt;/code&gt;这行代码处都会有返回值，但返回值不同。&lt;code&gt;getpid()&lt;/code&gt;是用来返回当前进程的pid，&lt;code&gt;getppid()&lt;/code&gt;是用来返回父进程的pid。&lt;/p&gt;
+
+&lt;p&gt;fork-test.c意在创建3个进程，即父进程A，子进程B，孙子进程C，让父进程A一直执行不结束，子进程B执行完结束，孙子进程C睡眠5秒，待子进程B执行完后打印出孙子进程C的父进程pid，当孙子进程C的父进程B没有结束时&lt;code&gt;getppid()&lt;/code&gt;返回的应当是孙子进程C的父进程B的pid，当父进程结束时，从运行结果可以看出，返回的是1号进程的pid，即1号进程变成了孙子进程C的父进程。所有的用户进程都是由1号进程派生出来的，所有的内核态进程都是由2号进程派生出来的。&lt;/p&gt;
+</description>
+        <pubDate>Fri, 18 Mar 2016 12:13:00 +0000</pubDate>
+        <link>http://www.dosrc.com/mark/linux/2016/03/18/linux-kernel-system-call.html</link>
+        <guid isPermaLink="true">http://www.dosrc.com/mark/linux/2016/03/18/linux-kernel-system-call.html</guid>
+        
+        <category>linux</category>
+        
+        <category>linux-kernel</category>
+        
+        <category>experiment</category>
+        
+        
+        <category>linux</category>
+        
+      </item>
+    
+      <item>
+        <title>Linux Kernel-Construct A Simple Linux Operating System</title>
+        <description>&lt;h2&gt;重点知识总结&lt;/h2&gt;
+
+&lt;h3&gt;Linux内核源码简介&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/&quot;&gt;内核源代码linux-3.18.6&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4&gt;各个文件夹模块的用途（部分）&lt;/h4&gt;
+
+&lt;p&gt;&lt;strong&gt;arch&lt;/strong&gt; -(archetecture)与具体cpu相关，其内的x86文件夹是目前重点关注的,若只是关注这一个文件夹，分析时可以把其它文件夹删除&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;crypto&lt;/strong&gt; - 与加密解密相关&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Documentation&lt;/strong&gt; - 文档相关&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;drivers&lt;/strong&gt; - 驱动相关&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;fs&lt;/strong&gt; - （file system）文件系统相关&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;init&lt;/strong&gt; - 初始化相关，内核启动相关的代码基本在此文件夹下，其中的main.c/start_kernel函数是内核启动的起点，相当于C程序的main函数&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;ipc&lt;/strong&gt; - (Inter-Process Communication)进程间通信相关&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;kernel&lt;/strong&gt; - linux内核的核心代码&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;lib&lt;/strong&gt; - 公用的库文件&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;mm&lt;/strong&gt; - (memory management)内存管理相关&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;net&lt;/strong&gt; - 网络相关&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;scripts&lt;/strong&gt; - 脚本&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;security&lt;/strong&gt; - 安全相关&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;sound&lt;/strong&gt; - 声音相关&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;tools&lt;/strong&gt; - 工具&lt;/p&gt;
+
+&lt;h3&gt;使用gdb跟踪调试内核，其中的rootfs.img 为自制的根文件系统&lt;/h3&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;qemu -kernel linux-3.18.6/arch/x86/boot/bzImage -initrd rootfs.img -s -S # 关于-s和-S选项的说明：
+# -S freeze CPU at startup (use ’c’ to start execution)
+# -s shorthand for -gdb tcp::1234 若不想使用1234端口，则可以使用-gdb tcp:xxxx来取代-s选项
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;另开一个shell窗口&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;gdb
+（gdb）file linux-3.18.6/vmlinux # 在gdb界面中targe remote之前加载符号表
+（gdb）target remote:1234 # 建立gdb和gdbserver之间的连接,按c 让qemu上的Linux继续运行
+（gdb）break start_kernel # 断点的设置可以在target remote之前，也可以在之后
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;实验分析&lt;/h2&gt;
+
+&lt;h3&gt;main.c的部分代码如下（省略号为略去的代码）&lt;/h3&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;asmlinkage __visible void __init start_kernel(void)
+{
+    ...
+    set_task_stack_end_magic(&amp;amp;init_task);
+    ...
+    trap_init();
+    mm_init();
+    ...
+    sched_init();
+    ...
+    rest_init();
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;rest_init 函数代码如下&lt;/h3&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;static noinline void __init_refok rest_init(void)
+{
+    int pid;
+
+    rcu_scheduler_starting();
+    /*
+     * We need to spawn init first so that it obtains pid 1, however
+     * the init task will end up wanting to create kthreads, which, if
+     * we schedule it before we create kthreadd, will OOPS.
+     */
+    kernel_thread(kernel_init, NULL, CLONE_FS);
+    numa_default_policy();
+    pid = kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);
+    rcu_read_lock();
+    kthreadd_task = find_task_by_pid_ns(pid, &amp;amp;init_pid_ns);
+    rcu_read_unlock();
+    complete(&amp;amp;kthreadd_done);
+
+    /*
+     * The boot idle thread must execute schedule()
+     * at least once to get things moving:
+     */
+    init_idle_bootup_task(current);
+    schedule_preempt_disabled();
+    /* Call into cpu_idle with preempt disabled */
+    cpu_startup_entry(CPUHP_ONLINE);
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;代码分析&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;start_kernel/set_task_stack_end_magic(&amp;amp;init_task); init_task&lt;/code&gt;即手工创建的PCB，即0号进程，即最终的idle进程&lt;/li&gt;
+&lt;li&gt;不管分析内核的哪一部分都会涉及到&lt;code&gt;start_kernel&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;start_kernel/trap_init&lt;/code&gt; 涉及到中断的初始化，其中的&lt;code&gt;set_system_trap_gate&lt;/code&gt;是设置系统调用的&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;start_kernel/mm_init&lt;/code&gt; 内存管理模块的初始化&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;start_kernel/sched_init&lt;/code&gt; 调度模块的初始化&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;rest_init/kernel_thread(kernel_init, NULL, CLONE_FS);&lt;/code&gt; 创建用户态1号进程&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;rest_init/kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);&lt;/code&gt; 创建内核态2号进程&lt;/li&gt;
+&lt;li&gt;之后若没有其他事情做，就进入cpu&lt;em&gt;startup&lt;/em&gt;entry(CPUHP_ONLINE);，此时0号进程就进入while(1)循环&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;这里面内核启动后通过&lt;code&gt;set_task_stack_end_magic(&amp;amp;init_task);&lt;/code&gt;初始化了0号进程，0号进程通过&lt;code&gt;kernel_thread(kernel_init, NULL, CLONE_FS);&lt;/code&gt;和&lt;code&gt;kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);&lt;/code&gt;分别创建了1号进程和2号进程，之后若无事做就进入&lt;code&gt;while(1)&lt;/code&gt;循环保持运行。&lt;/p&gt;
+
+&lt;p&gt;wdk 原创作品转载请注明出处&lt;br&gt;
+相关链接 [《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000][3]&lt;/p&gt;
+</description>
+        <pubDate>Thu, 17 Mar 2016 12:13:00 +0000</pubDate>
+        <link>http://www.dosrc.com/mark/linux/2016/03/17/linux-kernel-construct-a-simple-linux-operating-system.html</link>
+        <guid isPermaLink="true">http://www.dosrc.com/mark/linux/2016/03/17/linux-kernel-construct-a-simple-linux-operating-system.html</guid>
+        
+        <category>linux</category>
+        
+        <category>linux-kernel</category>
+        
+        <category>experiment</category>
+        
+        
+        <category>linux</category>
+        
+      </item>
+    
+      <item>
+        <title>Linux Kernel-Working Process Of Operating System</title>
         <description>&lt;h2&gt;重点知识总结&lt;/h2&gt;
 
 &lt;h3&gt;C语言内嵌汇编语法&lt;/h3&gt;
@@ -19,14 +305,14 @@
 
 &lt;h2&gt;实验分析&lt;/h2&gt;
 
-&lt;h3&gt;进程定义的代码如下&lt;/h3&gt;
+&lt;h3&gt;自定义进程定义的代码如下&lt;/h3&gt;
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;#define MAX_TASK_NUM        4
 #define KERNEL_STACK_SIZE   1024*8
 
 /* CPU-specific state of this task */
 struct Thread {
-    unsigned long       ip;
-    unsigned long       sp;
+    unsigned long        ip;
+    unsigned long        sp;
 };
 
 typedef struct PCB{
@@ -35,11 +321,11 @@ typedef struct PCB{
     char stack[KERNEL_STACK_SIZE];
     /* CPU-specific state of this task */
     struct Thread thread;
-    unsigned long   task_entry;
+    unsigned long    task_entry;
     struct PCB *next;
 }tPCB;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;h3&gt;进程切换的核心代码如下&lt;/h3&gt;
+&lt;h3&gt;自定义进程切换的核心代码如下&lt;/h3&gt;
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;if(next-&amp;gt;state == 0) {
     /* -1 unrunnable, 0 runnable, &amp;gt;0 stopped */
     my_current_task = next;
@@ -75,7 +361,7 @@ typedef struct PCB{
     );
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;h3&gt;进程切换代码简析&lt;/h3&gt;
+&lt;h3&gt;自定义进程切换代码简析&lt;/h3&gt;
 
 &lt;p&gt;计算机硬件三大法宝，存储程序计算机，函数调用堆栈，中断
 操作系统的“两把剑”：中断上下文和进程上下文切换&lt;/p&gt;
@@ -192,8 +478,8 @@ int a,b;
       </item>
     
       <item>
-        <title>Linux Kernel Working Process Of Assembly Code</title>
-        <description>&lt;h3&gt;重点知识总结&lt;/h3&gt;
+        <title>Linux Kernel-Working Process Of Assembly Code</title>
+        <description>&lt;h2&gt;重点知识总结&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;CS(code segment register)是代码段寄存器,CPU在实际取指令时根据cs:eip来准确定位一个指令。&lt;/li&gt;
@@ -231,10 +517,12 @@ int a,b;
 
 &lt;h3&gt;实验分析&lt;/h3&gt;
 
-&lt;p&gt;C程序源代码如下图
-&lt;img src=&quot;/mark/assets/images/2016-02-25-linux-kernel-working-process-of-assembly-code/main-c.png&quot; alt=&quot;main.c&quot;&gt;
-汇编源代码如下图
-&lt;img src=&quot;/mark/assets/images/2016-02-25-linux-kernel-working-process-of-assembly-code/main-s.png&quot; alt=&quot;main.s&quot;&gt;
+&lt;p&gt;C程序源代码如下图&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/mark/assets/images/2016-02-25-linux-kernel-working-process-of-assembly-code/main-c.png&quot; alt=&quot;main.c&quot;&gt;
+汇编源代码如下图&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/mark/assets/images/2016-02-25-linux-kernel-working-process-of-assembly-code/main-s.png&quot; alt=&quot;main.s&quot;&gt;
 从图中可以看出，C程序方法对应的汇编方法一般过程如下：&lt;/p&gt;
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;nl&quot;&gt;method&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
         &lt;span class=&quot;n&quot;&gt;enter&lt;/span&gt;
@@ -578,172 +866,6 @@ int a,b;
         
         
         <category>design-pattern</category>
-        
-      </item>
-    
-      <item>
-        <title>Java 连接 MySQL</title>
-        <description>&lt;ol&gt;
-&lt;li&gt;下载对应Java的MySQL驱动包，在&lt;a href=&quot;http://dev.mysql.com/downloads/connector/&quot;&gt;官方下载地址&lt;/a&gt;页面上选择Java对应的 Connector/J。进入下载页面，选择Platform为Platform Independent，下载压缩包，压缩包下的mysql-connector-java-XXX.jar即为我们需要的jar包。&lt;/li&gt;
-&lt;li&gt;添加jar包&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;完整代码如下&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.sql.Connection&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.sql.DriverManager&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.sql.PreparedStatement&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.sql.ResultSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.sql.SQLException&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-
-&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;TestConnectMySQL&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-
-    &lt;span class=&quot;cm&quot;&gt;/**&lt;/span&gt;
-&lt;span class=&quot;cm&quot;&gt;     * Database URL        ---&amp;gt; &amp;quot;localhost&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;cm&quot;&gt;     * Port                ---&amp;gt; &amp;quot;3306&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;cm&quot;&gt;     * Schema(database)    ---&amp;gt; &amp;quot;test&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;cm&quot;&gt;     * User                ---&amp;gt; &amp;quot;root&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;cm&quot;&gt;     * Password            ---&amp;gt; &amp;quot;&amp;quot;&lt;/span&gt;
-&lt;span class=&quot;cm&quot;&gt;     *                     &lt;/span&gt;
-&lt;span class=&quot;cm&quot;&gt;     * @param sql&lt;/span&gt;
-&lt;span class=&quot;cm&quot;&gt;     */&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;querySQL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sql&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;Connection&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;connection&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;PreparedStatement&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;preparedStatement&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;ResultSet&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resultSet&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;c1&quot;&gt;// Load driver&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;forName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;com.mysql.jdbc.Driver&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-
-            &lt;span class=&quot;c1&quot;&gt;// Connect and get connection&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;url&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;jdbc:mysql://localhost:3306/test&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;connection&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;DriverManager&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getConnection&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;root&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-
-            &lt;span class=&quot;c1&quot;&gt;// Prepare for the compiled sql statement&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;preparedStatement&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;connection&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;prepareCall&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sql&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-            &lt;span class=&quot;c1&quot;&gt;// preparedStatement.setString(1, &amp;quot;paramter&amp;quot;);&lt;/span&gt;
-
-            &lt;span class=&quot;c1&quot;&gt;// Execute and get the resultSet&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;resultSet&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;preparedStatement&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;executeQuery&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;resultSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-                &lt;span class=&quot;c1&quot;&gt;// int id = resultSet.getInt(1);&lt;/span&gt;
-            &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;printStackTrace&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;finally&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;resultSet&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-                    &lt;span class=&quot;n&quot;&gt;resultSet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;close&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;preparedStatement&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-                    &lt;span class=&quot;n&quot;&gt;preparedStatement&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;close&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;connection&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-                    &lt;span class=&quot;n&quot;&gt;connection&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;close&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-            &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SQLException&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-                &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;printStackTrace&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-            &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sql&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;SELECT * FROM `user`&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// 其中`为反引号，字段和表名都应该加上&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;TestConnectMySQL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;querySQL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sql&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
-&lt;/ol&gt;
-</description>
-        <pubDate>Tue, 30 Jun 2015 22:10:00 +0000</pubDate>
-        <link>http://www.dosrc.com/mark/j2ee/2015/06/30/java-connect-mysql.html</link>
-        <guid isPermaLink="true">http://www.dosrc.com/mark/j2ee/2015/06/30/java-connect-mysql.html</guid>
-        
-        <category>j2ee</category>
-        
-        <category>mysql</category>
-        
-        
-        <category>j2ee</category>
-        
-      </item>
-    
-      <item>
-        <title>Android 自定义 AsyncLoader loadInBackground  不被调用</title>
-        <description>&lt;p&gt;这是因为Android内部的运行方法中并不会主动调用loadInBackground()方法，所以需要手动调用forceLoad()方法，forceLoad()方法中会去调用loadInBackground()方法。&lt;/p&gt;
-
-&lt;p&gt;所以正确的实现应该是应该重载AsyncLoader中的onStartLoading()方法,并调用forceLoad()方法。&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;@Override
-protected void onStartLoading() {
-    forceLoad();
-    super.onStartLoading();
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;完整代码如下：&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;android.content.AsyncTaskLoader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;android.content.Context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-
-&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MyLoader&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AsyncTaskLoader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;MyLoader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Context&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;kd&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;context&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;loadInBackground&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;Thread&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sleep&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3000&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;InterruptedException&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;printStackTrace&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;data&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;protected&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;onStartLoading&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;forceLoad&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;kd&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;onStartLoading&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;android.app.Activity&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;android.app.LoaderManager.LoaderCallbacks&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;android.content.Loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;android.os.Bundle&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;android.util.Log&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-
-&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MainActivity&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Activity&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LoaderCallbacks&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-
-    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;protected&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;onCreate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Bundle&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;savedInstanceState&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;kd&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;onCreate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;savedInstanceState&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;setContentView&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;layout&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;activity_main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;getLoaderManager&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;initLoader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;onCreateLoader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Bundle&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;MyLoader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;onLoadFinished&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;Log&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;d&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;MainActivity&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;onLoaderReset&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
-        <pubDate>Mon, 08 Jun 2015 21:16:00 +0000</pubDate>
-        <link>http://www.dosrc.com/mark/android/2015/06/08/android-loader-issue.html</link>
-        <guid isPermaLink="true">http://www.dosrc.com/mark/android/2015/06/08/android-loader-issue.html</guid>
-        
-        <category>android</category>
-        
-        <category>loader</category>
-        
-        
-        <category>android</category>
         
       </item>
     

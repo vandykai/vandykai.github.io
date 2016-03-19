@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Linux Kernel-Construct A Simple Linux Operating System</title>
+  <meta name="description" content="重点知识总结">
+
+  <link rel="stylesheet" href="/mark/css/main.css">
+  <link rel="canonical" href="http://www.dosrc.com/mark/linux/2016/03/17/linux-kernel-construct-a-simple-linux-operating-system.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/mark/">Blog</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/mark/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Linux Kernel-Construct A Simple Linux Operating System</h1>
+    <p class="post-meta">Mar 17, 2016</p>
+  </header>
+
+  <article class="post-content">
+    <h2>重点知识总结</h2>
+
+<h3>Linux内核源码简介</h3>
+
+<p><a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/">内核源代码linux-3.18.6</a></p>
+
+<h4>各个文件夹模块的用途（部分）</h4>
+
+<p><strong>arch</strong> -(archetecture)与具体cpu相关，其内的x86文件夹是目前重点关注的,若只是关注这一个文件夹，分析时可以把其它文件夹删除</p>
+
+<p><strong>crypto</strong> - 与加密解密相关</p>
+
+<p><strong>Documentation</strong> - 文档相关</p>
+
+<p><strong>drivers</strong> - 驱动相关</p>
+
+<p><strong>fs</strong> - （file system）文件系统相关</p>
+
+<p><strong>init</strong> - 初始化相关，内核启动相关的代码基本在此文件夹下，其中的main.c/start_kernel函数是内核启动的起点，相当于C程序的main函数</p>
+
+<p><strong>ipc</strong> - (Inter-Process Communication)进程间通信相关</p>
+
+<p><strong>kernel</strong> - linux内核的核心代码</p>
+
+<p><strong>lib</strong> - 公用的库文件</p>
+
+<p><strong>mm</strong> - (memory management)内存管理相关</p>
+
+<p><strong>net</strong> - 网络相关</p>
+
+<p><strong>scripts</strong> - 脚本</p>
+
+<p><strong>security</strong> - 安全相关</p>
+
+<p><strong>sound</strong> - 声音相关</p>
+
+<p><strong>tools</strong> - 工具</p>
+
+<h3>使用gdb跟踪调试内核，其中的rootfs.img 为自制的根文件系统</h3>
+<div class="highlight"><pre><code class="language-text" data-lang="text">qemu -kernel linux-3.18.6/arch/x86/boot/bzImage -initrd rootfs.img -s -S # 关于-s和-S选项的说明：
+# -S freeze CPU at startup (use ’c’ to start execution)
+# -s shorthand for -gdb tcp::1234 若不想使用1234端口，则可以使用-gdb tcp:xxxx来取代-s选项
+</code></pre></div>
+<p>另开一个shell窗口</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">gdb
+（gdb）file linux-3.18.6/vmlinux # 在gdb界面中targe remote之前加载符号表
+（gdb）target remote:1234 # 建立gdb和gdbserver之间的连接,按c 让qemu上的Linux继续运行
+（gdb）break start_kernel # 断点的设置可以在target remote之前，也可以在之后
+</code></pre></div>
+<h2>实验分析</h2>
+
+<h3>main.c的部分代码如下（省略号为略去的代码）</h3>
+<div class="highlight"><pre><code class="language-text" data-lang="text">asmlinkage __visible void __init start_kernel(void)
+{
+    ...
+    set_task_stack_end_magic(&amp;init_task);
+    ...
+    trap_init();
+    mm_init();
+    ...
+    sched_init();
+    ...
+    rest_init();
+}
+</code></pre></div>
+<h3>rest_init 函数代码如下</h3>
+<div class="highlight"><pre><code class="language-text" data-lang="text">static noinline void __init_refok rest_init(void)
+{
+    int pid;
+
+    rcu_scheduler_starting();
+    /*
+     * We need to spawn init first so that it obtains pid 1, however
+     * the init task will end up wanting to create kthreads, which, if
+     * we schedule it before we create kthreadd, will OOPS.
+     */
+    kernel_thread(kernel_init, NULL, CLONE_FS);
+    numa_default_policy();
+    pid = kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);
+    rcu_read_lock();
+    kthreadd_task = find_task_by_pid_ns(pid, &amp;init_pid_ns);
+    rcu_read_unlock();
+    complete(&amp;kthreadd_done);
+
+    /*
+     * The boot idle thread must execute schedule()
+     * at least once to get things moving:
+     */
+    init_idle_bootup_task(current);
+    schedule_preempt_disabled();
+    /* Call into cpu_idle with preempt disabled */
+    cpu_startup_entry(CPUHP_ONLINE);
+}
+</code></pre></div>
+<h3>代码分析</h3>
+
+<ul>
+<li><code>start_kernel/set_task_stack_end_magic(&amp;init_task); init_task</code>即手工创建的PCB，即0号进程，即最终的idle进程</li>
+<li>不管分析内核的哪一部分都会涉及到<code>start_kernel</code></li>
+<li><code>start_kernel/trap_init</code> 涉及到中断的初始化，其中的<code>set_system_trap_gate</code>是设置系统调用的</li>
+<li><code>start_kernel/mm_init</code> 内存管理模块的初始化</li>
+<li><code>start_kernel/sched_init</code> 调度模块的初始化</li>
+<li><code>rest_init/kernel_thread(kernel_init, NULL, CLONE_FS);</code> 创建用户态1号进程</li>
+<li><code>rest_init/kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);</code> 创建内核态2号进程</li>
+<li>之后若没有其他事情做，就进入cpu<em>startup</em>entry(CPUHP_ONLINE);，此时0号进程就进入while(1)循环</li>
+</ul>
+
+<p>这里面内核启动后通过<code>set_task_stack_end_magic(&amp;init_task);</code>初始化了0号进程，0号进程通过<code>kernel_thread(kernel_init, NULL, CLONE_FS);</code>和<code>kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);</code>分别创建了1号进程和2号进程，之后若无事做就进入<code>while(1)</code>循环保持运行。</p>
+
+<p>wdk 原创作品转载请注明出处<br>
+相关链接 [《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000][3]</p>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>Blog</li>
+          <li><a href="mailto:wdkrgst@gmail.com">wdkrgst@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text"></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
