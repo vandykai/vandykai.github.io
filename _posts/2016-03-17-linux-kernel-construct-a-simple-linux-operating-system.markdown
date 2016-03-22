@@ -127,6 +127,7 @@ static noinline void __init_refok rest_init(void)
 这里面内核启动后通过`set_task_stack_end_magic(&init_task);`初始化了0号进程，0号进程通过`kernel_thread(kernel_init, NULL, CLONE_FS);`和`kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);`分别创建了1号进程和2号进程，之后若无事做就进入`while(1)`循环保持运行。
 
 wdk 原创作品转载请注明出处  
-相关链接 [《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000][3]
+相关链接 [《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000][2]
 
 [1]: http://codelab.shiyanlou.com/xref/linux-3.18.6/
+[2]: http://mooc.study.163.com/course/USTC-1000029000

@@ -88,6 +88,7 @@ if(next->state == 0) {
 
 
 wdk 原创作品转载请注明出处  
-相关链接 [《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000][3]
+相关链接 [《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000][2]
 
 [1]: /mark/gramar/2016/03/06/c-inline-assembly-language.html
+[2]: http://mooc.study.163.com/course/USTC-1000029000
