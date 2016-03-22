@@ -202,6 +202,9 @@ int main() {
 
 <p>fork-test.c意在创建3个进程，即父进程A，子进程B，孙子进程C，让父进程A一直执行不结束，子进程B执行完结束，孙子进程C睡眠5秒，待子进程B执行完后打印出孙子进程C的父进程pid，当孙子进程C的父进程B没有结束时<code>getppid()</code>返回的应当是孙子进程C的父进程B的pid，当父进程结束时，从运行结果可以看出，返回的是1号进程的pid，即1号进程变成了孙子进程C的父进程。所有的用户进程都是由1号进程派生出来的，所有的内核态进程都是由2号进程派生出来的。</p>
 
+<p>wdk 原创作品转载请注明出处<br>
+相关链接 <a href="http://mooc.study.163.com/course/USTC-1000029000">《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000</a></p>
+
   </article>
 
 </div>

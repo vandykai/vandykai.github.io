@@ -172,7 +172,7 @@
 <p>这里面内核启动后通过<code>set_task_stack_end_magic(&amp;init_task);</code>初始化了0号进程，0号进程通过<code>kernel_thread(kernel_init, NULL, CLONE_FS);</code>和<code>kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);</code>分别创建了1号进程和2号进程，之后若无事做就进入<code>while(1)</code>循环保持运行。</p>
 
 <p>wdk 原创作品转载请注明出处<br>
-相关链接 [《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000][3]</p>
+相关链接 <a href="http://mooc.study.163.com/course/USTC-1000029000">《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000</a></p>
 
   </article>
 
