@@ -109,6 +109,7 @@ tags: [linux, linux-kernel, experiment]
 mkdir.c 和 mkdir-asm.c 功能一致都是在当前目录下创建test文件夹，mkdir.c是通过调用库函数`int mkdir(const char *pathname,mode_t mode);`创建test文件夹，而mkdir-asm.c是通过中断程序创建test文件夹。
 
 ## 后记
+### fork系统调用分析
 在查找系统调用列表时发现了fork系统调用，fork系统调用是用来创建一个与本进程基本相同的子进程。
 
 分析下面的代码
@@ -150,6 +151,12 @@ int main() {
 
 fork-test.c意在创建3个进程，即父进程A，子进程B，孙子进程C，让父进程A一直执行不结束，子进程B执行完结束，孙子进程C睡眠5秒，待子进程B执行完后打印出孙子进程C的父进程pid，当孙子进程C的父进程B没有结束时`getppid()`返回的应当是孙子进程C的父进程B的pid，当父进程结束时，从运行结果可以看出，返回的是1号进程的pid，即1号进程变成了孙子进程C的父进程。所有的用户进程都是由1号进程派生出来的，所有的内核态进程都是由2号进程派生出来的。
 
+### systmm_call特殊中断处理函数分析
+1. system_call 源代码[**链接**][7]
+1. system_call 工作流程图
+
+    ![system-call-flow][8]
+
 wdk 原创作品转载请注明出处  
 相关链接 [《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000][6]
 
@@ -159,3 +166,5 @@ wdk 原创作品转载请注明出处
 [4]: /mark/assets/images/2016-03-18-linux-kernel-system-call/man-2-mkdir.png
 [5]: /mark/assets/images/2016-03-18-linux-kernel-system-call/fork-test-result.png
 [6]: http://mooc.study.163.com/course/USTC-1000029000
+[7]: http://codelab.shiyanlou.com/xref/linux-3.18.6/arch/x86/kernel/entry_32.S#490
+[8]: /mark/assets/images/2016-03-18-linux-kernel-system-call/system-call-flow.png
