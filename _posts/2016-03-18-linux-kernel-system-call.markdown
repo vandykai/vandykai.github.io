@@ -3,7 +3,7 @@
 layout: post
 title:  Linux Kernel-System Call
 date:   2016-03-18 12:13:00
-categories: [linux]
+categories: [Linux]
 tags: [linux, linux-kernel, experiment]
 
 ---

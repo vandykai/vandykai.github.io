@@ -3,7 +3,7 @@
 layout: post
 title:  C Inline Assembly Language
 date:   2016-03-06 08:45:00
-categories: [gramar]
+categories: [Gramar]
 tags: [gramar, c]
 
 ---

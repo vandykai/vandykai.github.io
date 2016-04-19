@@ -3,7 +3,7 @@
 layout: post
 title:  Web Note - Well Use Of Exception
 date:   2016-01-12 17:10:00
-categories: [j2ee]
+categories: [J2EE]
 tags: [j2ee, web-note, exception]
 
 ---

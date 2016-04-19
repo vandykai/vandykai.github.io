@@ -3,7 +3,7 @@
 layout: post
 title:  How Does Git Work
 date:   2016-03-20 12:30:00
-categories: [vcs]
+categories: [VCS]
 tags: [vcs, git]
 
 ---

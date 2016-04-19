@@ -3,7 +3,7 @@
 layout: post
 title:  Linux Kernel-Working Process Of Operating System
 date:   2016-03-06 10:45:00
-categories: [linux]
+categories: [Linux]
 tags: [linux, linux-kernel, experiment]
 
 ---

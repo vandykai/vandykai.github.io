@@ -3,7 +3,7 @@
 layout: post
 title:  Linux Kernel-Construct A Simple Linux Operating System
 date:   2016-03-17 12:13:00
-categories: [linux]
+categories: [Linux]
 tags: [linux, linux-kernel, experiment]
 
 ---
