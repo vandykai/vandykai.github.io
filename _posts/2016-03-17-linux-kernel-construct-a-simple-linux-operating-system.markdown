@@ -1,7 +1,7 @@
 ---
 
 layout: post
-title:  Linux Kernel-Construct A Simple Linux Operating System
+title:  Linux Kernel - Construct A Simple Linux Operating System
 date:   2016-03-17 12:13:00
 categories: [Linux]
 tags: [linux, linux-kernel, experiment]
@@ -66,7 +66,7 @@ gdb
 ## 实验分析
 ### main.c的部分代码如下（省略号为略去的代码）
 
-```
+``` C
 asmlinkage __visible void __init start_kernel(void)
 {
     ...
@@ -83,7 +83,7 @@ asmlinkage __visible void __init start_kernel(void)
 
 ### rest_init 函数代码如下
 
-```
+``` C
 static noinline void __init_refok rest_init(void)
 {
     int pid;
@@ -122,9 +122,9 @@ static noinline void __init_refok rest_init(void)
 - `start_kernel/sched_init` 调度模块的初始化
 - `rest_init/kernel_thread(kernel_init, NULL, CLONE_FS);` 创建用户态1号进程
 - `rest_init/kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);` 创建内核态2号进程
-- 之后若没有其他事情做，就进入cpu_startup_entry(CPUHP_ONLINE);，此时0号进程就进入while(1)循环
+- 之后若没有其他事情做，就进入`cpu_startup_entry(CPUHP_ONLINE);`，此时0号进程就进入`while(1)`循环
 
-这里面内核启动后通过`set_task_stack_end_magic(&init_task);`初始化了0号进程，0号进程通过`kernel_thread(kernel_init, NULL, CLONE_FS);`和`kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);`分别创建了1号进程和2号进程，之后若无事做就进入`while(1)`循环保持运行。
+这里面内核启动后通过`set_task_stack_end_magic(&init_task);`初始化了0号进程，0号进程通过`kernel_thread(kernel_init, NULL, CLONE_FS);`和`kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);`分别创建了1号进程（所有用户态进程的祖先）和2号进程（所有内核线程的祖先）。之后若无事做就进入`while(1)`循环保持运行。
 
 wdk 原创作品转载请注明出处  
 相关链接 [《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000][2]

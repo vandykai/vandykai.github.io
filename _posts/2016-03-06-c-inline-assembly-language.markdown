@@ -1,7 +1,7 @@
 ---
 
 layout: post
-title:  C Inline Assembly Language
+title:  C - Inline Assembly Language
 date:   2016-03-06 08:45:00
 categories: [Gramar]
 tags: [gramar, c]

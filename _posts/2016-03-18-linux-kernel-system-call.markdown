@@ -1,7 +1,7 @@
 ---
 
 layout: post
-title:  Linux Kernel-System Call
+title:  Linux Kernel - System Call
 date:   2016-03-18 12:13:00
 categories: [Linux]
 tags: [linux, linux-kernel, experiment]
@@ -32,8 +32,8 @@ tags: [linux, linux-kernel, experiment]
     ```
 
 - Libc库定义的一些API引用了封装例程（wrapper routine，唯一的目的就是发布系统调用），一般每个系统调用对应一个封装例程，库再用这些封装例程定义出给用户的API
-- 系统调用的三层皮xyz、system_call和sys_xyz,库函数中一般有trap指令或int指令，类似于一个系统中断，而系统调用是一个特殊的中断处理函数（inerrupt handler）。
-- 在Linux中是通过执行`int $0x80`来执行系统调用的，这条汇编指令产生向量为128的编程异常，使用eax来传递系统调用号。Intel Pentium II中引入了sysenter指令（快速系统调用）。
+- 系统调用的三层皮`xyz`、`system_call`和`sys_xyz`,库函数中一般有trap指令或int指令，类似于一个系统中断，而系统调用是一个特殊的中断处理函数（inerrupt handler）。
+- 在Linux中是通过执行`int $0x80`来执行系统调用的，这条汇编指令产生向量为128的编程异常，使用eax来传递系统调用号。Intel Pentium II中引入了`sysenter`指令（快速系统调用）。
 - 寄存器传递参数具有如下限制：
     1. 每个参数的长度不能超过寄存器的长度，即32位
     2. 系统调用传递第一个参数用ebx，系统调用的返回值使用eax存储，和普通函数一样，在系统调用号（eax）之外，参数的个数不能超过6个（ebx，ecx，edx，esi，edi，ebp），超过6个可通过传递指向一块内存区域的指针的方法减少参数传递。
@@ -65,23 +65,23 @@ tags: [linux, linux-kernel, experiment]
 
     **mkdir.c**
 
-    ```
+    ``` C
     #include <sys/stat.h>
     #include <sys/types.h>
     #include <stdio.h>
     int main() {
        int result =  mkdir("test", 0777);
        if (result == 0) {
-           printf("dirtory test make success");
+           printf("directory test make success");
        } else {
-           printf("dirtory test make failture");
+           printf("directory test make failure");
        }
     }
     ```
 
     **mkdir-asm.c**
 
-    ```
+    ``` C
     #include <sys/stat.h>
     #include <sys/types.h>
     #include <stdio.h>
@@ -100,12 +100,12 @@ tags: [linux, linux-kernel, experiment]
                 :"%eax","%ebx","%ecx"
                 );
        if (result == 0) {
-           printf("dirtory test make success");
+           printf("directory test make success");
        } else {
-           printf("dirtory test make failture");
+           printf("directory test make failure");
        }
     }
-```
+    ```
 mkdir.c 和 mkdir-asm.c 功能一致都是在当前目录下创建test文件夹，mkdir.c是通过调用库函数`int mkdir(const char *pathname,mode_t mode);`创建test文件夹，而mkdir-asm.c是通过中断程序创建test文件夹。
 
 ## 后记
@@ -116,7 +116,7 @@ mkdir.c 和 mkdir-asm.c 功能一致都是在当前目录下创建test文件夹�
 
 **fork-test.c**
 
-```
+``` C
 #include <unistd.h>
 #include <stdio.h>
 int main() {

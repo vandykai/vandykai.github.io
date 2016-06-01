@@ -1,7 +1,7 @@
 ---
 
 layout: post
-title:  Linux Kernel-Working Process Of Assembly Code
+title:  Linux Kernel - Working Process Of Assembly Code
 date:   2016-02-25 10:42:00
 categories: [Linux]
 tags: [linux, linux-kernel, experiment]
