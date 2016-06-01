@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Linux Kernel-Construct A Simple Linux Operating System</title>
+  <title>Linux Kernel - Construct A Simple Linux Operating System</title>
   <meta name="description" content="重点知识总结">
 
   <link rel="stylesheet" href="/mark/css/main.css">
@@ -57,7 +57,7 @@
         <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">Linux Kernel-Construct A Simple Linux Operating System</h1>
+    <h1 class="post-title">Linux Kernel - Construct A Simple Linux Operating System</h1>
     <p class="post-meta">Mar 17, 2016</p>
   </header>
 
@@ -114,47 +114,47 @@
 <h2>实验分析</h2>
 
 <h3>main.c的部分代码如下（省略号为略去的代码）</h3>
-<div class="highlight"><pre><code class="language-text" data-lang="text">asmlinkage __visible void __init start_kernel(void)
-{
-    ...
-    set_task_stack_end_magic(&amp;init_task);
-    ...
-    trap_init();
-    mm_init();
-    ...
-    sched_init();
-    ...
-    rest_init();
-}
+<div class="highlight"><pre><code class="language-C" data-lang="C"><span class="n">asmlinkage</span> <span class="n">__visible</span> <span class="kt">void</span> <span class="n">__init</span> <span class="nf">start_kernel</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="p">...</span>
+    <span class="n">set_task_stack_end_magic</span><span class="p">(</span><span class="o">&amp;</span><span class="n">init_task</span><span class="p">);</span>
+    <span class="p">...</span>
+    <span class="n">trap_init</span><span class="p">();</span>
+    <span class="n">mm_init</span><span class="p">();</span>
+    <span class="p">...</span>
+    <span class="n">sched_init</span><span class="p">();</span>
+    <span class="p">...</span>
+    <span class="n">rest_init</span><span class="p">();</span>
+<span class="p">}</span>
 </code></pre></div>
 <h3>rest_init 函数代码如下</h3>
-<div class="highlight"><pre><code class="language-text" data-lang="text">static noinline void __init_refok rest_init(void)
-{
-    int pid;
+<div class="highlight"><pre><code class="language-C" data-lang="C"><span class="k">static</span> <span class="n">noinline</span> <span class="kt">void</span> <span class="n">__init_refok</span> <span class="nf">rest_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">pid</span><span class="p">;</span>
 
-    rcu_scheduler_starting();
-    /*
-     * We need to spawn init first so that it obtains pid 1, however
-     * the init task will end up wanting to create kthreads, which, if
-     * we schedule it before we create kthreadd, will OOPS.
-     */
-    kernel_thread(kernel_init, NULL, CLONE_FS);
-    numa_default_policy();
-    pid = kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);
-    rcu_read_lock();
-    kthreadd_task = find_task_by_pid_ns(pid, &amp;init_pid_ns);
-    rcu_read_unlock();
-    complete(&amp;kthreadd_done);
+    <span class="n">rcu_scheduler_starting</span><span class="p">();</span>
+    <span class="cm">/*</span>
+<span class="cm">     * We need to spawn init first so that it obtains pid 1, however</span>
+<span class="cm">     * the init task will end up wanting to create kthreads, which, if</span>
+<span class="cm">     * we schedule it before we create kthreadd, will OOPS.</span>
+<span class="cm">     */</span>
+    <span class="n">kernel_thread</span><span class="p">(</span><span class="n">kernel_init</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">CLONE_FS</span><span class="p">);</span>
+    <span class="n">numa_default_policy</span><span class="p">();</span>
+    <span class="n">pid</span> <span class="o">=</span> <span class="n">kernel_thread</span><span class="p">(</span><span class="n">kthreadd</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">CLONE_FS</span> <span class="o">|</span> <span class="n">CLONE_FILES</span><span class="p">);</span>
+    <span class="n">rcu_read_lock</span><span class="p">();</span>
+    <span class="n">kthreadd_task</span> <span class="o">=</span> <span class="n">find_task_by_pid_ns</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">init_pid_ns</span><span class="p">);</span>
+    <span class="n">rcu_read_unlock</span><span class="p">();</span>
+    <span class="n">complete</span><span class="p">(</span><span class="o">&amp;</span><span class="n">kthreadd_done</span><span class="p">);</span>
 
-    /*
-     * The boot idle thread must execute schedule()
-     * at least once to get things moving:
-     */
-    init_idle_bootup_task(current);
-    schedule_preempt_disabled();
-    /* Call into cpu_idle with preempt disabled */
-    cpu_startup_entry(CPUHP_ONLINE);
-}
+    <span class="cm">/*</span>
+<span class="cm">     * The boot idle thread must execute schedule()</span>
+<span class="cm">     * at least once to get things moving:</span>
+<span class="cm">     */</span>
+    <span class="n">init_idle_bootup_task</span><span class="p">(</span><span class="n">current</span><span class="p">);</span>
+    <span class="n">schedule_preempt_disabled</span><span class="p">();</span>
+    <span class="cm">/* Call into cpu_idle with preempt disabled */</span>
+    <span class="n">cpu_startup_entry</span><span class="p">(</span><span class="n">CPUHP_ONLINE</span><span class="p">);</span>
+<span class="p">}</span>
 </code></pre></div>
 <h3>代码分析</h3>
 
@@ -166,10 +166,10 @@
 <li><code>start_kernel/sched_init</code> 调度模块的初始化</li>
 <li><code>rest_init/kernel_thread(kernel_init, NULL, CLONE_FS);</code> 创建用户态1号进程</li>
 <li><code>rest_init/kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);</code> 创建内核态2号进程</li>
-<li>之后若没有其他事情做，就进入cpu<em>startup</em>entry(CPUHP_ONLINE);，此时0号进程就进入while(1)循环</li>
+<li>之后若没有其他事情做，就进入<code>cpu_startup_entry(CPUHP_ONLINE);</code>，此时0号进程就进入<code>while(1)</code>循环</li>
 </ul>
 
-<p>这里面内核启动后通过<code>set_task_stack_end_magic(&amp;init_task);</code>初始化了0号进程，0号进程通过<code>kernel_thread(kernel_init, NULL, CLONE_FS);</code>和<code>kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);</code>分别创建了1号进程和2号进程，之后若无事做就进入<code>while(1)</code>循环保持运行。</p>
+<p>这里面内核启动后通过<code>set_task_stack_end_magic(&amp;init_task);</code>初始化了0号进程，0号进程通过<code>kernel_thread(kernel_init, NULL, CLONE_FS);</code>和<code>kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);</code>分别创建了1号进程（所有用户态进程的祖先）和2号进程（所有内核线程的祖先）。之后若无事做就进入<code>while(1)</code>循环保持运行。</p>
 
 <p>wdk 原创作品转载请注明出处<br>
 相关链接 <a href="http://mooc.study.163.com/course/USTC-1000029000">《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000</a></p>

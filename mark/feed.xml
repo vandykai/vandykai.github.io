@@ -5,9 +5,308 @@
     <description></description>
     <link>http://www.dosrc.com/mark/</link>
     <atom:link href="http://www.dosrc.com/mark/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 12 Apr 2016 08:29:46 +0000</pubDate>
-    <lastBuildDate>Tue, 12 Apr 2016 08:29:46 +0000</lastBuildDate>
+    <pubDate>Wed, 01 Jun 2016 00:49:31 +0000</pubDate>
+    <lastBuildDate>Wed, 01 Jun 2016 00:49:31 +0000</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>Linux Kernel - Loading Of Executable Program</title>
+        <description>&lt;h2&gt;重点知识总结&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;可执行文件的装载也是一个系统调用（&lt;code&gt;execve&lt;/code&gt;），只不过和&lt;code&gt;fork&lt;/code&gt;系统调用一样有一些特殊。&lt;/li&gt;
+&lt;li&gt;Shell会调用execve将命令行参数和环境参数传递给可执行程序的main函数。&lt;/li&gt;
+&lt;li&gt;库函数exec*都是execve的封装例程。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;可执行文件的文件格式，Shell环境，动态链接库。&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;(&lt;a href=&quot;http://www.xfocus.net/articles/200105/174.html&quot;&gt;ELF文件格式&lt;/a&gt;)，ELF格式的文件默认加载到进程空间的0X804800处。&lt;/li&gt;
+&lt;li&gt;Shell环境：加载一个新程序会覆盖当前进程的用户进程空间，所以Shell命令行要加载一个新程序时，先要fork一个新进程，在新进程中加载新程序，否则Shell进程就被覆盖了，那么命令行参数和环境变量是如何进入新程序堆栈的。通过&lt;code&gt;Shell程序&lt;/code&gt; -&amp;gt; &lt;code&gt;execve&lt;/code&gt; -&amp;gt; &lt;code&gt;sys_execve&lt;/code&gt; 然后在初始化新程序堆栈时拷贝进去。即先函数调用参数传递，再系统调用参数传递将命令行参数和环境变量传递进新程序堆栈。&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;动态链接库：分为装载时动态链接和运行时动态链接，如何在64位环境下编译32位动态链接库参看下面链接。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;/mark/gramar/2016/05/13/c-dynamical-loading.html&quot;&gt;动态链接&lt;/a&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;可执行文件的文件格式的解析。&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;寻找文件格式对应的解析模块，如下：&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#1604&quot;&gt;&lt;code&gt;sys_execve&lt;/code&gt;&lt;/a&gt; -&amp;gt; &lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#do_execve&quot;&gt;&lt;code&gt;do_execve&lt;/code&gt;&lt;/a&gt; -&amp;gt; &lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#do_execve_common&quot;&gt;&lt;code&gt;do_execve_common&lt;/code&gt;&lt;/a&gt; -&amp;gt; &lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#exec_binprm&quot;&gt;&lt;code&gt;exec_binprm&lt;/code&gt;&lt;/a&gt; -&amp;gt; &lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#search_binary_handler&quot;&gt;&lt;code&gt;search_binary_handler&lt;/code&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#search_binary_handler&quot;&gt;&lt;code&gt;search_binary_handler&lt;/code&gt;&lt;/a&gt;根据文件头部信息寻找对应的文件格式解析模块。&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;n&quot;&gt;list_for_each_entry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;formats&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lh&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;try_module_get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;continue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;read_unlock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;binfmt_lock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;bprm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;recursion_depth&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;retval&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;load_binary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bprm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;read_lock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;binfmt_lock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;对于ELF格式的可执行文件，语句&lt;code&gt;fmt-&amp;gt;load_binary(bprm);&lt;/code&gt;执行的应该是&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/binfmt_elf.c#load_elf_binary&quot;&gt;&lt;code&gt;load_elf_binary(bprm);&lt;/code&gt;&lt;/a&gt;。
+&lt;code&gt;load_binary&lt;/code&gt;是个函数指针。寻找对应的文件格式解析模块采用了设计模式中的&lt;strong&gt;观察者模式&lt;/strong&gt;。如下为ELF格式的观察者初始化的过程：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;static struct linux_binfmt elf_format = {
+    .module     = THIS_MODULE,
+    .load_binary    = load_elf_binary,
+    .load_shlib = load_elf_library,
+    .core_dump  = elf_core_dump,
+    .min_coredump   = ELF_EXEC_PAGESIZE,
+};
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;static int __init init_elf_binfmt(void)
+{
+    register_binfmt(&amp;amp;elf_format);
+    return 0;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;这里不同的文件格式解析模块就是观察者，可执行文件就是被观察者，&lt;code&gt;list_for_each_entry&lt;/code&gt;遍历文件格式解析模块向其发送通知，通知文件格式解析模块来解析当前的可执行文件，只不过这里只通知对应的文件解析模块（对应的观察者），而不是所有的文件格式解析模块（所有的观察者）。&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;可执行文件的执行起点&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;上面已经说了，对于ELF格式的文件。执行到&lt;code&gt;fmt-&amp;gt;load_binary(bprm);&lt;/code&gt;,实际上执行的是&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/binfmt_elf.c#load_elf_binary&quot;&gt;&lt;code&gt;load_elf_binary(bprm);&lt;/code&gt;&lt;/a&gt;，在&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/binfmt_elf.c#load_elf_binary&quot;&gt;&lt;code&gt;load_elf_binary(bprm);&lt;/code&gt;&lt;/a&gt;函数中的&lt;code&gt;start_thread(regs, elf_entry, bprm-&amp;gt;p);&lt;/code&gt;语句指明了可执行文件的起点。函数原型&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/arch/x86/kernel/process_32.c#start_thread&quot;&gt;&lt;code&gt;start_thread(struct pt_regs *regs, unsigned long new_ip, unsigned long new_sp)&lt;/code&gt;&lt;/a&gt;中的第二个参数就是新程序的起点，它通过修改内核堆栈中EIP的值作为新程序的起点，&lt;code&gt;execve&lt;/code&gt;系统调用返回到用户态就从这里开始执行。&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;对于静态链接的可执行文件&lt;code&gt;elf_entry&lt;/code&gt;就是ELF头中定义的起点，对于动态链接的可执行文件，先加载连接器ld，将CPU控制权交给ld来加载依赖库并完成动态链接，这部分不由内核完成，源代码如下：&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;if (elf_interpreter) {//需要动态链接
+    unsigned long interp_map_addr = 0;
+
+    elf_entry = load_elf_interp(&amp;amp;loc-&amp;gt;interp_elf_ex,
+            interpreter, &amp;amp;interp_map_addr, load_bias);
+    ...
+} else {//不需要动态链接
+    elf_entry = loc-&amp;gt;elf_ex.e_entry;
+｝
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;wdk 原创作品转载请注明出处&lt;br&gt;
+相关链接 &lt;a href=&quot;http://mooc.study.163.com/course/USTC-1000029000&quot;&gt;《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sat, 14 May 2016 20:31:00 +0000</pubDate>
+        <link>http://www.dosrc.com/mark/linux/2016/05/14/linux-kernel-loading-of-executable-program.html</link>
+        <guid isPermaLink="true">http://www.dosrc.com/mark/linux/2016/05/14/linux-kernel-loading-of-executable-program.html</guid>
+        
+        <category>linux</category>
+        
+        <category>linux-kernel</category>
+        
+        <category>experiment</category>
+        
+        
+        <category>linux</category>
+        
+      </item>
+    
+      <item>
+        <title>C - Dynamical Loading</title>
+        <description>&lt;h2&gt;动态链接：&lt;/h2&gt;
+
+&lt;p&gt;动态链接分为装载时动态链接和运行时动态链接，在64位环境下编译32位动态链接库如下（32位下只需去掉-m32 这个编译选项）&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;libexample.h&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#ifndef _LIB_EXAMPLE_H_&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#define _LIB_EXAMPLE_H_&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#define SUCCESS 0&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#define FAILURE (-1)&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#ifdef __cplusplus&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;extern&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;C&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#endif&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LibApi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#ifdef __cplusplus&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#endif&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#endif &lt;/span&gt;&lt;span class=&quot;cm&quot;&gt;/* _LIB_EXAMPLE_H_ */&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;libexample.c&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#include &amp;quot;libexample.h&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;LibApi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;This Is A Library Api!&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SUCCESS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;code&gt;gcc -shared libexample.c -o liblibexample.so -m32&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;注意这里编译成的.so文件命名规则是源文件前面加上lib即libample -&amp;gt; liblibexample。
+无论是装载时动态链接还是运行时动态链接，库文件的编译方法都是一样的，区别在于怎么使用它们。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;装载时的动态链接举例&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#include &amp;quot;libexample.h&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;This is a main program!&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;LibApi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SUCCESS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;gcc main.c -o main -L/path/to/your/dir -llibexample -m32
+# 编译main，/path/to/your/dir可用.代替。
+# 注意这里只提供libexample的-L（库对应的接口头文件所在目录）和-l（库名，如liblibexample.so去掉lib和.so的部分）。
+$ export LD_LIBRARY_PATH=$PWD
+# 将当前目录加入默认路径，否则main找不到依赖的库文件，当然也可以将库文件copy到默认路径下。
+$ ./main
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;运行时的动态链接举例&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;dlfcn.h&amp;gt;&lt;/span&gt;
+
+&lt;span class=&quot;cp&quot;&gt;#define SUCCESS 0&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#define FAILURE (-1)&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;This is a main program!&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;handle&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dlopen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;liblibexample.so&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;RTLD_NOW&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;handle&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;open lib liblibexample.so error :%s&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dlerror&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;FAILURE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dlsym&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;handle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;LibApi&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;error&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dlerror&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;LibApi not found:%s&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;dlclose&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;handle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SUCCESS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;gcc main.c -o main -ldl -m32
+# -ldl选项，表示生成的对象模块使用运行时动态链接。
+$ export LD_LIBRARY_PATH=$PWD
+# 将当前目录加入默认路径，否则main找不到依赖的库文件，当然也可以将库文件copy到默认路径下。
+$ ./main
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+        <pubDate>Fri, 13 May 2016 14:58:00 +0000</pubDate>
+        <link>http://www.dosrc.com/mark/gramar/2016/05/13/c-dynamical-loading.html</link>
+        <guid isPermaLink="true">http://www.dosrc.com/mark/gramar/2016/05/13/c-dynamical-loading.html</guid>
+        
+        <category>gramar</category>
+        
+        <category>c</category>
+        
+        
+        <category>gramar</category>
+        
+      </item>
+    
+      <item>
+        <title>Linux Kernel - Description Of Process</title>
+        <description>&lt;h2&gt;重点知识总结&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;进程结构定义struct &lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/include/linux/sched.h#task_struct&quot;&gt;task_struct&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;volatile long state;&lt;/code&gt;记录进程的状态，进程状态的定义&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/include/linux/sched.h#203&quot;&gt;&lt;strong&gt;链接&lt;/strong&gt;&lt;/a&gt;，值得注意的是操作系统进程状态概念中的就绪态和运行态在这里都表示为TASK_RUNNING状态，若获得CPU的执行就为运行态，否则为就绪态。&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Linux为每个进程分配一个8KB大小的内存区域，用于存放该进程两个不同的数据结构：&lt;code&gt;Thread_info&lt;/code&gt;和进程的内核堆栈&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;k&quot;&gt;union&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;thread_union&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;thread_info&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;thread_info&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;THREAD_SIZE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;sizeof&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)];&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;可能会有点奇怪，为什么这两个数据结构要共用一个内存空间呢，其实这是有原因的，早在以前，&lt;code&gt;thread_union&lt;/code&gt;中存放的并不是&lt;code&gt;thread_info&lt;/code&gt;,而是&lt;code&gt;thread_struct&lt;/code&gt;，只是后来变成了新的数据结构&lt;code&gt;thread_info&lt;/code&gt;，将&lt;code&gt;thread_struct&lt;/code&gt;或&lt;code&gt;thread_info&lt;/code&gt;放在内核栈的尾端（因为共用了一块内存）可以通过esp指针屏蔽末尾的若干位方便的得到当前运行进程的进程描述结构指针。&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;void *stack;&lt;/code&gt;指向内核态堆栈。其实应该就是指向上面的8kb大小的共用内存区域。&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;struct list_head tasks;&lt;/code&gt;所有进程的链表，将所有当前进程链接起来。&lt;code&gt;list_head&lt;/code&gt;中有两个指针域&lt;code&gt;next&lt;/code&gt;和&lt;code&gt;prev&lt;/code&gt;，分别指向下一个和前一个进程。&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;list_head&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;list_head&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;struct mm_struct *mm, *active_mm;&lt;/code&gt;内存管理，进程的地址空间相关，如代码段，数据段等。&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;struct thread_struct thread;&lt;/code&gt;执行进程的CPU相关的状态，定义&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/arch/x86/include/asm/processor.h#thread_struct&quot;&gt;&lt;strong&gt;链接&lt;/strong&gt;&lt;/a&gt;，里面包括&lt;code&gt;sp&lt;/code&gt;，&lt;code&gt;ip&lt;/code&gt;等地址变量，。&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;struct fs_struct *fs;&lt;/code&gt;文件系统相关。&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;struct files_struct *files;&lt;/code&gt;打开的文件描述符列表。&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;sys_fork&lt;/code&gt;，&lt;code&gt;sys_clone&lt;/code&gt;，&lt;code&gt;sys_vfork&lt;/code&gt;最终都是调用&lt;code&gt;do_fork&lt;/code&gt;创建新进程。&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;创建一个新进程在内核中的执行过程&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/kernel/fork.c#do_fork&quot;&gt;&lt;code&gt;do_fork&lt;/code&gt;源码&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/arch/x86/kernel/process_32.c#copy_thread&quot;&gt;&lt;code&gt;copy_thread&lt;/code&gt;源码&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/arch/x86/kernel/entry_32.S#290&quot;&gt;&lt;code&gt;ret_from_fork&lt;/code&gt;源码&lt;/a&gt;&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;do_fork&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(...)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;copy_process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clone_flags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stack_start&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stack_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;child_tidptr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;trace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task_struct&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;copy_process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(...)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dup_task_struct&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;//修改task_struct&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;retval&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;copy_thread&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clone_flags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stack_start&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stack_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task_struct&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;dup_task_struct&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task_struct&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;orig&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;tsk&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;alloc_task_struct_node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;ti&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;alloc_thread_info_node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tsk&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;arch_dup_task_struct&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tsk&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;orig&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;tsk&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ti&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;setup_thread_stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tsk&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;orig&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;cp&quot;&gt;#define task_pt_regs(tsk)   ((struct pt_regs *)(tsk)-&amp;gt;thread.sp0 - 1)&lt;/span&gt;
+
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;copy_thread&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;clone_flags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                &lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;arg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task_struct&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pt_regs&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;childregs&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task_pt_regs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;//子进程的内核态堆栈，pt_regs就是栈底内容的容器，这里是找到栈底内容的地址赋值给childregs。&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;thread&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;childregs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;thread&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sp0&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;childregs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;childregs&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;current_pt_regs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;//这里不懂为什么又要赋值？&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;childregs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ax&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;thread&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ip&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ret_from_fork&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;err&quot;&gt;｝&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;inline&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task_struct&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;alloc_task_struct_node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kmem_cache_alloc_node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;task_struct_cachep&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GFP_KERNEL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;thread_info&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;alloc_thread_info_node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task_struct&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tsk&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;page&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;page&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;alloc_kmem_pages_node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;THREADINFO_GFP&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;THREAD_SIZE_ORDER&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;page&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;page_address&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;page&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__weak&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;arch_dup_task_struct&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task_struct&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dst&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task_struct&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;src&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dst&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;src&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;cp&quot;&gt;#define task_thread_info(task)  ((struct thread_info *)(task)-&amp;gt;stack)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;inline&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;setup_thread_stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task_struct&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task_struct&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;task_thread_info&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;task_thread_info&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;org&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;task_thread_info&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;task&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;wdk 原创作品转载请注明出处&lt;br&gt;
+相关链接 [《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000]7]&lt;/p&gt;
+</description>
+        <pubDate>Wed, 13 Apr 2016 14:32:00 +0000</pubDate>
+        <link>http://www.dosrc.com/mark/linux/2016/04/13/linux-kernel-description-of-process.html</link>
+        <guid isPermaLink="true">http://www.dosrc.com/mark/linux/2016/04/13/linux-kernel-description-of-process.html</guid>
+        
+        <category>linux</category>
+        
+        <category>linux-kernel</category>
+        
+        <category>experiment</category>
+        
+        
+        <category>linux</category>
+        
+      </item>
     
       <item>
         <title>How Does Git Work</title>
@@ -137,7 +436,7 @@ $ git cat-file -p 5a1e99b76770966d5975d2ba8aadf32c2bf550ea
       </item>
     
       <item>
-        <title>Linux Kernel-System Call</title>
+        <title>Linux Kernel - System Call</title>
         <description>&lt;h2&gt;重点知识总结&lt;/h2&gt;
 
 &lt;ul&gt;
@@ -158,8 +457,8 @@ RESTORE_ALL调用
 iret指令
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;Libc库定义的一些API引用了封装例程（wrapper routine，唯一的目的就是发布系统调用），一般每个系统调用对应一个封装例程，库再用这些封装例程定义出给用户的API&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;系统调用的三层皮xyz、system&lt;em&gt;call和sys&lt;/em&gt;xyz,库函数中一般有trap指令或int指令，类似于一个系统中断，而系统调用是一个特殊的中断处理函数（inerrupt handler）。&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;在Linux中是通过执行&lt;code&gt;int $0x80&lt;/code&gt;来执行系统调用的，这条汇编指令产生向量为128的编程异常，使用eax来传递系统调用号。Intel Pentium II中引入了sysenter指令（快速系统调用）。&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;系统调用的三层皮&lt;code&gt;xyz&lt;/code&gt;、&lt;code&gt;system_call&lt;/code&gt;和&lt;code&gt;sys_xyz&lt;/code&gt;,库函数中一般有trap指令或int指令，类似于一个系统中断，而系统调用是一个特殊的中断处理函数（inerrupt handler）。&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;在Linux中是通过执行&lt;code&gt;int $0x80&lt;/code&gt;来执行系统调用的，这条汇编指令产生向量为128的编程异常，使用eax来传递系统调用号。Intel Pentium II中引入了&lt;code&gt;sysenter&lt;/code&gt;指令（快速系统调用）。&lt;/p&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;寄存器传递参数具有如下限制：&lt;/p&gt;
 
 &lt;ol&gt;
@@ -198,42 +497,42 @@ iret指令
 &lt;li&gt;&lt;p&gt;源代码如下&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;mkdir.c&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;#include &amp;lt;sys/stat.h&amp;gt;
-#include &amp;lt;sys/types.h&amp;gt;
-#include &amp;lt;stdio.h&amp;gt;
-int main() {
-   int result =  mkdir(&amp;quot;test&amp;quot;, 0777);
-   if (result == 0) {
-       printf(&amp;quot;dirtory test make success&amp;quot;);
-   } else {
-       printf(&amp;quot;dirtory test make failture&amp;quot;);
-   }
-}
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;sys/stat.h&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;sys/types.h&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+   &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;mkdir&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;test&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mo&quot;&gt;0777&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+   &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+       &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;directory test make success&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+   &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+       &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;directory test make failure&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+   &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;&lt;strong&gt;mkdir-asm.c&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;#include &amp;lt;sys/stat.h&amp;gt;
-#include &amp;lt;sys/types.h&amp;gt;
-#include &amp;lt;stdio.h&amp;gt;
-int main() {
-    int result = 0;
-    const char *filePath = &amp;quot;test&amp;quot;;
-    mode_t mode = 0777;
-    asm volatile(
-            &amp;quot;movl $0X27,%%eax\n\t&amp;quot;
-            &amp;quot;movl %1,%%ebx\n\t&amp;quot;
-            &amp;quot;movl %2,%%ecx\n\t&amp;quot;
-            &amp;quot;int $0X80\n\t&amp;quot;
-            &amp;quot;movl %%eax,%0\n\t&amp;quot;
-            :&amp;quot;=m&amp;quot;(result)
-            :&amp;quot;r&amp;quot;(filePath),&amp;quot;r&amp;quot;(mode)
-            :&amp;quot;%eax&amp;quot;,&amp;quot;%ebx&amp;quot;,&amp;quot;%ecx&amp;quot;
-            );
-   if (result == 0) {
-       printf(&amp;quot;dirtory test make success&amp;quot;);
-   } else {
-       printf(&amp;quot;dirtory test make failture&amp;quot;);
-   }
-}
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;sys/stat.h&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;sys/types.h&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;filePath&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;test&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;mode_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mo&quot;&gt;0777&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;asm&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;volatile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&amp;quot;movl $0X27,%%eax&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&amp;quot;movl %1,%%ebx&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&amp;quot;movl %2,%%ecx&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&amp;quot;int $0X80&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&amp;quot;movl %%eax,%0&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;=m&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;r&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;filePath&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;r&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;%eax&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;%ebx&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;%ecx&amp;quot;&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+   &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+       &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;directory test make success&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+   &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+       &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;directory test make failure&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+   &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;mkdir.c 和 mkdir-asm.c 功能一致都是在当前目录下创建test文件夹，mkdir.c是通过调用库函数&lt;code&gt;int mkdir(const char *pathname,mode_t mode);&lt;/code&gt;创建test文件夹，而mkdir-asm.c是通过中断程序创建test文件夹。&lt;/p&gt;&lt;/li&gt;
 &lt;/ol&gt;
@@ -247,28 +546,28 @@ int main() {
 &lt;p&gt;分析下面的代码&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;fork-test.c&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;#include &amp;lt;unistd.h&amp;gt;
-#include &amp;lt;stdio.h&amp;gt;
-int main() {
-    pid_t sonPid = 0;
-    sonPid = fork();
-    if (sonPid == 0) {
-        printf(&amp;quot;process %d -&amp;gt; parent pid: %d\n&amp;quot;, getpid(), getppid());
-        printf(&amp;quot;process %d -&amp;gt; before excute fork&amp;#39;s fork pid: %d\n&amp;quot;, getpid(), sonPid);
-        sonPid = fork();
-        if (sonPid == 0) {
-            sleep(5);
-            printf(&amp;quot;process %d -&amp;gt; parent pid: %d\n&amp;quot;, getpid(), getppid());
-            printf(&amp;quot;process %d -&amp;gt; fork pid: %d\n&amp;quot;, getpid(), sonPid);
-        } else {
-            printf(&amp;quot;process %d -&amp;gt; after excute fork&amp;#39;s fork pid: %d\n&amp;quot;, getpid(), sonPid);
-        }
-    } else {
-        printf(&amp;quot;process %d -&amp;gt; parent pid: %d\n&amp;quot;, getpid(), getppid());
-        printf(&amp;quot;process %d -&amp;gt; fork pid: %d\n&amp;quot;, getpid(), sonPid);
-        while(1);
-    }
-}
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;unistd.h&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;pid_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sonPid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;sonPid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fork&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sonPid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;process %d -&amp;gt; parent pid: %d&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getpid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getppid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;process %d -&amp;gt; before excute fork&amp;#39;s fork pid: %d&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getpid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sonPid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;sonPid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fork&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sonPid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;sleep&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;process %d -&amp;gt; parent pid: %d&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getpid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getppid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;process %d -&amp;gt; fork pid: %d&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getpid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sonPid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;process %d -&amp;gt; after excute fork&amp;#39;s fork pid: %d&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getpid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sonPid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;process %d -&amp;gt; parent pid: %d&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getpid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getppid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;process %d -&amp;gt; fork pid: %d&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getpid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sonPid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;运行结果为&lt;/p&gt;
 
@@ -308,7 +607,7 @@ int main() {
       </item>
     
       <item>
-        <title>Linux Kernel-Construct A Simple Linux Operating System</title>
+        <title>Linux Kernel - Construct A Simple Linux Operating System</title>
         <description>&lt;h2&gt;重点知识总结&lt;/h2&gt;
 
 &lt;h3&gt;Linux内核源码简介&lt;/h3&gt;
@@ -361,47 +660,47 @@ int main() {
 &lt;h2&gt;实验分析&lt;/h2&gt;
 
 &lt;h3&gt;main.c的部分代码如下（省略号为略去的代码）&lt;/h3&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;asmlinkage __visible void __init start_kernel(void)
-{
-    ...
-    set_task_stack_end_magic(&amp;amp;init_task);
-    ...
-    trap_init();
-    mm_init();
-    ...
-    sched_init();
-    ...
-    rest_init();
-}
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;n&quot;&gt;asmlinkage&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__visible&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__init&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;start_kernel&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;set_task_stack_end_magic&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;init_task&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;trap_init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;mm_init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;sched_init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;rest_init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h3&gt;rest_init 函数代码如下&lt;/h3&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;static noinline void __init_refok rest_init(void)
-{
-    int pid;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;noinline&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__init_refok&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;rest_init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 
-    rcu_scheduler_starting();
-    /*
-     * We need to spawn init first so that it obtains pid 1, however
-     * the init task will end up wanting to create kthreads, which, if
-     * we schedule it before we create kthreadd, will OOPS.
-     */
-    kernel_thread(kernel_init, NULL, CLONE_FS);
-    numa_default_policy();
-    pid = kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);
-    rcu_read_lock();
-    kthreadd_task = find_task_by_pid_ns(pid, &amp;amp;init_pid_ns);
-    rcu_read_unlock();
-    complete(&amp;amp;kthreadd_done);
+    &lt;span class=&quot;n&quot;&gt;rcu_scheduler_starting&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;cm&quot;&gt;/*&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * We need to spawn init first so that it obtains pid 1, however&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * the init task will end up wanting to create kthreads, which, if&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * we schedule it before we create kthreadd, will OOPS.&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     */&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;kernel_thread&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kernel_init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CLONE_FS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;numa_default_policy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kernel_thread&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kthreadd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CLONE_FS&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;CLONE_FILES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;rcu_read_lock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;kthreadd_task&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;find_task_by_pid_ns&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;init_pid_ns&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;rcu_read_unlock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;complete&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kthreadd_done&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 
-    /*
-     * The boot idle thread must execute schedule()
-     * at least once to get things moving:
-     */
-    init_idle_bootup_task(current);
-    schedule_preempt_disabled();
-    /* Call into cpu_idle with preempt disabled */
-    cpu_startup_entry(CPUHP_ONLINE);
-}
+    &lt;span class=&quot;cm&quot;&gt;/*&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * The boot idle thread must execute schedule()&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     * at least once to get things moving:&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;     */&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;init_idle_bootup_task&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;schedule_preempt_disabled&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;cm&quot;&gt;/* Call into cpu_idle with preempt disabled */&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;cpu_startup_entry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;CPUHP_ONLINE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h3&gt;代码分析&lt;/h3&gt;
 
@@ -413,10 +712,10 @@ int main() {
 &lt;li&gt;&lt;code&gt;start_kernel/sched_init&lt;/code&gt; 调度模块的初始化&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;rest_init/kernel_thread(kernel_init, NULL, CLONE_FS);&lt;/code&gt; 创建用户态1号进程&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;rest_init/kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);&lt;/code&gt; 创建内核态2号进程&lt;/li&gt;
-&lt;li&gt;之后若没有其他事情做，就进入cpu&lt;em&gt;startup&lt;/em&gt;entry(CPUHP_ONLINE);，此时0号进程就进入while(1)循环&lt;/li&gt;
+&lt;li&gt;之后若没有其他事情做，就进入&lt;code&gt;cpu_startup_entry(CPUHP_ONLINE);&lt;/code&gt;，此时0号进程就进入&lt;code&gt;while(1)&lt;/code&gt;循环&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;这里面内核启动后通过&lt;code&gt;set_task_stack_end_magic(&amp;amp;init_task);&lt;/code&gt;初始化了0号进程，0号进程通过&lt;code&gt;kernel_thread(kernel_init, NULL, CLONE_FS);&lt;/code&gt;和&lt;code&gt;kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);&lt;/code&gt;分别创建了1号进程和2号进程，之后若无事做就进入&lt;code&gt;while(1)&lt;/code&gt;循环保持运行。&lt;/p&gt;
+&lt;p&gt;这里面内核启动后通过&lt;code&gt;set_task_stack_end_magic(&amp;amp;init_task);&lt;/code&gt;初始化了0号进程，0号进程通过&lt;code&gt;kernel_thread(kernel_init, NULL, CLONE_FS);&lt;/code&gt;和&lt;code&gt;kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);&lt;/code&gt;分别创建了1号进程（所有用户态进程的祖先）和2号进程（所有内核线程的祖先）。之后若无事做就进入&lt;code&gt;while(1)&lt;/code&gt;循环保持运行。&lt;/p&gt;
 
 &lt;p&gt;wdk 原创作品转载请注明出处&lt;br&gt;
 相关链接 &lt;a href=&quot;http://mooc.study.163.com/course/USTC-1000029000&quot;&gt;《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000&lt;/a&gt;&lt;/p&gt;
@@ -437,7 +736,7 @@ int main() {
       </item>
     
       <item>
-        <title>Linux Kernel-Working Process Of Operating System</title>
+        <title>Linux Kernel - Working Process Of Operating System</title>
         <description>&lt;h2&gt;重点知识总结&lt;/h2&gt;
 
 &lt;h3&gt;C语言内嵌汇编语法&lt;/h3&gt;
@@ -447,60 +746,60 @@ int main() {
 &lt;h2&gt;实验分析&lt;/h2&gt;
 
 &lt;h3&gt;自定义进程定义的代码如下&lt;/h3&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;#define MAX_TASK_NUM        4
-#define KERNEL_STACK_SIZE   1024*8
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#define MAX_TASK_NUM        4&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#define KERNEL_STACK_SIZE   1024*8&lt;/span&gt;
 
-/* CPU-specific state of this task */
-struct Thread {
-    unsigned long        ip;
-    unsigned long        sp;
-};
+&lt;span class=&quot;cm&quot;&gt;/* CPU-specific state of this task */&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Thread&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt;        &lt;span class=&quot;n&quot;&gt;ip&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt;        &lt;span class=&quot;n&quot;&gt;sp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
 
-typedef struct PCB{
-    int pid;
-    volatile long state;    /* -1 unrunnable, 0 runnable, &amp;gt;0 stopped */
-    char stack[KERNEL_STACK_SIZE];
-    /* CPU-specific state of this task */
-    struct Thread thread;
-    unsigned long    task_entry;
-    struct PCB *next;
-}tPCB;
+&lt;span class=&quot;k&quot;&gt;typedef&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PCB&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;volatile&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;state&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;    &lt;span class=&quot;cm&quot;&gt;/* -1 unrunnable, 0 runnable, &amp;gt;0 stopped */&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;KERNEL_STACK_SIZE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+    &lt;span class=&quot;cm&quot;&gt;/* CPU-specific state of this task */&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Thread&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;thread&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;task_entry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PCB&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tPCB&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h3&gt;自定义进程切换的核心代码如下&lt;/h3&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;if(next-&amp;gt;state == 0) {
-    /* -1 unrunnable, 0 runnable, &amp;gt;0 stopped */
-    my_current_task = next;
-    printk(KERN_NOTICE &amp;quot;&amp;gt;&amp;gt;&amp;gt;switch %d to %d&amp;lt;&amp;lt;&amp;lt;\n&amp;quot;,prev-&amp;gt;pid,next-&amp;gt;pid);
-    /* switch to next process */
-    asm volatile(
-            &amp;quot;pushl %%ebp\n\t&amp;quot; /* save ebp */
-            &amp;quot;movl %%esp,%0\n\t&amp;quot; /* save esp */
-            &amp;quot;movl %2,%%esp\n\t&amp;quot; /* restore  esp */
-            &amp;quot;movl $1f,%1\n\t&amp;quot; /* save eip */
-            &amp;quot;pushl %3\n\t&amp;quot;
-            &amp;quot;ret\n\t&amp;quot; /* restore  eip */
-            &amp;quot;1:\t&amp;quot; /* next process start here */
-            &amp;quot;popl %%ebp\n\t&amp;quot;
-            : &amp;quot;=m&amp;quot; (prev-&amp;gt;thread.sp),&amp;quot;=m&amp;quot; (prev-&amp;gt;thread.ip)
-            : &amp;quot;m&amp;quot; (next-&amp;gt;thread.sp),&amp;quot;m&amp;quot; (next-&amp;gt;thread.ip)
-    );
-} else {
-    next-&amp;gt;state = 0;
-    my_current_task = next;
-    printk(KERN_NOTICE &amp;quot;&amp;gt;&amp;gt;&amp;gt;switch %d to %d&amp;lt;&amp;lt;&amp;lt;\n&amp;quot;,prev-&amp;gt;pid,next-&amp;gt;pid);
-    /* switch to new process */
-    asm volatile(
-            &amp;quot;pushl %%ebp\n\t&amp;quot; /* save ebp */
-            &amp;quot;movl %%esp,%0\n\t&amp;quot; /* save esp */
-            &amp;quot;movl %2,%%esp\n\t&amp;quot; /* restore  esp */
-            &amp;quot;movl %2,%%ebp\n\t&amp;quot; /* restore  ebp */
-            &amp;quot;movl $1f,%1\n\t&amp;quot; /* save eip */
-            &amp;quot;pushl %3\n\t&amp;quot;
-            &amp;quot;ret\n\t&amp;quot; /* restore  eip */
-            : &amp;quot;=m&amp;quot; (prev-&amp;gt;thread.sp),&amp;quot;=m&amp;quot; (prev-&amp;gt;thread.ip)
-            : &amp;quot;m&amp;quot; (next-&amp;gt;thread.sp),&amp;quot;m&amp;quot; (next-&amp;gt;thread.ip)
-    );
-}
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;state&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;cm&quot;&gt;/* -1 unrunnable, 0 runnable, &amp;gt;0 stopped */&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;my_current_task&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;printk&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;KERN_NOTICE&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;gt;&amp;gt;&amp;gt;switch %d to %d&amp;lt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;cm&quot;&gt;/* switch to next process */&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;asm&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;volatile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&amp;quot;pushl %%ebp&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* save ebp */&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&amp;quot;movl %%esp,%0&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* save esp */&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&amp;quot;movl %2,%%esp&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* restore  esp */&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&amp;quot;movl $1f,%1&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* save eip */&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&amp;quot;pushl %3&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&amp;quot;ret&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* restore  eip */&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&amp;quot;1:&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* next process start here */&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&amp;quot;popl %%ebp&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;=m&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;thread&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;=m&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;thread&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ip&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;m&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;thread&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;m&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;thread&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ip&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;state&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;my_current_task&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;printk&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;KERN_NOTICE&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;gt;&amp;gt;&amp;gt;switch %d to %d&amp;lt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;cm&quot;&gt;/* switch to new process */&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;asm&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;volatile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&amp;quot;pushl %%ebp&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* save ebp */&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&amp;quot;movl %%esp,%0&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* save esp */&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&amp;quot;movl %2,%%esp&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* restore  esp */&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&amp;quot;movl %2,%%ebp&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* restore  ebp */&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&amp;quot;movl $1f,%1&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* save eip */&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&amp;quot;pushl %3&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;
+            &lt;span class=&quot;s&quot;&gt;&amp;quot;ret&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* restore  eip */&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;=m&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;thread&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;=m&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;thread&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ip&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;m&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;thread&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;m&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;thread&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ip&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h3&gt;自定义进程切换代码简析&lt;/h3&gt;
 
@@ -511,7 +810,7 @@ typedef struct PCB{
 
 &lt;ol&gt;
 &lt;li&gt;&lt;p&gt;若下一个进程是可运行的,即状态码是0
-先保存当前进程的运行栈，把当前进程的栈底ebp压入到该进程自己的堆栈，再将栈顶指针esp用该进程的sp指针保存，接着把下一个进程的sp指针恢复到保存栈顶的寄存器esp中去，保存当前进程运行的下一条指令的地址到该进程的ip指针中去，其中$1f是指接下来的标号1：的位置，接着再恢复下一个进程的ip指针到eip寄存器中去，由于eip寄存器不能被直接修改，只能通过ret，call等指令间接修改，于是便通过&lt;code&gt;&amp;quot;pushl %3\n\t&amp;quot; &amp;quot;ret\n\t&amp;quot;&lt;/code&gt;两条指令间接修改，ret相当于&lt;code&gt;popl %eip*&lt;/code&gt;,最后一条语句是当前进程下次再获得cpu运行时的第一条语句，也是下一进程需要运行的指令，用来恢复之前被压入各个进程自己的栈的ebp，这里巧妙地共用了这条指令。&lt;/p&gt;&lt;/li&gt;
+先保存当前进程的运行栈，把当前进程的栈底ebp压入到该进程自己的堆栈，再将栈顶指针esp用该进程的sp指针保存，接着把下一个进程的sp指针恢复到保存栈顶的寄存器esp中去，保存当前进程运行的下一条指令的地址到该进程的ip指针中去，其中$1f是指接下来的标号1：的位置，接着再恢复下一个进程的ip指针到eip寄存器中去，由于eip寄存器不能被直接修改，只能通过ret，call等指令间接修改，于是便通过&lt;code&gt;&amp;quot;pushl %3\n\t&amp;quot;&lt;/code&gt; &lt;code&gt;&amp;quot;ret\n\t&amp;quot;&lt;/code&gt;两条指令间接修改，ret相当于&lt;code&gt;popl %eip*&lt;/code&gt;,最后一条语句是当前进程下次再获得cpu运行时的第一条语句，也是下一进程需要运行的指令，用来恢复之前被压入各个进程自己的栈的ebp，这里巧妙地共用了这条指令。&lt;/p&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;若下一个进程不是可运行的,即状态码不是0
 同样先保存当前进程的运行栈，把当前进程的栈底ebp压入到该进程自己的堆栈，再将栈顶指针esp用该进程的sp指针保存，接着把下一个进程的sp指针恢复到保存栈顶的寄存器esp中去，由于下一个进程是不可运行的，所以下一个进程的原先栈里什么也没有，是空栈，所以esp和ebp相等，接着保存当前进程运行的下一条指令的地址到该进程的ip指针中去，同样是用两条语句恢复下一个进程的ip指针到eip寄存器中去。&lt;/p&gt;&lt;/li&gt;
 &lt;/ol&gt;
@@ -535,7 +834,7 @@ typedef struct PCB{
       </item>
     
       <item>
-        <title>C Inline Assembly Language</title>
+        <title>C - Inline Assembly Language</title>
         <description>&lt;h2&gt;C语言内嵌汇编语法&lt;/h2&gt;
 
 &lt;h3&gt;GCC&lt;/h3&gt;
@@ -619,7 +918,7 @@ int a,b;
       </item>
     
       <item>
-        <title>Linux Kernel-Working Process Of Assembly Code</title>
+        <title>Linux Kernel - Working Process Of Assembly Code</title>
         <description>&lt;h2&gt;重点知识总结&lt;/h2&gt;
 
 &lt;ul&gt;
@@ -763,221 +1062,6 @@ int a,b;
         
         
         <category>j2ee</category>
-        
-      </item>
-    
-      <item>
-        <title>Web Note - Environment Build</title>
-        <description>&lt;h2&gt;Java Web 环境介绍&lt;/h2&gt;
-
-&lt;h3&gt;1. 环境搭建&lt;/h3&gt;
-
-&lt;h4&gt;准备工具&lt;/h4&gt;
-
-&lt;ol&gt;
-&lt;li&gt;JDK (windows 下配置JDK&lt;em&gt;HOME或JAVA&lt;/em&gt;HOME或JRE_HOME)&lt;/li&gt;
-&lt;li&gt;Tomcat (windows 下配置 CATALINA_HOME)&lt;/li&gt;
-&lt;li&gt;Eclipse&lt;/li&gt;
-&lt;li&gt;MySQL&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;&lt;strong&gt;tips&lt;/strong&gt;：有一软件xampp集成了常用软件如Tomcat和MySQL等，可以尝试替换看看。&lt;/p&gt;
-
-&lt;h4&gt;配置环境&lt;/h4&gt;
-
-&lt;ol&gt;
-&lt;li&gt;若想在命令行下直接使用上述软件的命令，需要在环境变量下配置命令路径（过程略）。&lt;/li&gt;
-&lt;li&gt;Eclipse环境配置
-
-&lt;ol&gt;
-&lt;li&gt;Eclipse-&amp;gt;Window-&amp;gt;Preferences-&amp;gt;Java-&amp;gt;Installed JREs 将jre路径改为刚才安装的jdk路径，这样便可以查看java源代码。&lt;/li&gt;
-&lt;li&gt;Eclipse-&amp;gt;Window-&amp;gt;Preferences-&amp;gt;Server—&amp;gt;Runtime Environments 添加刚刚安装的Tomcat作为Server。&lt;/li&gt;
-&lt;li&gt;code style的配置如编码（建议utf8），换行符的设置（建议类Unix），制表符的宽度（建议4），显示空白符，显示行号，用空格替换制表符等，自己根据实际style来配置。&lt;/li&gt;
-&lt;/ol&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h3&gt;2. Eclipse技巧&lt;/h3&gt;
-
-&lt;ol&gt;
-&lt;li&gt;查看Tomcat运行时目录：在任意代码编写的界面 右键-&amp;gt;Run As-&amp;gt;Run Configurations-&amp;gt;Apache Tomcat-&amp;gt;Arguments-&amp;gt;VM Arguments 里可查看Dwtp.deploy变量的值即为Tomcat运行时deploy目录。&lt;/li&gt;
-&lt;/ol&gt;
-</description>
-        <pubDate>Tue, 12 Jan 2016 17:10:00 +0000</pubDate>
-        <link>http://www.dosrc.com/mark/j2ee/2016/01/12/web-note-environment-building.html</link>
-        <guid isPermaLink="true">http://www.dosrc.com/mark/j2ee/2016/01/12/web-note-environment-building.html</guid>
-        
-        <category>j2ee</category>
-        
-        <category>web-note， web-environment</category>
-        
-        
-        <category>j2ee</category>
-        
-      </item>
-    
-      <item>
-        <title>Design Pattern - Factory Method</title>
-        <description>&lt;h2&gt;工厂方法模式&lt;/h2&gt;
-
-&lt;ol&gt;
-&lt;li&gt;&lt;strong&gt;适用范围&lt;/strong&gt;：当一个对象的创建和初始化工作比较复杂或者一个对象会被反复创建时，采用工厂方法模式是一个很好的选择。&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;工厂方法模式的思想是每个产品的创建都有一个具体的工厂类来实现，由此可能会想到为什么不在产品类里面提供一个创建自己的方法，这是由于不同的使用者可能创建时需要的参数不同，这时用工厂方法模式就可以直接再新建（符合开闭原则，只增加不修改）一些工厂来区分不同的参数，而由产品类自己创建就势必要提供很多创建方法，不符合开闭原则。&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;工厂方法模式的实现方式  &lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Product&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;commonMethod&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ProductOne&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Product&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;// empty&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ProductTwo&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Product&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;//empty&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Creator&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Product&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getProduct&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ProductOneCreator&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Creator&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-
-    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ProductOne&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getProduct&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;ProductOne&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;productOne&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ProductOne&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// Initial productOne here&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;productOne&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ProductTwoCreator&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Creator&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-
-    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ProductTwo&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getProduct&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;ProductTwo&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;productTwo&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ProductTwo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// Initial productTwo here&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;productTwo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Client&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[])&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;Product&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;productOne&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ProductOneCreator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getProduct&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;Product&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;productTwo&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ProductTwoCreator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getProduct&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;productOne&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;commonMethod&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;productTwo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;commonMethod&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;窃以为实现工厂方法模式时如需要则可以把工厂做成单例，或工厂中产生对象的方法做成静态方法，当然静态方法可能是不妥的，待以后想到再来修改此处。&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;与工厂方法模式类似的还有一种叫做简单工厂的模式，这种模式通过一个工厂类来根据传入的参数来选择生成不同的产品对象，所有的产品都继承一个公共的产品抽象类，这种模式的缺点是当生产的产品过多时，将导致工厂类较复杂，不利于后期维护，这种模式不属于经典的二十三种模式之一。工厂方法模式就是把简单工厂的一个大工厂创建所有的类的形式拆分成许多小工厂，并抽象出一个抽象工厂类，这个抽象工厂类只负责定义创建的方式，具体创建的内容有继承它的小工厂类来实现。&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
-</description>
-        <pubDate>Thu, 07 Jan 2016 19:50:00 +0000</pubDate>
-        <link>http://www.dosrc.com/mark/design-pattern/2016/01/07/design-model-factory-method.html</link>
-        <guid isPermaLink="true">http://www.dosrc.com/mark/design-pattern/2016/01/07/design-model-factory-method.html</guid>
-        
-        <category>design-pattern</category>
-        
-        <category>factory-method</category>
-        
-        
-        <category>design-pattern</category>
-        
-      </item>
-    
-      <item>
-        <title>Design Pattern - Singleton</title>
-        <description>&lt;h2&gt;单例模式&lt;/h2&gt;
-
-&lt;ol&gt;
-&lt;li&gt;&lt;strong&gt;适用范围&lt;/strong&gt;：当一个类只需要一个实例时，可以考虑采用单例模式，但并不是所有的类都适合做成单例，如果一个类含有数据（也即是有状态的类），那么将该类做成单例时可能会引发线程安全问题（多个线程同时对数据操作），此时的解决之道是要么将该数据做成只读（创建时写入数据），要么不做成单例，做成单例的类要尽量保证是无状态的。&lt;/li&gt;
-&lt;li&gt;单例模式可以分为&lt;strong&gt;强制型单例&lt;/strong&gt;和&lt;strong&gt;非强制型单例&lt;/strong&gt;（也有人叫管理上的单例），这两种单例是我自己命名的，前一种单例是让coder代码上不能轻易（Java中可以通过反射机制创建对象）创建对象，只能使用单例模式提供的获取对象的方法，非强制性单例代码上不对coder做强制性限制，要求自觉。&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;多线程安全强制型单例模式的实现方式&lt;br&gt;
-饿汉式：&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// 饿汉式&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Singleton&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-
-    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Singleton&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Singleton&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Singleton&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// empty&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Singleton&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getInstance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;双检测锁机制的单例模式：&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// 双检测锁机制的单例模式&lt;/span&gt;
-&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Singleton&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-
-    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Singleton&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Singleton&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// empty&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Singleton&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getInstance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;kd&quot;&gt;synchronized&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Singleton&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-                    &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Singleton&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-            &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;还有一种懒汉式的实现方法，不过不满足多线程安全，只能在单线程下使用&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;多线程安全非强制性单例模式的实现方式&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Singleton&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;// empty&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.HashMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.util.Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-
-&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;BeanFactory&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;beans&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;HashMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;();&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BeanFactory&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;BeanFactory&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
-
-    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;BeanFactory&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// empty&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BeanFactory&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getInstance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Object&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getBean&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;beans&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;containsKey&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;beans&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;equals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Singleton&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getSimpleName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;kd&quot;&gt;synchronized&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Singleton&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;beans&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;containsKey&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-                    &lt;span class=&quot;n&quot;&gt;beans&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;put&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Singleton&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
-                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-            &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;beans&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;单例模式还有范围的概念，即在某一范围内才是单例，范围扩大了可能就不是单例了，常见的单例范围有application级别，session级别，request/response级别。&lt;br&gt;
-&lt;strong&gt;小技巧&lt;/strong&gt;：可以利用thread的thread号为关键字存入HashMap来实现thread级别的单例。&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
-</description>
-        <pubDate>Tue, 05 Jan 2016 19:50:00 +0000</pubDate>
-        <link>http://www.dosrc.com/mark/design-pattern/2016/01/05/design-model-singleton.html</link>
-        <guid isPermaLink="true">http://www.dosrc.com/mark/design-pattern/2016/01/05/design-model-singleton.html</guid>
-        
-        <category>design-pattern</category>
-        
-        <category>singleton</category>
-        
-        
-        <category>design-pattern</category>
         
       </item>
     

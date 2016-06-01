@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Linux Kernel - Description Of Process</title>
+  <meta name="description" content="重点知识总结进程结构定义struct task_structvolatile long state;记录进程的状态，进程状态的定义链接，值得注意的是操作系统进程状态概念中的就绪态和运行态在这里都表示为TASK_RUNNING状态，若获得CPU的执行就为运行态，否则为就绪态。Linux为每个进程分配一个8KB大小的...">
+
+  <link rel="stylesheet" href="/mark/css/main.css">
+  <link rel="canonical" href="http://www.dosrc.com/mark/linux/2016/04/13/linux-kernel-description-of-process.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/mark/">Blog</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/mark/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Linux Kernel - Description Of Process</h1>
+    <p class="post-meta">Apr 13, 2016</p>
+  </header>
+
+  <article class="post-content">
+    <h2>重点知识总结</h2>
+
+<ul>
+<li>进程结构定义struct <a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/include/linux/sched.h#task_struct">task_struct</a></li>
+<li><code>volatile long state;</code>记录进程的状态，进程状态的定义<a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/include/linux/sched.h#203"><strong>链接</strong></a>，值得注意的是操作系统进程状态概念中的就绪态和运行态在这里都表示为TASK_RUNNING状态，若获得CPU的执行就为运行态，否则为就绪态。</li>
+<li><p>Linux为每个进程分配一个8KB大小的内存区域，用于存放该进程两个不同的数据结构：<code>Thread_info</code>和进程的内核堆栈</p>
+<div class="highlight"><pre><code class="language-C" data-lang="C"><span class="k">union</span> <span class="n">thread_union</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">thread_info</span> <span class="n">thread_info</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">stack</span><span class="p">[</span><span class="n">THREAD_SIZE</span><span class="o">/</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">long</span><span class="p">)];</span>
+<span class="p">};</span>
+</code></pre></div>
+<p>可能会有点奇怪，为什么这两个数据结构要共用一个内存空间呢，其实这是有原因的，早在以前，<code>thread_union</code>中存放的并不是<code>thread_info</code>,而是<code>thread_struct</code>，只是后来变成了新的数据结构<code>thread_info</code>，将<code>thread_struct</code>或<code>thread_info</code>放在内核栈的尾端（因为共用了一块内存）可以通过esp指针屏蔽末尾的若干位方便的得到当前运行进程的进程描述结构指针。</p></li>
+<li><p><code>void *stack;</code>指向内核态堆栈。其实应该就是指向上面的8kb大小的共用内存区域。</p></li>
+<li><p><code>struct list_head tasks;</code>所有进程的链表，将所有当前进程链接起来。<code>list_head</code>中有两个指针域<code>next</code>和<code>prev</code>，分别指向下一个和前一个进程。</p>
+<div class="highlight"><pre><code class="language-C" data-lang="C"><span class="k">struct</span> <span class="n">list_head</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">list_head</span> <span class="o">*</span><span class="n">next</span><span class="p">,</span> <span class="o">*</span><span class="n">prev</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></li>
+<li><p><code>struct mm_struct *mm, *active_mm;</code>内存管理，进程的地址空间相关，如代码段，数据段等。</p></li>
+<li><p><code>struct thread_struct thread;</code>执行进程的CPU相关的状态，定义<a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/arch/x86/include/asm/processor.h#thread_struct"><strong>链接</strong></a>，里面包括<code>sp</code>，<code>ip</code>等地址变量，。</p></li>
+<li><p><code>struct fs_struct *fs;</code>文件系统相关。</p></li>
+<li><p><code>struct files_struct *files;</code>打开的文件描述符列表。</p></li>
+<li><p><code>sys_fork</code>，<code>sys_clone</code>，<code>sys_vfork</code>最终都是调用<code>do_fork</code>创建新进程。</p></li>
+</ul>
+
+<h3>创建一个新进程在内核中的执行过程</h3>
+
+<p><a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/kernel/fork.c#do_fork"><code>do_fork</code>源码</a></p>
+
+<p><a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/arch/x86/kernel/process_32.c#copy_thread"><code>copy_thread</code>源码</a></p>
+
+<p><a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/arch/x86/kernel/entry_32.S#290"><code>ret_from_fork</code>源码</a></p>
+<div class="highlight"><pre><code class="language-C" data-lang="C"><span class="kt">long</span> <span class="nf">do_fork</span><span class="p">(...)</span> <span class="p">{</span>
+    <span class="p">...</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">copy_process</span><span class="p">(</span><span class="n">clone_flags</span><span class="p">,</span> <span class="n">stack_start</span><span class="p">,</span> <span class="n">stack_size</span><span class="p">,</span> <span class="n">child_tidptr</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">trace</span><span class="p">);</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span><span class="nf">copy_process</span><span class="p">(...)</span> <span class="p">{</span>
+    <span class="p">...</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">dup_task_struct</span><span class="p">(</span><span class="n">current</span><span class="p">);</span>
+    <span class="p">...</span>
+    <span class="p">...</span> <span class="c1">//修改task_struct</span>
+    <span class="n">retval</span> <span class="o">=</span> <span class="n">copy_thread</span><span class="p">(</span><span class="n">clone_flags</span><span class="p">,</span> <span class="n">stack_start</span><span class="p">,</span> <span class="n">stack_size</span><span class="p">,</span> <span class="n">p</span><span class="p">);</span>
+    <span class="p">...</span>
+    <span class="k">return</span> <span class="n">p</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span><span class="nf">dup_task_struct</span><span class="p">(</span><span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span><span class="n">orig</span><span class="p">)</span> <span class="p">{</span>
+  <span class="p">...</span>
+  <span class="n">tsk</span> <span class="o">=</span> <span class="n">alloc_task_struct_node</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+  <span class="p">...</span>
+  <span class="n">ti</span> <span class="o">=</span> <span class="n">alloc_thread_info_node</span><span class="p">(</span><span class="n">tsk</span><span class="p">,</span> <span class="n">node</span><span class="p">);</span>
+  <span class="p">...</span>
+  <span class="n">err</span> <span class="o">=</span> <span class="n">arch_dup_task_struct</span><span class="p">(</span><span class="n">tsk</span><span class="p">,</span> <span class="n">orig</span><span class="p">);</span>
+  <span class="p">...</span>
+  <span class="n">tsk</span><span class="o">-&gt;</span><span class="n">stack</span> <span class="o">=</span> <span class="n">ti</span><span class="p">;</span>
+  <span class="p">...</span>
+  <span class="n">setup_thread_stack</span><span class="p">(</span><span class="n">tsk</span><span class="p">,</span> <span class="n">orig</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cp">#define task_pt_regs(tsk)   ((struct pt_regs *)(tsk)-&gt;thread.sp0 - 1)</span>
+
+<span class="kt">int</span> <span class="nf">copy_thread</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">clone_flags</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">sp</span><span class="p">,</span>
+                <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">arg</span><span class="p">,</span> <span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span><span class="n">p</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">pt_regs</span> <span class="o">*</span><span class="n">childregs</span> <span class="o">=</span> <span class="n">task_pt_regs</span><span class="p">(</span><span class="n">p</span><span class="p">);</span><span class="c1">//子进程的内核态堆栈，pt_regs就是栈底内容的容器，这里是找到栈底内容的地址赋值给childregs。</span>
+    <span class="p">...</span>
+    <span class="n">p</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="p">.</span><span class="n">sp</span> <span class="o">=</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span><span class="p">)</span> <span class="n">childregs</span><span class="p">;</span>
+    <span class="n">p</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="p">.</span><span class="n">sp0</span> <span class="o">=</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span><span class="p">)</span> <span class="p">(</span><span class="n">childregs</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+    <span class="p">...</span>
+    <span class="o">*</span><span class="n">childregs</span> <span class="o">=</span> <span class="o">*</span><span class="n">current_pt_regs</span><span class="p">();</span><span class="c1">//这里不懂为什么又要赋值？</span>
+    <span class="n">childregs</span><span class="o">-&gt;</span><span class="n">ax</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">...</span>
+    <span class="n">p</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="p">.</span><span class="n">ip</span> <span class="o">=</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span><span class="p">)</span> <span class="n">ret_from_fork</span><span class="p">;</span>
+
+<span class="err">｝</span>
+
+<span class="k">static</span> <span class="kr">inline</span> <span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span><span class="n">alloc_task_struct_node</span><span class="p">(</span><span class="kt">int</span> <span class="n">node</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">kmem_cache_alloc_node</span><span class="p">(</span><span class="n">task_struct_cachep</span><span class="p">,</span> <span class="n">GFP_KERNEL</span><span class="p">,</span> <span class="n">node</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="k">struct</span> <span class="n">thread_info</span> <span class="o">*</span><span class="n">alloc_thread_info_node</span><span class="p">(</span><span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span><span class="n">tsk</span><span class="p">,</span> <span class="kt">int</span> <span class="n">node</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">page</span> <span class="o">*</span><span class="n">page</span> <span class="o">=</span> <span class="n">alloc_kmem_pages_node</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">THREADINFO_GFP</span><span class="p">,</span> <span class="n">THREAD_SIZE_ORDER</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">page</span> <span class="o">?</span> <span class="n">page_address</span><span class="p">(</span><span class="n">page</span><span class="p">)</span> <span class="o">:</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">__weak</span> <span class="n">arch_dup_task_struct</span><span class="p">(</span><span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span><span class="n">dst</span><span class="p">,</span> <span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span><span class="n">src</span><span class="p">)</span> <span class="p">{</span>
+    <span class="o">*</span><span class="n">dst</span> <span class="o">=</span> <span class="o">*</span><span class="n">src</span><span class="p">;</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cp">#define task_thread_info(task)  ((struct thread_info *)(task)-&gt;stack)</span>
+<span class="p">...</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="n">setup_thread_stack</span><span class="p">(</span><span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span><span class="n">p</span><span class="p">,</span> <span class="k">struct</span> <span class="n">task_struct</span> <span class="o">*</span><span class="n">org</span><span class="p">)</span> <span class="p">{</span>
+    <span class="o">*</span><span class="n">task_thread_info</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">=</span> <span class="o">*</span><span class="n">task_thread_info</span><span class="p">(</span><span class="n">org</span><span class="p">);</span>
+    <span class="n">task_thread_info</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">task</span> <span class="o">=</span> <span class="n">p</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>wdk 原创作品转载请注明出处<br>
+相关链接 [《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000]7]</p>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>Blog</li>
+          <li><a href="mailto:wdkrgst@gmail.com">wdkrgst@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text"></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

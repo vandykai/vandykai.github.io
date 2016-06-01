@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>C - Dynamical Loading</title>
+  <meta name="description" content="动态链接：">
+
+  <link rel="stylesheet" href="/mark/css/main.css">
+  <link rel="canonical" href="http://www.dosrc.com/mark/gramar/2016/05/13/c-dynamical-loading.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/mark/">Blog</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/mark/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">C - Dynamical Loading</h1>
+    <p class="post-meta">May 13, 2016</p>
+  </header>
+
+  <article class="post-content">
+    <h2>动态链接：</h2>
+
+<p>动态链接分为装载时动态链接和运行时动态链接，在64位环境下编译32位动态链接库如下（32位下只需去掉-m32 这个编译选项）</p>
+
+<p><strong>libexample.h</strong></p>
+<div class="highlight"><pre><code class="language-C" data-lang="C"><span class="cp">#ifndef _LIB_EXAMPLE_H_</span>
+<span class="cp">#define _LIB_EXAMPLE_H_</span>
+<span class="cp">#define SUCCESS 0</span>
+<span class="cp">#define FAILURE (-1)</span>
+<span class="cp">#ifdef __cplusplus</span>
+<span class="k">extern</span> <span class="s">&quot;C&quot;</span> <span class="p">{</span>
+<span class="cp">#endif</span>
+<span class="kt">int</span> <span class="n">LibApi</span><span class="p">();</span>
+<span class="cp">#ifdef __cplusplus</span>
+<span class="p">}</span>
+<span class="cp">#endif</span>
+<span class="cp">#endif </span><span class="cm">/* _LIB_EXAMPLE_H_ */</span><span class="cp"></span>
+</code></pre></div>
+<p><strong>libexample.c</strong></p>
+<div class="highlight"><pre><code class="language-C" data-lang="C"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &quot;libexample.h&quot;</span>
+<span class="kt">int</span> <span class="nf">LibApi</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;This Is A Library Api!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><code>gcc -shared libexample.c -o liblibexample.so -m32</code></p>
+
+<p>注意这里编译成的.so文件命名规则是源文件前面加上lib即libample -&gt; liblibexample。
+无论是装载时动态链接还是运行时动态链接，库文件的编译方法都是一样的，区别在于怎么使用它们。</p>
+
+<p><strong>装载时的动态链接举例</strong></p>
+<div class="highlight"><pre><code class="language-C" data-lang="C"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &quot;libexample.h&quot;</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;This is a main program!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+  <span class="n">LibApi</span><span class="p">();</span>
+  <span class="k">return</span> <span class="n">SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div><div class="highlight"><pre><code class="language-text" data-lang="text">gcc main.c -o main -L/path/to/your/dir -llibexample -m32
+# 编译main，/path/to/your/dir可用.代替。
+# 注意这里只提供libexample的-L（库对应的接口头文件所在目录）和-l（库名，如liblibexample.so去掉lib和.so的部分）。
+$ export LD_LIBRARY_PATH=$PWD
+# 将当前目录加入默认路径，否则main找不到依赖的库文件，当然也可以将库文件copy到默认路径下。
+$ ./main
+</code></pre></div>
+<p><strong>运行时的动态链接举例</strong></p>
+<div class="highlight"><pre><code class="language-C" data-lang="C"><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;dlfcn.h&gt;</span>
+
+<span class="cp">#define SUCCESS 0</span>
+<span class="cp">#define FAILURE (-1)</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;This is a main program!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="o">*</span> <span class="n">handle</span> <span class="o">=</span> <span class="n">dlopen</span><span class="p">(</span><span class="s">&quot;liblibexample.so&quot;</span><span class="p">,</span><span class="n">RTLD_NOW</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">handle</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;open lib liblibexample.so error :%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">dlerror</span><span class="p">());</span>
+        <span class="k">return</span> <span class="n">FAILURE</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">func</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
+    <span class="kt">char</span> <span class="o">*</span> <span class="n">error</span><span class="p">;</span>
+    <span class="n">func</span> <span class="o">=</span> <span class="n">dlsym</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span><span class="s">&quot;LibApi&quot;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">((</span><span class="n">error</span> <span class="o">=</span> <span class="n">dlerror</span><span class="p">())</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;LibApi not found:%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">error</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">func</span><span class="p">();</span>
+    <span class="n">dlclose</span><span class="p">(</span><span class="n">handle</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div><div class="highlight"><pre><code class="language-text" data-lang="text">gcc main.c -o main -ldl -m32
+# -ldl选项，表示生成的对象模块使用运行时动态链接。
+$ export LD_LIBRARY_PATH=$PWD
+# 将当前目录加入默认路径，否则main找不到依赖的库文件，当然也可以将库文件copy到默认路径下。
+$ ./main
+</code></pre></div>
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>Blog</li>
+          <li><a href="mailto:wdkrgst@gmail.com">wdkrgst@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text"></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Linux Kernel-System Call</title>
+  <title>Linux Kernel - System Call</title>
   <meta name="description" content="重点知识总结Intel X86 CPU 有四种不同的执行级别0-3，Linux只使用了其中的0级和3级，分别来表示内核态和用户态。一般来说在32位X86机器上，Linux系统中，地址空间是一个显著的标志：0XC0000000以上的地址空间只能在内核态下访问，0X00000000-0XBFFFFFFF的地址空间在两...">
 
   <link rel="stylesheet" href="/mark/css/main.css">
@@ -57,7 +57,7 @@
         <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">Linux Kernel-System Call</h1>
+    <h1 class="post-title">Linux Kernel - System Call</h1>
     <p class="post-meta">Mar 18, 2016</p>
   </header>
 
@@ -82,8 +82,8 @@ RESTORE_ALL调用
 iret指令
 </code></pre></div></li>
 <li><p>Libc库定义的一些API引用了封装例程（wrapper routine，唯一的目的就是发布系统调用），一般每个系统调用对应一个封装例程，库再用这些封装例程定义出给用户的API</p></li>
-<li><p>系统调用的三层皮xyz、system<em>call和sys</em>xyz,库函数中一般有trap指令或int指令，类似于一个系统中断，而系统调用是一个特殊的中断处理函数（inerrupt handler）。</p></li>
-<li><p>在Linux中是通过执行<code>int $0x80</code>来执行系统调用的，这条汇编指令产生向量为128的编程异常，使用eax来传递系统调用号。Intel Pentium II中引入了sysenter指令（快速系统调用）。</p></li>
+<li><p>系统调用的三层皮<code>xyz</code>、<code>system_call</code>和<code>sys_xyz</code>,库函数中一般有trap指令或int指令，类似于一个系统中断，而系统调用是一个特殊的中断处理函数（inerrupt handler）。</p></li>
+<li><p>在Linux中是通过执行<code>int $0x80</code>来执行系统调用的，这条汇编指令产生向量为128的编程异常，使用eax来传递系统调用号。Intel Pentium II中引入了<code>sysenter</code>指令（快速系统调用）。</p></li>
 <li><p>寄存器传递参数具有如下限制：</p>
 
 <ol>
@@ -122,42 +122,42 @@ iret指令
 <li><p>源代码如下</p>
 
 <p><strong>mkdir.c</strong></p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">#include &lt;sys/stat.h&gt;
-#include &lt;sys/types.h&gt;
-#include &lt;stdio.h&gt;
-int main() {
-   int result =  mkdir(&quot;test&quot;, 0777);
-   if (result == 0) {
-       printf(&quot;dirtory test make success&quot;);
-   } else {
-       printf(&quot;dirtory test make failture&quot;);
-   }
-}
+<div class="highlight"><pre><code class="language-C" data-lang="C"><span class="cp">#include &lt;sys/stat.h&gt;</span>
+<span class="cp">#include &lt;sys/types.h&gt;</span>
+<span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+   <span class="kt">int</span> <span class="n">result</span> <span class="o">=</span>  <span class="n">mkdir</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">,</span> <span class="mo">0777</span><span class="p">);</span>
+   <span class="k">if</span> <span class="p">(</span><span class="n">result</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+       <span class="n">printf</span><span class="p">(</span><span class="s">&quot;directory test make success&quot;</span><span class="p">);</span>
+   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+       <span class="n">printf</span><span class="p">(</span><span class="s">&quot;directory test make failure&quot;</span><span class="p">);</span>
+   <span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div>
 <p><strong>mkdir-asm.c</strong></p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">#include &lt;sys/stat.h&gt;
-#include &lt;sys/types.h&gt;
-#include &lt;stdio.h&gt;
-int main() {
-    int result = 0;
-    const char *filePath = &quot;test&quot;;
-    mode_t mode = 0777;
-    asm volatile(
-            &quot;movl $0X27,%%eax\n\t&quot;
-            &quot;movl %1,%%ebx\n\t&quot;
-            &quot;movl %2,%%ecx\n\t&quot;
-            &quot;int $0X80\n\t&quot;
-            &quot;movl %%eax,%0\n\t&quot;
-            :&quot;=m&quot;(result)
-            :&quot;r&quot;(filePath),&quot;r&quot;(mode)
-            :&quot;%eax&quot;,&quot;%ebx&quot;,&quot;%ecx&quot;
-            );
-   if (result == 0) {
-       printf(&quot;dirtory test make success&quot;);
-   } else {
-       printf(&quot;dirtory test make failture&quot;);
-   }
-}
+<div class="highlight"><pre><code class="language-C" data-lang="C"><span class="cp">#include &lt;sys/stat.h&gt;</span>
+<span class="cp">#include &lt;sys/types.h&gt;</span>
+<span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">filePath</span> <span class="o">=</span> <span class="s">&quot;test&quot;</span><span class="p">;</span>
+    <span class="kt">mode_t</span> <span class="n">mode</span> <span class="o">=</span> <span class="mo">0777</span><span class="p">;</span>
+    <span class="n">asm</span> <span class="k">volatile</span><span class="p">(</span>
+            <span class="s">&quot;movl $0X27,%%eax</span><span class="se">\n\t</span><span class="s">&quot;</span>
+            <span class="s">&quot;movl %1,%%ebx</span><span class="se">\n\t</span><span class="s">&quot;</span>
+            <span class="s">&quot;movl %2,%%ecx</span><span class="se">\n\t</span><span class="s">&quot;</span>
+            <span class="s">&quot;int $0X80</span><span class="se">\n\t</span><span class="s">&quot;</span>
+            <span class="s">&quot;movl %%eax,%0</span><span class="se">\n\t</span><span class="s">&quot;</span>
+            <span class="o">:</span><span class="s">&quot;=m&quot;</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+            <span class="o">:</span><span class="s">&quot;r&quot;</span><span class="p">(</span><span class="n">filePath</span><span class="p">),</span><span class="s">&quot;r&quot;</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+            <span class="o">:</span><span class="s">&quot;%eax&quot;</span><span class="p">,</span><span class="s">&quot;%ebx&quot;</span><span class="p">,</span><span class="s">&quot;%ecx&quot;</span>
+            <span class="p">);</span>
+   <span class="k">if</span> <span class="p">(</span><span class="n">result</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+       <span class="n">printf</span><span class="p">(</span><span class="s">&quot;directory test make success&quot;</span><span class="p">);</span>
+   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+       <span class="n">printf</span><span class="p">(</span><span class="s">&quot;directory test make failure&quot;</span><span class="p">);</span>
+   <span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div>
 <p>mkdir.c 和 mkdir-asm.c 功能一致都是在当前目录下创建test文件夹，mkdir.c是通过调用库函数<code>int mkdir(const char *pathname,mode_t mode);</code>创建test文件夹，而mkdir-asm.c是通过中断程序创建test文件夹。</p></li>
 </ol>
@@ -171,28 +171,28 @@ int main() {
 <p>分析下面的代码</p>
 
 <p><strong>fork-test.c</strong></p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">#include &lt;unistd.h&gt;
-#include &lt;stdio.h&gt;
-int main() {
-    pid_t sonPid = 0;
-    sonPid = fork();
-    if (sonPid == 0) {
-        printf(&quot;process %d -&gt; parent pid: %d\n&quot;, getpid(), getppid());
-        printf(&quot;process %d -&gt; before excute fork&#39;s fork pid: %d\n&quot;, getpid(), sonPid);
-        sonPid = fork();
-        if (sonPid == 0) {
-            sleep(5);
-            printf(&quot;process %d -&gt; parent pid: %d\n&quot;, getpid(), getppid());
-            printf(&quot;process %d -&gt; fork pid: %d\n&quot;, getpid(), sonPid);
-        } else {
-            printf(&quot;process %d -&gt; after excute fork&#39;s fork pid: %d\n&quot;, getpid(), sonPid);
-        }
-    } else {
-        printf(&quot;process %d -&gt; parent pid: %d\n&quot;, getpid(), getppid());
-        printf(&quot;process %d -&gt; fork pid: %d\n&quot;, getpid(), sonPid);
-        while(1);
-    }
-}
+<div class="highlight"><pre><code class="language-C" data-lang="C"><span class="cp">#include &lt;unistd.h&gt;</span>
+<span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kt">pid_t</span> <span class="n">sonPid</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">sonPid</span> <span class="o">=</span> <span class="n">fork</span><span class="p">();</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">sonPid</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;process %d -&gt; parent pid: %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">getpid</span><span class="p">(),</span> <span class="n">getppid</span><span class="p">());</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;process %d -&gt; before excute fork&#39;s fork pid: %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">getpid</span><span class="p">(),</span> <span class="n">sonPid</span><span class="p">);</span>
+        <span class="n">sonPid</span> <span class="o">=</span> <span class="n">fork</span><span class="p">();</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">sonPid</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s">&quot;process %d -&gt; parent pid: %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">getpid</span><span class="p">(),</span> <span class="n">getppid</span><span class="p">());</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s">&quot;process %d -&gt; fork pid: %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">getpid</span><span class="p">(),</span> <span class="n">sonPid</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s">&quot;process %d -&gt; after excute fork&#39;s fork pid: %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">getpid</span><span class="p">(),</span> <span class="n">sonPid</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;process %d -&gt; parent pid: %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">getpid</span><span class="p">(),</span> <span class="n">getppid</span><span class="p">());</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;process %d -&gt; fork pid: %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">getpid</span><span class="p">(),</span> <span class="n">sonPid</span><span class="p">);</span>
+        <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div>
 <p>运行结果为</p>
 
