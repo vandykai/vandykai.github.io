@@ -5,12 +5,12 @@
     <description></description>
     <link>http://www.dosrc.com/mark/</link>
     <atom:link href="http://www.dosrc.com/mark/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 01 Jun 2016 00:49:31 +0000</pubDate>
-    <lastBuildDate>Wed, 01 Jun 2016 00:49:31 +0000</lastBuildDate>
+    <pubDate>Tue, 02 Aug 2016 03:17:31 +0000</pubDate>
+    <lastBuildDate>Tue, 02 Aug 2016 03:17:31 +0000</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
-        <title>Linux Kernel - Loading Of Executable Program</title>
+        <title>Linux Kernel - 可执行程序的加载过程</title>
         <description>&lt;h2&gt;重点知识总结&lt;/h2&gt;
 
 &lt;ul&gt;
@@ -191,7 +191,7 @@ $ ./main
       </item>
     
       <item>
-        <title>Linux Kernel - Description Of Process</title>
+        <title>Linux Kernel - 进程结构和进程的克隆</title>
         <description>&lt;h2&gt;重点知识总结&lt;/h2&gt;
 
 &lt;ul&gt;
@@ -436,7 +436,7 @@ $ git cat-file -p 5a1e99b76770966d5975d2ba8aadf32c2bf550ea
       </item>
     
       <item>
-        <title>Linux Kernel - System Call</title>
+        <title>Linux Kernel - 系统调用和用户态内核态的转换</title>
         <description>&lt;h2&gt;重点知识总结&lt;/h2&gt;
 
 &lt;ul&gt;
@@ -471,7 +471,7 @@ iret指令
 
 &lt;p&gt;&lt;strong&gt;实验目的：&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;实验选取某个系统调用，编码实现两种调用方法——C语言库函数调用和汇编中断达，并到相同的效果。&lt;/p&gt;
+&lt;p&gt;实验选取某个系统调用，编码实现两种调用方法——C语言库函数调用和汇编中断，并达到相同的效果。&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;实验步骤：&lt;/strong&gt;&lt;/p&gt;
 
@@ -579,7 +579,7 @@ iret指令
 
 &lt;p&gt;fork-test.c意在创建3个进程，即父进程A，子进程B，孙子进程C，让父进程A一直执行不结束，子进程B执行完结束，孙子进程C睡眠5秒，待子进程B执行完后打印出孙子进程C的父进程pid，当孙子进程C的父进程B没有结束时&lt;code&gt;getppid()&lt;/code&gt;返回的应当是孙子进程C的父进程B的pid，当父进程结束时，从运行结果可以看出，返回的是1号进程的pid，即1号进程变成了孙子进程C的父进程。所有的用户进程都是由1号进程派生出来的，所有的内核态进程都是由2号进程派生出来的。&lt;/p&gt;
 
-&lt;h3&gt;systmm_call特殊中断处理函数分析&lt;/h3&gt;
+&lt;h3&gt;system_call特殊中断处理函数分析&lt;/h3&gt;
 
 &lt;ol&gt;
 &lt;li&gt;system_call 源代码&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/arch/x86/kernel/entry_32.S#490&quot;&gt;&lt;strong&gt;链接&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
@@ -607,7 +607,7 @@ iret指令
       </item>
     
       <item>
-        <title>Linux Kernel - Construct A Simple Linux Operating System</title>
+        <title>Linux Kernel - 编程起点和各模块简述</title>
         <description>&lt;h2&gt;重点知识总结&lt;/h2&gt;
 
 &lt;h3&gt;Linux内核源码简介&lt;/h3&gt;
@@ -736,7 +736,7 @@ iret指令
       </item>
     
       <item>
-        <title>Linux Kernel - Working Process Of Operating System</title>
+        <title>Linux Kernel - 自定义进程切换</title>
         <description>&lt;h2&gt;重点知识总结&lt;/h2&gt;
 
 &lt;h3&gt;C语言内嵌汇编语法&lt;/h3&gt;
@@ -918,7 +918,7 @@ int a,b;
       </item>
     
       <item>
-        <title>Linux Kernel - Working Process Of Assembly Code</title>
+        <title>Linux Kernel - C语言对应汇编源代码分析</title>
         <description>&lt;h2&gt;重点知识总结&lt;/h2&gt;
 
 &lt;ul&gt;
@@ -970,8 +970,9 @@ int a,b;
         &lt;span class=&quot;n&quot;&gt;leave&lt;/span&gt;
         &lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;若方法中不再调用另一方法也即汇编代码中不调用call语句，那么&lt;code&gt;leave&lt;/code&gt;语句可优化为&lt;code&gt;popl %ebp&lt;/code&gt;
-参数传递通过堆栈完成，一个参数，则通过&lt;code&gt;8(%ebp)&lt;/code&gt;取参数，两个参数则通过&lt;code&gt;12(%ebp)&lt;/code&gt;, &lt;code&gt;8(*ebp)&lt;/code&gt;分别取出第一和第二个参数。&lt;/p&gt;
+&lt;p&gt;若方法中不再调用另一方法也即汇编代码中不调用call语句，那么&lt;code&gt;leave&lt;/code&gt;语句可优化为&lt;code&gt;popl %ebp&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;参数传递通过堆栈完成，一个参数，则通过&lt;code&gt;8(%ebp)&lt;/code&gt;取参数，两个参数则通过&lt;code&gt;12(%ebp)&lt;/code&gt;, &lt;code&gt;8(*ebp)&lt;/code&gt;分别取出第一和第二个参数。&lt;/p&gt;
 
 &lt;p&gt;wdk 原创作品转载请注明出处&lt;br&gt;
 相关链接 &lt;a href=&quot;http://mooc.study.163.com/course/USTC-1000029000&quot;&gt;《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000&lt;/a&gt;&lt;/p&gt;
