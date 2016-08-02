@@ -1,7 +1,7 @@
 ---
 
 layout: post
-title:  Linux Kernel - Construct A Simple Linux Operating System
+title:  Linux Kernel - 编程起点和各模块简述
 date:   2016-03-17 12:13:00
 categories: [Linux]
 tags: [linux, linux-kernel, experiment]

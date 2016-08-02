@@ -1,7 +1,7 @@
 ---
 
 layout: post
-title:  Linux Kernel - Working Process Of Assembly Code
+title:  Linux Kernel - C语言对应汇编源代码分析
 date:   2016-02-25 10:42:00
 categories: [Linux]
 tags: [linux, linux-kernel, experiment]
@@ -62,7 +62,8 @@ method:
         leave
         ret
 ```
-若方法中不再调用另一方法也即汇编代码中不调用call语句，那么`leave`语句可优化为`popl %ebp`
+若方法中不再调用另一方法也即汇编代码中不调用call语句，那么`leave`语句可优化为`popl %ebp`。
+
 参数传递通过堆栈完成，一个参数，则通过`8(%ebp)`取参数，两个参数则通过`12(%ebp)`, `8(*ebp)`分别取出第一和第二个参数。
 
 wdk 原创作品转载请注明出处  

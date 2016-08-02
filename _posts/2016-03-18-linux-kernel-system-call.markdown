@@ -1,7 +1,7 @@
 ---
 
 layout: post
-title:  Linux Kernel - System Call
+title:  Linux Kernel - 系统调用和用户态内核态的转换
 date:   2016-03-18 12:13:00
 categories: [Linux]
 tags: [linux, linux-kernel, experiment]
@@ -42,7 +42,7 @@ tags: [linux, linux-kernel, experiment]
 
 **实验目的：**
 
-实验选取某个系统调用，编码实现两种调用方法——C语言库函数调用和汇编中断达，并到相同的效果。
+实验选取某个系统调用，编码实现两种调用方法——C语言库函数调用和汇编中断，并达到相同的效果。
 
 **实验步骤：**
 
@@ -151,7 +151,7 @@ int main() {
 
 fork-test.c意在创建3个进程，即父进程A，子进程B，孙子进程C，让父进程A一直执行不结束，子进程B执行完结束，孙子进程C睡眠5秒，待子进程B执行完后打印出孙子进程C的父进程pid，当孙子进程C的父进程B没有结束时`getppid()`返回的应当是孙子进程C的父进程B的pid，当父进程结束时，从运行结果可以看出，返回的是1号进程的pid，即1号进程变成了孙子进程C的父进程。所有的用户进程都是由1号进程派生出来的，所有的内核态进程都是由2号进程派生出来的。
 
-### systmm_call特殊中断处理函数分析
+### system_call特殊中断处理函数分析
 1. system_call 源代码[**链接**][7]
 1. system_call 工作流程图
 

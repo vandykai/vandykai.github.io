@@ -1,7 +1,7 @@
 ---
 
 layout: post
-title:  Linux Kernel - Description Of Process
+title:  Linux Kernel - 进程结构和进程的克隆
 date:   2016-04-13 14:32:00
 categories: [Linux]
 tags: [linux, linux-kernel, experiment]
