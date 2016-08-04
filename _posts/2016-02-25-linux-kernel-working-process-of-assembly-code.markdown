@@ -34,7 +34,7 @@ tags: [linux, linux-kernel, experiment]
         movl (%esp), %eax
         addl $4, %esp
     call 0x12345
-        pushl %eip*
+        pushl %eip*  /* 这里eip后面的*意在说明这条指令实际不存在，是伪指令，下同 */
         movl $0x12345, %eip*
     ret
         popl %eip*

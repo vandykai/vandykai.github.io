@@ -98,7 +98,7 @@ tags: [linux, linux-kernel, experiment]
                 :"=m"(result)
                 :"r"(filePath),"r"(mode)
                 :"%eax","%ebx","%ecx"
-                );
+        );
        if (result == 0) {
            printf("directory test make success");
        } else {
