@@ -165,7 +165,7 @@
     <span class="p">);</span>                                                                      \
 <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 </code></pre></div>
-<p>这里值得注意的是<code>switch_to(prev, next, last)</code>中的<code>jmp __switch_to</code>，实际上类似于函数，只不过参数通过寄存器传递，且因为没有<code>call</code>语句所以不<code>pushl %eip*</code>(*意在说明这条指令实际不存在，是伪指令)，但是<code>__switch_to</code>末尾任然有条<code>ret</code>语句，这样就把之前<code>pushl %[next_ip]</code>的<code>[next_ip]</code><code>popl</code>给了<code>eip</code>。</p></li>
+<p>这里值得注意的是<a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/arch/x86/include/asm/switch_to.h#switch_to"><code>switch_to(prev, next, last)</code></a>中的<code>jmp __switch_to</code>，实际上类似于函数，只不过参数通过寄存器传递，且因为没有<code>call</code>语句所以不<code>pushl %eip*</code>(*意在说明这条指令实际不存在，是伪指令)，但是<code>__switch_to</code>末尾任然有条<code>ret</code>语句，这样就把之前<code>pushl %[next_ip]</code>的<code>[next_ip]</code><code>popl</code>给了<code>eip</code>。</p></li>
 </ul>
 
 <h3>Linux系统的一般运行过程。</h3>
