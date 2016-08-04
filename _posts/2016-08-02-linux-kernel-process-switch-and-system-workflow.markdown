@@ -115,7 +115,7 @@ tags: [linux, linux-kernel, experiment]
         );                                                                      \
     } while (0)
     ```
-    这里值得注意的是`switch_to(prev, next, last)`中的`jmp __switch_to`，实际上类似于函数，只不过参数通过寄存器传递，且因为没有`call`语句所以不`pushl %eip*`(*意在说明这条指令实际不存在，是伪指令)，但是`__switch_to`末尾任然有条`ret`语句，这样就把之前`pushl %[next_ip]`的`[next_ip]``popl`给了`eip`。
+    这里值得注意的是[`switch_to(prev, next, last)`][3]中的`jmp __switch_to`，实际上类似于函数，只不过参数通过寄存器传递，且因为没有`call`语句所以不`pushl %eip*`(*意在说明这条指令实际不存在，是伪指令)，但是`__switch_to`末尾任然有条`ret`语句，这样就把之前`pushl %[next_ip]`的`[next_ip]``popl`给了`eip`。
 
 ### Linux系统的一般运行过程。
 #### 最一般的情况：正在运行的用户态进程X切换到运行X用户态进程Y的过程
@@ -140,15 +140,9 @@ tags: [linux, linux-kernel, experiment]
 - 内核态是各中断处理过程和内核线程的集合。
 
 wdk 原创作品转载请注明出处  
-相关链接 [《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000][10]
+相关链接 [《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000][4]
 
 [1]: http://codelab.shiyanlou.com/xref/linux-3.18.6/kernel/sched/core.c#schedule
 [2]: http://codelab.shiyanlou.com/xref/linux-3.18.6/kernel/sched/core.c#context_switch
 [3]: http://codelab.shiyanlou.com/xref/linux-3.18.6/arch/x86/include/asm/switch_to.h#switch_to
-[4]: http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#do_execve
-[5]: http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#do_execve_common
-[6]: http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#exec_binprm
-[7]: http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#search_binary_handler
-[8]: http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/binfmt_elf.c#load_elf_binary
-[9]: http://codelab.shiyanlou.com/xref/linux-3.18.6/arch/x86/kernel/process_32.c#start_thread
-[10]: http://mooc.study.163.com/course/USTC-1000029000
+[4]: http://mooc.study.163.com/course/USTC-1000029000
