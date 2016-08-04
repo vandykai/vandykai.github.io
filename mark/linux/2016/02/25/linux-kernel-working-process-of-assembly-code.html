@@ -85,7 +85,7 @@
     <span class="nf">movl</span> <span class="o">(%</span><span class="n">esp</span><span class="o">),</span> <span class="o">%</span><span class="n">eax</span>
     <span class="n">addl</span> <span class="n">$4</span><span class="o">,</span> <span class="o">%</span><span class="n">esp</span>
 <span class="n">call</span> <span class="mh">0x12345</span>
-    <span class="n">pushl</span> <span class="o">%</span><span class="n">eip</span><span class="o">*</span>
+    <span class="n">pushl</span> <span class="o">%</span><span class="n">eip</span><span class="o">*</span>  <span class="cm">/* 这里eip后面的*意在说明这条指令实际不存在，是伪指令，下同 */</span>
     <span class="n">movl</span> <span class="n">$0x12345</span><span class="o">,</span> <span class="o">%</span><span class="n">eip</span><span class="o">*</span>
 <span class="n">ret</span>
     <span class="n">popl</span> <span class="o">%</span><span class="n">eip</span><span class="o">*</span>
