@@ -3,7 +3,7 @@
 layout: post
 title:  Linux Kernel - 编程起点和各模块简述
 date:   2016-03-17 12:13:00
-categories: [Linux]
+categories: [Linux-3.18.6]
 tags: [linux, linux-kernel, experiment]
 
 ---

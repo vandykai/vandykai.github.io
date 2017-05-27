@@ -3,7 +3,7 @@
 layout: post
 title:  Linux Kernel - 自定义进程切换
 date:   2016-03-06 10:45:00
-categories: [Linux]
+categories: [Linux-3.18.6]
 tags: [linux, linux-kernel, experiment]
 
 ---

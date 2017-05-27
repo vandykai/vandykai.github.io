@@ -3,7 +3,7 @@
 layout: post
 title:  Linux Kernel - 可执行程序的加载过程
 date:   2016-05-14 20:31:00
-categories: [Linux]
+categories: [Linux-3.18.6]
 tags: [linux, linux-kernel, experiment]
 
 ---

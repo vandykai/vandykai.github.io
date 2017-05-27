@@ -3,7 +3,7 @@
 layout: post
 title:  Linux Kernel - C语言对应汇编源代码分析
 date:   2016-02-25 10:42:00
-categories: [Linux]
+categories: [Linux-3.18.6]
 tags: [linux, linux-kernel, experiment]
 
 ---

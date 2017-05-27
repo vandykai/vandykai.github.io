@@ -3,7 +3,7 @@
 layout: post
 title:  Linux Kernel - 进程的切换和系统的一般执行过程
 date:   2016-08-02 21:16:00
-categories: [Linux]
+categories: [Linux-3.18.6]
 tags: [linux, linux-kernel, experiment]
 
 ---

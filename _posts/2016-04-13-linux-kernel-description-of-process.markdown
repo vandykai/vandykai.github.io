@@ -3,7 +3,7 @@
 layout: post
 title:  Linux Kernel - 进程结构和进程的克隆
 date:   2016-04-13 14:32:00
-categories: [Linux]
+categories: [Linux-3.18.6]
 tags: [linux, linux-kernel, experiment]
 
 ---

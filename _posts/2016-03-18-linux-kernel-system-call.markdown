@@ -3,7 +3,7 @@
 layout: post
 title:  Linux Kernel - 系统调用和用户态内核态的转换
 date:   2016-03-18 12:13:00
-categories: [Linux]
+categories: [Linux-3.18.6]
 tags: [linux, linux-kernel, experiment]
 
 ---
