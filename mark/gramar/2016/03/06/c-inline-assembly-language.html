@@ -10,8 +10,12 @@
   <meta name="description" content="C语言内嵌汇编语法">
 
   <link rel="stylesheet" href="/mark/css/main.css">
-  <link rel="canonical" href="http://www.dosrc.com/mark/gramar/2016/03/06/c-inline-assembly-language.html">
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
+  <link rel="stylesheet" href="/mark/css/pygments.css">
+  <link rel="shortcut icon" href="/mark/favicon.ico">
+  <link rel="canonical" href="http://localhost:4000/mark/gramar/2016/03/06/c-inline-assembly-language.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
 </head>
 
 
@@ -65,7 +69,7 @@
     <h2>C语言内嵌汇编语法</h2>
 
 <h3>GCC</h3>
-<div class="highlight"><pre><code class="language-C" data-lang="C"> <span class="n">__asm__</span><span class="p">(</span>
+<div class="highlight"><pre><code class="language-C" data-lang="C"><span></span> <span class="n">__asm__</span><span class="p">(</span>
     <span class="err">汇编语句模版：</span>
     <span class="err">输出部分：</span>
     <span class="err">输入部分：</span>
@@ -79,35 +83,34 @@
 <p>在<code>__asm__</code>后面有时也会加上<code>__volatile__</code>表示编译器不要优化代码，后面的指令保留原样，同样<code>volatile</code>是它的别名，在这里值得注意的是无论<code>__asm__</code>还是&quot;<code>__volatile__</code>&quot;中的每个下划线都不是一个单独的下划线，而是两个短的下划线拼成的。再后面括号里面的便是汇编指令。</p>
 
 <h3>Visual C++</h3>
-<div class="highlight"><pre><code class="language-text" data-lang="text">__asm 汇编指令 [ ; ]
+<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>__asm 汇编指令 [ ; ]
 __asm { 汇编指令 } [ ; ]
 </code></pre></div>
 <p>同样asm前面是两条下划线，后面的方括号内容表示分号可有可无。</p>
 
 <ol>
 <li><p>组成一块地用</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">__asm {
+<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>__asm {
    mov al, 2
    mov dx, 0xD007
    out dx, al
 }
 </code></pre></div></li>
 <li><p>分条的使用</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">__asm mov al, 2
+<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>__asm mov al, 2
 __asm mov dx, 0xD007
 __asm out dx, al
 </code></pre></div>
 <p>也可以写在同一行</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">__asm mov al, 2   __asm mov dx, 0xD007   __asm out dx, al
+<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>__asm mov al, 2   __asm mov dx, 0xD007   __asm out dx, al
 </code></pre></div></li>
 </ol>
 
 <h3>Turbo C</h3>
 
 <ol>
-<li><p>使用预处理程序的伪指令#asm和#endasm,#asm用来开始一个汇编程序块，而#endasm指令用于该块的结
-束。</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">mul(a,b)
+<li><p>使用预处理程序的伪指令<code>#asm</code>和<code>#endasm</code>,<code>#asm</code>用来开始一个汇编程序块，而<code>#endasm</code>指令用于该块的结束。</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>mul(a,b)
 int a,b;
 {
    #asm
@@ -117,8 +120,8 @@ int a,b;
 }
 </code></pre></div></li>
 <li><p>使用asm语句
-格式：asm&lt;汇编语句&gt;</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">mul(a,b)
+格式：<code>asm&lt;汇编语句&gt;</code></p>
+<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>mul(a,b)
 int a,b;
 {
     asm   mov ax,word ptr 8[bp]

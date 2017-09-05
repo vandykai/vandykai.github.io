@@ -10,8 +10,12 @@
   <meta name="description" content="Git 思想git 旨在创建一个分布式版本控制工具，满足以下一些需求：">
 
   <link rel="stylesheet" href="/mark/css/main.css">
-  <link rel="canonical" href="http://www.dosrc.com/mark/vcs/2016/03/20/git-how-does-git-work.html">
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
+  <link rel="stylesheet" href="/mark/css/pygments.css">
+  <link rel="shortcut icon" href="/mark/favicon.ico">
+  <link rel="canonical" href="http://localhost:4000/mark/vcs/2016/03/20/git-how-does-git-work.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
 </head>
 
 
@@ -80,7 +84,7 @@
 <p>虽然仅有一个属性不同，但是这两个repository的作用却是不同，一个是本地工作repository，一个是专供远程提交的repository。对于本地工作repository，别人是不能推送（push）工作到你的repository的。所以congit/下的bare属性如果为true的话则这个repository可以充当远程repository，你只要把你的clone过来的repository或git init初始化的repository中的.git/config下的bare属性改为true就可以变成远程repository了，甚至都不需要把.git下的文件移出来到父目录下。远程repository今后的工作中并不会产生logs（用来记录运行记录）文件夹。</p>
 
 <h3>Git 工作运行的目录结构</h3>
-<div class="highlight"><pre><code class="language-text" data-lang="text">hooks                                   │hooks
+<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>hooks                                   │hooks
     - applypatch-msg.sample             │    - applypatch-msg.sample
     - commit-msg.sample                 │    - commit-msg.sample
     - post-update.sample                │    - post-update.sample
@@ -141,7 +145,7 @@ HEAD                                    │HEAD
 <h4>Git 记录文件探索</h4>
 
 <p>前面已经说了，git的所有操作记录都会保存在objects目录下的文件中，那么这些文件中到底都存储了些什么内容呢，直接以文本方式打开这些文件都是乱码，后来发现这些文件要使用<code>git cat-file -p (SHA-1)</code>命令来查看，其中可以不写完整（实测至少4位），只要能唯一标识文件即可。针对上述的第一次提交我们分别查看objects下增加的三个文件夹下的三个文件，SHA-1值是等于文件夹名加上文件名,在objects目录下（只要git目录下都可以）打开bash或命令提示窗口</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">$ git cat-file -p 80865964295ae2f11d27383e5f9c0b58a8ef21da
+<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>$ git cat-file -p 80865964295ae2f11d27383e5f9c0b58a8ef21da
 100644 blob d670460b4b4aece5915caf5c68d12f560a9fe3e4    test.txt
 
 $ git cat-file -p b042d75a51e77fdac111e85eda5331470781b9de
@@ -157,7 +161,7 @@ test content
 <p>第一次提交的是test.txt文件，该文本文件中的内容是test content，提交时的comment是test comment</p>
 
 <p>在text.txtw文件中换行添加内容added text再次提交，提交comment为added comment，提交后又新增了三个文件夹和三个文件，分别使用<code>git cat-file -p (SHA-1)</code>命令来查看这三个文件的内容结果如下</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">$ git cat-file -p 2ce18c9a25e15f30d684274b89d0ef29d032491e
+<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>$ git cat-file -p 2ce18c9a25e15f30d684274b89d0ef29d032491e
 tree 5a1e99b76770966d5975d2ba8aadf32c2bf550ea
 parent b042d75a51e77fdac111e85eda5331470781b9de
 author vandykai &lt;wdkrgst@gmail.com&gt; 1458567378 +0800

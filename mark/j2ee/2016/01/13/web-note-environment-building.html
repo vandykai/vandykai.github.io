@@ -6,13 +6,13 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>About</title>
-  <meta name="description" content="">
+  <title>Web Note - Environment Build</title>
+  <meta name="description" content="Java Web 环境介绍1. 环境搭建准备工具JDK (windows 下配置JDKHOME或JAVAHOME或JRE_HOME)Tomcat (windows 下配置 CATALINA_HOME)EclipseMySQL">
 
   <link rel="stylesheet" href="/mark/css/main.css">
   <link rel="stylesheet" href="/mark/css/pygments.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://localhost:4000/mark/about/">
+  <link rel="canonical" href="http://localhost:4000/mark/j2ee/2016/01/13/web-note-environment-building.html">
   <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
@@ -61,11 +61,44 @@
         <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">About</h1>
+    <h1 class="post-title">Web Note - Environment Build</h1>
+    <p class="post-meta">Jan 13, 2016</p>
   </header>
 
   <article class="post-content">
-    <p>Being Constructing...</p>
+    <h2>Java Web 环境介绍</h2>
+
+<h3>1. 环境搭建</h3>
+
+<h4>准备工具</h4>
+
+<ol>
+<li>JDK (windows 下配置JDK<em>HOME或JAVA</em>HOME或JRE_HOME)</li>
+<li>Tomcat (windows 下配置 CATALINA_HOME)</li>
+<li>Eclipse</li>
+<li>MySQL</li>
+</ol>
+
+<p><strong>tips</strong>：有一软件xampp集成了常用软件如Tomcat和MySQL等，可以尝试替换看看。</p>
+
+<h4>配置环境</h4>
+
+<ol>
+<li>若想在命令行下直接使用上述软件的命令，需要在环境变量下配置命令路径（过程略）。</li>
+<li>Eclipse环境配置
+
+<ol>
+<li>Eclipse-&gt;Window-&gt;Preferences-&gt;Java-&gt;Installed JREs 将jre路径改为刚才安装的jdk路径，这样便可以查看java源代码。</li>
+<li>Eclipse-&gt;Window-&gt;Preferences-&gt;Server—&gt;Runtime Environments 添加刚刚安装的Tomcat作为Server。</li>
+<li>code style的配置如编码（建议utf8），换行符的设置（建议类Unix），制表符的宽度（建议4），显示空白符，显示行号，用空格替换制表符等，自己根据实际style来配置。</li>
+</ol></li>
+</ol>
+
+<h3>2. Eclipse技巧</h3>
+
+<ol>
+<li>查看Tomcat运行时目录：在任意代码编写的界面 右键-&gt;Run As-&gt;Run Configurations-&gt;Apache Tomcat-&gt;Arguments-&gt;VM Arguments 里可查看Dwtp.deploy变量的值即为Tomcat运行时deploy目录。</li>
+</ol>
 
   </article>
 

@@ -6,13 +6,13 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>About</title>
-  <meta name="description" content="">
+  <title>Html拖放事件</title>
+  <meta name="description" content="为了使得元素能够被拖放首先要设置被拖动元素的 draggable=&quot;true&quot;">
 
   <link rel="stylesheet" href="/mark/css/main.css">
   <link rel="stylesheet" href="/mark/css/pygments.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://localhost:4000/mark/about/">
+  <link rel="canonical" href="http://localhost:4000/mark/j2ee/2015/06/05/html5-drag-event.html">
   <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
@@ -61,11 +61,34 @@
         <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">About</h1>
+    <h1 class="post-title">Html拖放事件</h1>
+    <p class="post-meta">Jun 5, 2015</p>
   </header>
 
   <article class="post-content">
-    <p>Being Constructing...</p>
+    <p>为了使得元素能够被拖放首先要设置被拖动元素的 draggable=&quot;true&quot;</p>
+
+<p><strong>被拖动对象</strong></p>
+
+<p>被拖动对象会触发三个事件如下，分别触发三个事件所指定的回调函数</p>
+
+<ol>
+<li>ondragstart--------&gt;开始拖动时被触发</li>
+<li>drag---------------&gt;拖动过程中一直被触发</li>
+<li>ondragend----------&gt;松开拖动鼠标后被触发</li>
+</ol>
+
+<p><strong>目标对象</strong></p>
+
+<p>目标对象即被拖动对象所拖动到的对象，会触发如下事件</p>
+
+<ol>
+<li>dragenter----------&gt;被拖动对象进入目标对象后被触发</li>
+<li>dragover-----------&gt;被拖动对象在目标对象上时一直被触发</li>
+<li>dragleave或drop----&gt;dragleave事件在被拖动对象离开目标对象后被触发，drop事件在被拖动对象拖动到目标对象上松开鼠标后被触发，drop事件和dragleave事件为互斥事件，不能同时发生。</li>
+</ol>
+
+<p><a href="http://www.w3school.com.cn/tiy/t.asp?f=html5_draganddrop"><strong>代码示例</strong></a></p>
 
   </article>
 

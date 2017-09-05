@@ -3,11 +3,11 @@
   <channel>
     <title>Blog</title>
     <description></description>
-    <link>http://www.dosrc.com/mark/</link>
-    <atom:link href="http://www.dosrc.com/mark/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 04 Aug 2016 03:46:58 +0000</pubDate>
-    <lastBuildDate>Thu, 04 Aug 2016 03:46:58 +0000</lastBuildDate>
-    <generator>Jekyll v2.5.3</generator>
+    <link>http://localhost:4000/mark/</link>
+    <atom:link href="http://localhost:4000/mark/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Tue, 05 Sep 2017 10:37:50 +0800</pubDate>
+    <lastBuildDate>Tue, 05 Sep 2017 10:37:50 +0800</lastBuildDate>
+    <generator>Jekyll v3.4.3</generator>
     
       <item>
         <title>Linux Kernel - 进程的切换和系统的一般执行过程</title>
@@ -33,13 +33,13 @@
 &lt;li&gt;硬件上下文（注意中断也要保存硬件上下文只是保存的方法不同）&lt;/li&gt;
 &lt;/ul&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/kernel/sched/core.c#schedule&quot;&gt;&lt;code&gt;schedule()&lt;/code&gt;&lt;/a&gt;函数选择一个新的进程来运行，并调用&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/kernel/sched/core.c#context_switch&quot;&gt;&lt;code&gt;context_switch&lt;/code&gt;&lt;/a&gt;进行上下文的切换，其中的宏调用&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/arch/x86/include/asm/switch_to.h#switch_to&quot;&gt;&lt;code&gt;switch_to&lt;/code&gt;&lt;/a&gt;进行关键上下文切换。&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;n&quot;&gt;asmlinkage&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__visible&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__sched&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;schedule&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;asmlinkage&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__visible&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__sched&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;schedule&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task_struct&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tsk&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 
     &lt;span class=&quot;n&quot;&gt;sched_submit_work&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tsk&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;__schedule&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__sched&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;__schedule&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__sched&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;__schedule&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task_struct&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
     &lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;switch_count&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rq&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rq&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
@@ -55,7 +55,7 @@
     &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
     &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;inline&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;context_switch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rq&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rq&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task_struct&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task_struct&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;inline&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;context_switch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rq&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rq&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task_struct&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task_struct&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;prepare_task_switch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rq&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
     &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
@@ -64,7 +64,7 @@
     &lt;span class=&quot;n&quot;&gt;switch_to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
     &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#define switch_to(prev, next, last)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;#define switch_to(prev, next, last)&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;                                                                        \
     &lt;span class=&quot;cm&quot;&gt;/*                                                                      \&lt;/span&gt;
 &lt;span class=&quot;cm&quot;&gt;     * Context-switching clobbers all registers, so we clobber              \&lt;/span&gt;
@@ -75,7 +75,7 @@
 &lt;span class=&quot;cm&quot;&gt;     */&lt;/span&gt;                                                                     \
     &lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ebx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ecx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;edx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;esi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;edi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;                                  \
                                                                             \
-    &lt;span class=&quot;n&quot;&gt;asm&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;volatile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;                                                           \
+    &lt;span class=&quot;k&quot;&gt;asm&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;volatile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;                                                           \
             &lt;span class=&quot;s&quot;&gt;&amp;quot;pushfl&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;    &lt;span class=&quot;cm&quot;&gt;/* save    flags */&lt;/span&gt;                             \
             &lt;span class=&quot;s&quot;&gt;&amp;quot;pushl %%ebp&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;    &lt;span class=&quot;cm&quot;&gt;/* save    EBP   */&lt;/span&gt;                        \
             &lt;span class=&quot;s&quot;&gt;&amp;quot;movl %%esp,%[prev_sp]&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;  &lt;span class=&quot;cm&quot;&gt;/* save    ESP   */&lt;/span&gt;                \
@@ -152,9 +152,9 @@
 &lt;p&gt;wdk 原创作品转载请注明出处&lt;br&gt;
 相关链接 &lt;a href=&quot;http://mooc.study.163.com/course/USTC-1000029000&quot;&gt;《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000&lt;/a&gt;&lt;/p&gt;
 </description>
-        <pubDate>Tue, 02 Aug 2016 21:16:00 +0000</pubDate>
-        <link>http://www.dosrc.com/mark/linux/2016/08/02/linux-kernel-process-switch-and-system-workflow.html</link>
-        <guid isPermaLink="true">http://www.dosrc.com/mark/linux/2016/08/02/linux-kernel-process-switch-and-system-workflow.html</guid>
+        <pubDate>Wed, 03 Aug 2016 05:16:00 +0800</pubDate>
+        <link>http://localhost:4000/mark/linux-3.18.6/2016/08/03/linux-kernel-process-switch-and-system-workflow.html</link>
+        <guid isPermaLink="true">http://localhost:4000/mark/linux-3.18.6/2016/08/03/linux-kernel-process-switch-and-system-workflow.html</guid>
         
         <category>linux</category>
         
@@ -163,7 +163,7 @@
         <category>experiment</category>
         
         
-        <category>linux</category>
+        <category>Linux-3.18.6</category>
         
       </item>
     
@@ -195,7 +195,7 @@
 &lt;p&gt;&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#1604&quot;&gt;&lt;code&gt;sys_execve&lt;/code&gt;&lt;/a&gt; -&amp;gt; &lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#do_execve&quot;&gt;&lt;code&gt;do_execve&lt;/code&gt;&lt;/a&gt; -&amp;gt; &lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#do_execve_common&quot;&gt;&lt;code&gt;do_execve_common&lt;/code&gt;&lt;/a&gt; -&amp;gt; &lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#exec_binprm&quot;&gt;&lt;code&gt;exec_binprm&lt;/code&gt;&lt;/a&gt; -&amp;gt; &lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#search_binary_handler&quot;&gt;&lt;code&gt;search_binary_handler&lt;/code&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#search_binary_handler&quot;&gt;&lt;code&gt;search_binary_handler&lt;/code&gt;&lt;/a&gt;根据文件头部信息寻找对应的文件格式解析模块。&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;n&quot;&gt;list_for_each_entry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;formats&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lh&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;list_for_each_entry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;formats&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lh&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;try_module_get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
       &lt;span class=&quot;k&quot;&gt;continue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;read_unlock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;binfmt_lock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
@@ -207,14 +207,14 @@
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;对于ELF格式的可执行文件，语句&lt;code&gt;fmt-&amp;gt;load_binary(bprm);&lt;/code&gt;执行的应该是&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/binfmt_elf.c#load_elf_binary&quot;&gt;&lt;code&gt;load_elf_binary(bprm);&lt;/code&gt;&lt;/a&gt;。
 &lt;code&gt;load_binary&lt;/code&gt;是个函数指针。寻找对应的文件格式解析模块采用了设计模式中的&lt;strong&gt;观察者模式&lt;/strong&gt;。如下为ELF格式的观察者初始化的过程：&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;linux_binfmt&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;elf_format&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;linux_binfmt&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;elf_format&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;module&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;THIS_MODULE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
     &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;load_binary&lt;/span&gt;    &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;load_elf_binary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
     &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;load_shlib&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;load_elf_library&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
     &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;core_dump&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;elf_core_dump&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
     &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;min_coredump&lt;/span&gt;   &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ELF_EXEC_PAGESIZE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__init&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;init_elf_binfmt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__init&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;init_elf_binfmt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;register_binfmt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;elf_format&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
@@ -228,7 +228,7 @@
 &lt;ul&gt;
 &lt;li&gt;&lt;p&gt;上面已经说了，对于ELF格式的文件。执行到&lt;code&gt;fmt-&amp;gt;load_binary(bprm);&lt;/code&gt;,实际上执行的是&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/binfmt_elf.c#load_elf_binary&quot;&gt;&lt;code&gt;load_elf_binary(bprm);&lt;/code&gt;&lt;/a&gt;，在&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/binfmt_elf.c#load_elf_binary&quot;&gt;&lt;code&gt;load_elf_binary(bprm);&lt;/code&gt;&lt;/a&gt;函数中的&lt;code&gt;start_thread(regs, elf_entry, bprm-&amp;gt;p);&lt;/code&gt;语句指明了可执行文件的起点。函数原型&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/arch/x86/kernel/process_32.c#start_thread&quot;&gt;&lt;code&gt;start_thread(struct pt_regs *regs, unsigned long new_ip, unsigned long new_sp)&lt;/code&gt;&lt;/a&gt;中的第二个参数就是新程序的起点，它通过修改内核堆栈中EIP的值作为新程序的起点，&lt;code&gt;execve&lt;/code&gt;系统调用返回到用户态就从这里开始执行。&lt;/p&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;对于静态链接的可执行文件&lt;code&gt;elf_entry&lt;/code&gt;就是ELF头中定义的起点，对于动态链接的可执行文件，先加载连接器ld，将CPU控制权交给ld来加载依赖库并完成动态链接，这部分不由内核完成，源代码如下：&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;elf_interpreter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;//需要动态链接&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;elf_interpreter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;//需要动态链接&lt;/span&gt;
     &lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;interp_map_addr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 
     &lt;span class=&quot;n&quot;&gt;elf_entry&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;load_elf_interp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;loc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;interp_elf_ex&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
@@ -236,16 +236,16 @@
     &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;//不需要动态链接&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;elf_entry&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;elf_ex&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;e_entry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;err&quot;&gt;｝&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;wdk 原创作品转载请注明出处&lt;br&gt;
 相关链接 &lt;a href=&quot;http://mooc.study.163.com/course/USTC-1000029000&quot;&gt;《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000&lt;/a&gt;&lt;/p&gt;
 </description>
-        <pubDate>Sat, 14 May 2016 20:31:00 +0000</pubDate>
-        <link>http://www.dosrc.com/mark/linux/2016/05/14/linux-kernel-loading-of-executable-program.html</link>
-        <guid isPermaLink="true">http://www.dosrc.com/mark/linux/2016/05/14/linux-kernel-loading-of-executable-program.html</guid>
+        <pubDate>Sun, 15 May 2016 04:31:00 +0800</pubDate>
+        <link>http://localhost:4000/mark/linux-3.18.6/2016/05/15/linux-kernel-loading-of-executable-program.html</link>
+        <guid isPermaLink="true">http://localhost:4000/mark/linux-3.18.6/2016/05/15/linux-kernel-loading-of-executable-program.html</guid>
         
         <category>linux</category>
         
@@ -254,7 +254,7 @@
         <category>experiment</category>
         
         
-        <category>linux</category>
+        <category>Linux-3.18.6</category>
         
       </item>
     
@@ -265,7 +265,7 @@
 &lt;p&gt;动态链接分为装载时动态链接和运行时动态链接，在64位环境下编译32位动态链接库如下（32位下只需去掉-m32 这个编译选项）&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;libexample.h&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#ifndef _LIB_EXAMPLE_H_&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;#ifndef _LIB_EXAMPLE_H_&lt;/span&gt;
 &lt;span class=&quot;cp&quot;&gt;#define _LIB_EXAMPLE_H_&lt;/span&gt;
 &lt;span class=&quot;cp&quot;&gt;#define SUCCESS 0&lt;/span&gt;
 &lt;span class=&quot;cp&quot;&gt;#define FAILURE (-1)&lt;/span&gt;
@@ -279,8 +279,8 @@
 &lt;span class=&quot;cp&quot;&gt;#endif &lt;/span&gt;&lt;span class=&quot;cm&quot;&gt;/* _LIB_EXAMPLE_H_ */&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;&lt;strong&gt;libexample.c&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#include &amp;quot;libexample.h&amp;quot;&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;cpf&quot;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;cpf&quot;&gt;&amp;quot;libexample.h&amp;quot;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;&lt;/span&gt;
 &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;LibApi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;This Is A Library Api!&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SUCCESS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
@@ -292,14 +292,14 @@
 无论是装载时动态链接还是运行时动态链接，库文件的编译方法都是一样的，区别在于怎么使用它们。&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;装载时的动态链接举例&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#include &amp;quot;libexample.h&amp;quot;&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;cpf&quot;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;cpf&quot;&gt;&amp;quot;libexample.h&amp;quot;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;&lt;/span&gt;
 &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;This is a main program!&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;LibApi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
   &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SUCCESS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;gcc main.c -o main -L/path/to/your/dir -llibexample -m32
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;gcc main.c -o main -L/path/to/your/dir -llibexample -m32
 # 编译main，/path/to/your/dir可用.代替。
 # 注意这里只提供libexample的-L（库对应的接口头文件所在目录）和-l（库名，如liblibexample.so去掉lib和.so的部分）。
 $ export LD_LIBRARY_PATH=$PWD
@@ -307,8 +307,8 @@ $ export LD_LIBRARY_PATH=$PWD
 $ ./main
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;&lt;strong&gt;运行时的动态链接举例&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;dlfcn.h&amp;gt;&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;cpf&quot;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;cpf&quot;&gt;&amp;lt;dlfcn.h&amp;gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;&lt;/span&gt;
 
 &lt;span class=&quot;cp&quot;&gt;#define SUCCESS 0&lt;/span&gt;
 &lt;span class=&quot;cp&quot;&gt;#define FAILURE (-1)&lt;/span&gt;
@@ -329,22 +329,22 @@ $ ./main
     &lt;span class=&quot;n&quot;&gt;dlclose&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;handle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SUCCESS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;gcc main.c -o main -ldl -m32
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;gcc main.c -o main -ldl -m32
 # -ldl选项，表示生成的对象模块使用运行时动态链接。
 $ export LD_LIBRARY_PATH=$PWD
 # 将当前目录加入默认路径，否则main找不到依赖的库文件，当然也可以将库文件copy到默认路径下。
 $ ./main
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
-        <pubDate>Fri, 13 May 2016 14:58:00 +0000</pubDate>
-        <link>http://www.dosrc.com/mark/gramar/2016/05/13/c-dynamical-loading.html</link>
-        <guid isPermaLink="true">http://www.dosrc.com/mark/gramar/2016/05/13/c-dynamical-loading.html</guid>
+        <pubDate>Fri, 13 May 2016 22:58:00 +0800</pubDate>
+        <link>http://localhost:4000/mark/gramar/2016/05/13/c-dynamical-loading.html</link>
+        <guid isPermaLink="true">http://localhost:4000/mark/gramar/2016/05/13/c-dynamical-loading.html</guid>
         
         <category>gramar</category>
         
         <category>c</category>
         
         
-        <category>gramar</category>
+        <category>Gramar</category>
         
       </item>
     
@@ -356,7 +356,7 @@ $ ./main
 &lt;li&gt;进程结构定义struct &lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/include/linux/sched.h#task_struct&quot;&gt;task_struct&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;volatile long state;&lt;/code&gt;记录进程的状态，进程状态的定义&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/include/linux/sched.h#203&quot;&gt;&lt;strong&gt;链接&lt;/strong&gt;&lt;/a&gt;，值得注意的是操作系统进程状态概念中的就绪态和运行态在这里都表示为TASK_RUNNING状态，若获得CPU的执行就为运行态，否则为就绪态。&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;Linux为每个进程分配一个8KB大小的内存区域，用于存放该进程两个不同的数据结构：&lt;code&gt;Thread_info&lt;/code&gt;和进程的内核堆栈&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;k&quot;&gt;union&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;thread_union&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;union&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;thread_union&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;thread_info&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;thread_info&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
     &lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;THREAD_SIZE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;sizeof&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)];&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
@@ -364,7 +364,7 @@ $ ./main
 &lt;p&gt;可能会有点奇怪，为什么这两个数据结构要共用一个内存空间呢，其实这是有原因的，早在以前，&lt;code&gt;thread_union&lt;/code&gt;中存放的并不是&lt;code&gt;thread_info&lt;/code&gt;,而是&lt;code&gt;thread_struct&lt;/code&gt;，只是后来变成了新的数据结构&lt;code&gt;thread_info&lt;/code&gt;，将&lt;code&gt;thread_struct&lt;/code&gt;或&lt;code&gt;thread_info&lt;/code&gt;放在内核栈的尾端（因为共用了一块内存）可以通过esp指针屏蔽末尾的若干位方便的得到当前运行进程的进程描述结构指针。&lt;/p&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;&lt;code&gt;void *stack;&lt;/code&gt;指向内核态堆栈。其实应该就是指向上面的8kb大小的共用内存区域。&lt;/p&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;&lt;code&gt;struct list_head tasks;&lt;/code&gt;所有进程的链表，将所有当前进程链接起来。&lt;code&gt;list_head&lt;/code&gt;中有两个指针域&lt;code&gt;next&lt;/code&gt;和&lt;code&gt;prev&lt;/code&gt;，分别指向下一个和前一个进程。&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;list_head&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;list_head&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;list_head&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
@@ -382,7 +382,7 @@ $ ./main
 &lt;p&gt;&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/arch/x86/kernel/process_32.c#copy_thread&quot;&gt;&lt;code&gt;copy_thread&lt;/code&gt;源码&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/arch/x86/kernel/entry_32.S#290&quot;&gt;&lt;code&gt;ret_from_fork&lt;/code&gt;源码&lt;/a&gt;&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;do_fork&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(...)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;do_fork&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(...)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;copy_process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clone_flags&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stack_start&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;stack_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;child_tidptr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;trace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
     &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
@@ -451,9 +451,9 @@ $ ./main
 &lt;p&gt;wdk 原创作品转载请注明出处&lt;br&gt;
 相关链接 [《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000]7]&lt;/p&gt;
 </description>
-        <pubDate>Wed, 13 Apr 2016 14:32:00 +0000</pubDate>
-        <link>http://www.dosrc.com/mark/linux/2016/04/13/linux-kernel-description-of-process.html</link>
-        <guid isPermaLink="true">http://www.dosrc.com/mark/linux/2016/04/13/linux-kernel-description-of-process.html</guid>
+        <pubDate>Wed, 13 Apr 2016 22:32:00 +0800</pubDate>
+        <link>http://localhost:4000/mark/linux-3.18.6/2016/04/13/linux-kernel-description-of-process.html</link>
+        <guid isPermaLink="true">http://localhost:4000/mark/linux-3.18.6/2016/04/13/linux-kernel-description-of-process.html</guid>
         
         <category>linux</category>
         
@@ -462,7 +462,7 @@ $ ./main
         <category>experiment</category>
         
         
-        <category>linux</category>
+        <category>Linux-3.18.6</category>
         
       </item>
     
@@ -486,7 +486,7 @@ $ ./main
 &lt;p&gt;虽然仅有一个属性不同，但是这两个repository的作用却是不同，一个是本地工作repository，一个是专供远程提交的repository。对于本地工作repository，别人是不能推送（push）工作到你的repository的。所以congit/下的bare属性如果为true的话则这个repository可以充当远程repository，你只要把你的clone过来的repository或git init初始化的repository中的.git/config下的bare属性改为true就可以变成远程repository了，甚至都不需要把.git下的文件移出来到父目录下。远程repository今后的工作中并不会产生logs（用来记录运行记录）文件夹。&lt;/p&gt;
 
 &lt;h3&gt;Git 工作运行的目录结构&lt;/h3&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;hooks                                   │hooks
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;hooks                                   │hooks
     - applypatch-msg.sample             │    - applypatch-msg.sample
     - commit-msg.sample                 │    - commit-msg.sample
     - post-update.sample                │    - post-update.sample
@@ -547,7 +547,7 @@ HEAD                                    │HEAD
 &lt;h4&gt;Git 记录文件探索&lt;/h4&gt;
 
 &lt;p&gt;前面已经说了，git的所有操作记录都会保存在objects目录下的文件中，那么这些文件中到底都存储了些什么内容呢，直接以文本方式打开这些文件都是乱码，后来发现这些文件要使用&lt;code&gt;git cat-file -p (SHA-1)&lt;/code&gt;命令来查看，其中可以不写完整（实测至少4位），只要能唯一标识文件即可。针对上述的第一次提交我们分别查看objects下增加的三个文件夹下的三个文件，SHA-1值是等于文件夹名加上文件名,在objects目录下（只要git目录下都可以）打开bash或命令提示窗口&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;$ git cat-file -p 80865964295ae2f11d27383e5f9c0b58a8ef21da
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;$ git cat-file -p 80865964295ae2f11d27383e5f9c0b58a8ef21da
 100644 blob d670460b4b4aece5915caf5c68d12f560a9fe3e4    test.txt
 
 $ git cat-file -p b042d75a51e77fdac111e85eda5331470781b9de
@@ -563,7 +563,7 @@ test content
 &lt;p&gt;第一次提交的是test.txt文件，该文本文件中的内容是test content，提交时的comment是test comment&lt;/p&gt;
 
 &lt;p&gt;在text.txtw文件中换行添加内容added text再次提交，提交comment为added comment，提交后又新增了三个文件夹和三个文件，分别使用&lt;code&gt;git cat-file -p (SHA-1)&lt;/code&gt;命令来查看这三个文件的内容结果如下&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;$ git cat-file -p 2ce18c9a25e15f30d684274b89d0ef29d032491e
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;$ git cat-file -p 2ce18c9a25e15f30d684274b89d0ef29d032491e
 tree 5a1e99b76770966d5975d2ba8aadf32c2bf550ea
 parent b042d75a51e77fdac111e85eda5331470781b9de
 author vandykai &amp;lt;wdkrgst@gmail.com&amp;gt; 1458567378 +0800
@@ -580,16 +580,16 @@ $ git cat-file -p 5a1e99b76770966d5975d2ba8aadf32c2bf550ea
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;可以看到SHA-1值为2ce18c9a25e15f30d684274b89d0ef29d032491e的文件信息中有一个tree值和parent值，parent值就是上次提交的SHA-1值，链接起来就形成了单个分支的列表，多个分支形成了一棵git数。通过tree的值指向的文件里里面的记录可以找到更新的文件被存储在哪个文件里面，现在的tree值为5a1e99b76770966d5975d2ba8aadf32c2bf550ea，查看这个文件，发现更新的文件被存储在了3a35a3b22ba503b003bbdf6066163a14d75b9a41这个文件里面，提交的文件名是test.txt，100644是文件模式，查看3a35a3b22ba503b003bbdf6066163a14d75b9a41这个文件发现它存储了最新文件的内容，没有采取差异存储，与预计有点出路，后面私下再次实验了一把，更新（增加数行）了一个5MB多的文本文件，发现每次更新提交都会增加3MB多的文件，看来确实没有采用差异存储，只是压缩了文件，这一点还是很奇怪的。后来查了下&lt;a href=&quot;http://www.open-open.com/lib/view/open1328070620202.html&quot;&gt;资料&lt;/a&gt;发现要手工调用&lt;code&gt;git gc&lt;/code&gt;命令来实现这种目的，当objects中的对象过多时，也会自动调用这个过程。这部分和index文件的作用留待以后研究。&lt;/p&gt;
 </description>
-        <pubDate>Sun, 20 Mar 2016 12:30:00 +0000</pubDate>
-        <link>http://www.dosrc.com/mark/vcs/2016/03/20/git-how-does-git-work.html</link>
-        <guid isPermaLink="true">http://www.dosrc.com/mark/vcs/2016/03/20/git-how-does-git-work.html</guid>
+        <pubDate>Sun, 20 Mar 2016 20:30:00 +0800</pubDate>
+        <link>http://localhost:4000/mark/vcs/2016/03/20/git-how-does-git-work.html</link>
+        <guid isPermaLink="true">http://localhost:4000/mark/vcs/2016/03/20/git-how-does-git-work.html</guid>
         
         <category>vcs</category>
         
         <category>git</category>
         
         
-        <category>vcs</category>
+        <category>VCS</category>
         
       </item>
     
@@ -606,9 +606,9 @@ $ git cat-file -p 5a1e99b76770966d5975d2ba8aadf32c2bf550ea
 &lt;li&gt;中断发生后第一件事就是保存现场到自己（内核态)的堆栈中,这就正好衔接了之前保存和恢复栈顶指针的动作，保护现场就是进入中断程序保存需要用到的寄存器的数据，也可以简单保存其他所有寄存器的值即定义一个SAVE_ALL的代码块供调用。恢复现场同理。&lt;/li&gt;
 &lt;li&gt;iret指令与中断信号（包括int指令）发生时CPU做的动作正好相反&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;中断一般模版&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;;进入中断
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;;进入中断
 int指令进入到中断/系统调用
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;;中断处理程序一般步骤
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;;中断处理程序一般步骤
 SAVE_ALL调用
 中断处理程序
 RESTORE_ALL调用
@@ -655,9 +655,9 @@ iret指令
 &lt;li&gt;&lt;p&gt;源代码如下&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;mkdir.c&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;sys/stat.h&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;sys/types.h&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;cpf&quot;&gt;&amp;lt;sys/stat.h&amp;gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;cpf&quot;&gt;&amp;lt;sys/types.h&amp;gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;cpf&quot;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;&lt;/span&gt;
 &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;mkdir&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;test&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mo&quot;&gt;0777&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
@@ -668,14 +668,14 @@ iret指令
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;&lt;strong&gt;mkdir-asm.c&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;sys/stat.h&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;sys/types.h&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;cpf&quot;&gt;&amp;lt;sys/stat.h&amp;gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;cpf&quot;&gt;&amp;lt;sys/types.h&amp;gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;cpf&quot;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;&lt;/span&gt;
 &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;filePath&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;test&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
     &lt;span class=&quot;kt&quot;&gt;mode_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mo&quot;&gt;0777&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;asm&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;volatile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;asm&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;volatile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
             &lt;span class=&quot;s&quot;&gt;&amp;quot;movl $0X27,%%eax&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;
             &lt;span class=&quot;s&quot;&gt;&amp;quot;movl %1,%%ebx&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;
             &lt;span class=&quot;s&quot;&gt;&amp;quot;movl %2,%%ecx&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;
@@ -704,8 +704,8 @@ iret指令
 &lt;p&gt;分析下面的代码&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;fork-test.c&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;unistd.h&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;cpf&quot;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#include&lt;/span&gt; &lt;span class=&quot;cpf&quot;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;&lt;/span&gt;
 &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;kt&quot;&gt;pid_t&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sonPid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;sonPid&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fork&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
@@ -749,9 +749,9 @@ iret指令
 &lt;p&gt;wdk 原创作品转载请注明出处&lt;br&gt;
 相关链接 &lt;a href=&quot;http://mooc.study.163.com/course/USTC-1000029000&quot;&gt;《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000&lt;/a&gt;&lt;/p&gt;
 </description>
-        <pubDate>Fri, 18 Mar 2016 12:13:00 +0000</pubDate>
-        <link>http://www.dosrc.com/mark/linux/2016/03/18/linux-kernel-system-call.html</link>
-        <guid isPermaLink="true">http://www.dosrc.com/mark/linux/2016/03/18/linux-kernel-system-call.html</guid>
+        <pubDate>Fri, 18 Mar 2016 20:13:00 +0800</pubDate>
+        <link>http://localhost:4000/mark/linux-3.18.6/2016/03/18/linux-kernel-system-call.html</link>
+        <guid isPermaLink="true">http://localhost:4000/mark/linux-3.18.6/2016/03/18/linux-kernel-system-call.html</guid>
         
         <category>linux</category>
         
@@ -760,7 +760,7 @@ iret指令
         <category>experiment</category>
         
         
-        <category>linux</category>
+        <category>Linux-3.18.6</category>
         
       </item>
     
@@ -805,12 +805,12 @@ iret指令
 &lt;p&gt;&lt;strong&gt;tools&lt;/strong&gt; - 工具&lt;/p&gt;
 
 &lt;h3&gt;使用gdb跟踪调试内核，其中的rootfs.img 为自制的根文件系统&lt;/h3&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;qemu -kernel linux-3.18.6/arch/x86/boot/bzImage -initrd rootfs.img -s -S # 关于-s和-S选项的说明：
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;qemu -kernel linux-3.18.6/arch/x86/boot/bzImage -initrd rootfs.img -s -S # 关于-s和-S选项的说明：
 # -S freeze CPU at startup (use ’c’ to start execution)
 # -s shorthand for -gdb tcp::1234 若不想使用1234端口，则可以使用-gdb tcp:xxxx来取代-s选项
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;另开一个shell窗口&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;gdb
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;gdb
 （gdb）file linux-3.18.6/vmlinux # 在gdb界面中targe remote之前加载符号表
 （gdb）target remote:1234 # 建立gdb和gdbserver之间的连接,按c 让qemu上的Linux继续运行
 （gdb）break start_kernel # 断点的设置可以在target remote之前，也可以在之后
@@ -818,7 +818,7 @@ iret指令
 &lt;h2&gt;实验分析&lt;/h2&gt;
 
 &lt;h3&gt;main.c的部分代码如下（省略号为略去的代码）&lt;/h3&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;n&quot;&gt;asmlinkage&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__visible&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__init&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;start_kernel&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;asmlinkage&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__visible&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__init&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;start_kernel&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;set_task_stack_end_magic&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;init_task&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
@@ -832,7 +832,7 @@ iret指令
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h3&gt;rest_init 函数代码如下&lt;/h3&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;noinline&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__init_refok&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;rest_init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;noinline&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__init_refok&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;rest_init&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 
@@ -878,9 +878,9 @@ iret指令
 &lt;p&gt;wdk 原创作品转载请注明出处&lt;br&gt;
 相关链接 &lt;a href=&quot;http://mooc.study.163.com/course/USTC-1000029000&quot;&gt;《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000&lt;/a&gt;&lt;/p&gt;
 </description>
-        <pubDate>Thu, 17 Mar 2016 12:13:00 +0000</pubDate>
-        <link>http://www.dosrc.com/mark/linux/2016/03/17/linux-kernel-construct-a-simple-linux-operating-system.html</link>
-        <guid isPermaLink="true">http://www.dosrc.com/mark/linux/2016/03/17/linux-kernel-construct-a-simple-linux-operating-system.html</guid>
+        <pubDate>Thu, 17 Mar 2016 20:13:00 +0800</pubDate>
+        <link>http://localhost:4000/mark/linux-3.18.6/2016/03/17/linux-kernel-construct-a-simple-linux-operating-system.html</link>
+        <guid isPermaLink="true">http://localhost:4000/mark/linux-3.18.6/2016/03/17/linux-kernel-construct-a-simple-linux-operating-system.html</guid>
         
         <category>linux</category>
         
@@ -889,7 +889,7 @@ iret指令
         <category>experiment</category>
         
         
-        <category>linux</category>
+        <category>Linux-3.18.6</category>
         
       </item>
     
@@ -904,7 +904,7 @@ iret指令
 &lt;h2&gt;实验分析&lt;/h2&gt;
 
 &lt;h3&gt;自定义进程定义的代码如下&lt;/h3&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#define MAX_TASK_NUM        4&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;#define MAX_TASK_NUM        4&lt;/span&gt;
 &lt;span class=&quot;cp&quot;&gt;#define KERNEL_STACK_SIZE   1024*8&lt;/span&gt;
 
 &lt;span class=&quot;cm&quot;&gt;/* CPU-specific state of this task */&lt;/span&gt;
@@ -924,12 +924,12 @@ iret指令
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tPCB&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h3&gt;自定义进程切换的核心代码如下&lt;/h3&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;state&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;state&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;cm&quot;&gt;/* -1 unrunnable, 0 runnable, &amp;gt;0 stopped */&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;my_current_task&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;printk&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;KERN_NOTICE&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;gt;&amp;gt;&amp;gt;switch %d to %d&amp;lt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
     &lt;span class=&quot;cm&quot;&gt;/* switch to next process */&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;asm&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;volatile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;asm&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;volatile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
             &lt;span class=&quot;s&quot;&gt;&amp;quot;pushl %%ebp&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* save ebp */&lt;/span&gt;
             &lt;span class=&quot;s&quot;&gt;&amp;quot;movl %%esp,%0&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* save esp */&lt;/span&gt;
             &lt;span class=&quot;s&quot;&gt;&amp;quot;movl %2,%%esp&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* restore  esp */&lt;/span&gt;
@@ -946,7 +946,7 @@ iret指令
     &lt;span class=&quot;n&quot;&gt;my_current_task&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;printk&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;KERN_NOTICE&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;gt;&amp;gt;&amp;gt;switch %d to %d&amp;lt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
     &lt;span class=&quot;cm&quot;&gt;/* switch to new process */&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;asm&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;volatile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;asm&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;volatile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
             &lt;span class=&quot;s&quot;&gt;&amp;quot;pushl %%ebp&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* save ebp */&lt;/span&gt;
             &lt;span class=&quot;s&quot;&gt;&amp;quot;movl %%esp,%0&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* save esp */&lt;/span&gt;
             &lt;span class=&quot;s&quot;&gt;&amp;quot;movl %2,%%esp&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* restore  esp */&lt;/span&gt;
@@ -976,9 +976,9 @@ iret指令
 &lt;p&gt;wdk 原创作品转载请注明出处&lt;br&gt;
 相关链接 &lt;a href=&quot;http://mooc.study.163.com/course/USTC-1000029000&quot;&gt;《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000&lt;/a&gt;&lt;/p&gt;
 </description>
-        <pubDate>Sun, 06 Mar 2016 10:45:00 +0000</pubDate>
-        <link>http://www.dosrc.com/mark/linux/2016/03/06/linux-kernel-working-process-of-operating-system.html</link>
-        <guid isPermaLink="true">http://www.dosrc.com/mark/linux/2016/03/06/linux-kernel-working-process-of-operating-system.html</guid>
+        <pubDate>Sun, 06 Mar 2016 18:45:00 +0800</pubDate>
+        <link>http://localhost:4000/mark/linux-3.18.6/2016/03/06/linux-kernel-working-process-of-operating-system.html</link>
+        <guid isPermaLink="true">http://localhost:4000/mark/linux-3.18.6/2016/03/06/linux-kernel-working-process-of-operating-system.html</guid>
         
         <category>linux</category>
         
@@ -987,7 +987,7 @@ iret指令
         <category>experiment</category>
         
         
-        <category>linux</category>
+        <category>Linux-3.18.6</category>
         
       </item>
     
@@ -996,7 +996,7 @@ iret指令
         <description>&lt;h2&gt;C语言内嵌汇编语法&lt;/h2&gt;
 
 &lt;h3&gt;GCC&lt;/h3&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt; &lt;span class=&quot;n&quot;&gt;__asm__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__asm__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
     &lt;span class=&quot;err&quot;&gt;汇编语句模版：&lt;/span&gt;
     &lt;span class=&quot;err&quot;&gt;输出部分：&lt;/span&gt;
     &lt;span class=&quot;err&quot;&gt;输入部分：&lt;/span&gt;
@@ -1010,35 +1010,34 @@ iret指令
 &lt;p&gt;在&lt;code&gt;__asm__&lt;/code&gt;后面有时也会加上&lt;code&gt;__volatile__&lt;/code&gt;表示编译器不要优化代码，后面的指令保留原样，同样&lt;code&gt;volatile&lt;/code&gt;是它的别名，在这里值得注意的是无论&lt;code&gt;__asm__&lt;/code&gt;还是&amp;quot;&lt;code&gt;__volatile__&lt;/code&gt;&amp;quot;中的每个下划线都不是一个单独的下划线，而是两个短的下划线拼成的。再后面括号里面的便是汇编指令。&lt;/p&gt;
 
 &lt;h3&gt;Visual C++&lt;/h3&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;__asm 汇编指令 [ ; ]
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;__asm 汇编指令 [ ; ]
 __asm { 汇编指令 } [ ; ]
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;同样asm前面是两条下划线，后面的方括号内容表示分号可有可无。&lt;/p&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;p&gt;组成一块地用&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;__asm {
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;__asm {
    mov al, 2
    mov dx, 0xD007
    out dx, al
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;分条的使用&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;__asm mov al, 2
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;__asm mov al, 2
 __asm mov dx, 0xD007
 __asm out dx, al
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;也可以写在同一行&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;__asm mov al, 2   __asm mov dx, 0xD007   __asm out dx, al
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;__asm mov al, 2   __asm mov dx, 0xD007   __asm out dx, al
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;h3&gt;Turbo C&lt;/h3&gt;
 
 &lt;ol&gt;
-&lt;li&gt;&lt;p&gt;使用预处理程序的伪指令#asm和#endasm,#asm用来开始一个汇编程序块，而#endasm指令用于该块的结
-束。&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;mul(a,b)
+&lt;li&gt;&lt;p&gt;使用预处理程序的伪指令&lt;code&gt;#asm&lt;/code&gt;和&lt;code&gt;#endasm&lt;/code&gt;,&lt;code&gt;#asm&lt;/code&gt;用来开始一个汇编程序块，而&lt;code&gt;#endasm&lt;/code&gt;指令用于该块的结束。&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;mul(a,b)
 int a,b;
 {
    #asm
@@ -1048,8 +1047,8 @@ int a,b;
 }
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;使用asm语句
-格式：asm&amp;lt;汇编语句&amp;gt;&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;mul(a,b)
+格式：&lt;code&gt;asm&amp;lt;汇编语句&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;mul(a,b)
 int a,b;
 {
     asm   mov ax,word ptr 8[bp]
@@ -1062,16 +1061,16 @@ int a,b;
 &lt;p&gt;Visual C++ 和 Turbo C语法转自&lt;a href=&quot;http://bbs.51cto.com/thread-652061-1.html&quot;&gt;http://bbs.51cto.com/thread-652061-1.html&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 </description>
-        <pubDate>Sun, 06 Mar 2016 08:45:00 +0000</pubDate>
-        <link>http://www.dosrc.com/mark/gramar/2016/03/06/c-inline-assembly-language.html</link>
-        <guid isPermaLink="true">http://www.dosrc.com/mark/gramar/2016/03/06/c-inline-assembly-language.html</guid>
+        <pubDate>Sun, 06 Mar 2016 16:45:00 +0800</pubDate>
+        <link>http://localhost:4000/mark/gramar/2016/03/06/c-inline-assembly-language.html</link>
+        <guid isPermaLink="true">http://localhost:4000/mark/gramar/2016/03/06/c-inline-assembly-language.html</guid>
         
         <category>gramar</category>
         
         <category>c</category>
         
         
-        <category>gramar</category>
+        <category>Gramar</category>
         
       </item>
     
@@ -1086,14 +1085,14 @@ int a,b;
 &lt;li&gt;eip寄存器不能被直接修改，只能通过特殊指令间接修改，如通过call与ret指令。&lt;/li&gt;
 &lt;li&gt;函数的返回值默认使用eax寄存器存储返回给上一级函数&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;汇编中对应的方法过程如下&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;nl&quot;&gt;method&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;method&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;enter&lt;/span&gt;
     &lt;span class=&quot;c1&quot;&gt;// Real Code Here&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;leave&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;ret&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;指令实际做的事情列表：&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span class=&quot;n&quot;&gt;push&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;eax&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-Java&quot; data-lang=&quot;Java&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;push&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;eax&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;subl&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;$4&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;esp&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;movl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;eax&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;esp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
 &lt;span class=&quot;n&quot;&gt;pop&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;eax&lt;/span&gt;
@@ -1122,7 +1121,7 @@ int a,b;
 
 &lt;p&gt;&lt;img src=&quot;/mark/assets/images/2016-02-25-linux-kernel-working-process-of-assembly-code/main-s.png&quot; alt=&quot;main.s&quot;&gt;
 从图中可以看出，C程序方法对应的汇编方法一般过程如下：&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span class=&quot;nl&quot;&gt;method&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;method&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
         &lt;span class=&quot;n&quot;&gt;enter&lt;/span&gt;
         &lt;span class=&quot;c1&quot;&gt;// Real Code Here&lt;/span&gt;
         &lt;span class=&quot;n&quot;&gt;leave&lt;/span&gt;
@@ -1135,9 +1134,9 @@ int a,b;
 &lt;p&gt;wdk 原创作品转载请注明出处&lt;br&gt;
 相关链接 &lt;a href=&quot;http://mooc.study.163.com/course/USTC-1000029000&quot;&gt;《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000&lt;/a&gt;&lt;/p&gt;
 </description>
-        <pubDate>Thu, 25 Feb 2016 10:42:00 +0000</pubDate>
-        <link>http://www.dosrc.com/mark/linux/2016/02/25/linux-kernel-working-process-of-assembly-code.html</link>
-        <guid isPermaLink="true">http://www.dosrc.com/mark/linux/2016/02/25/linux-kernel-working-process-of-assembly-code.html</guid>
+        <pubDate>Thu, 25 Feb 2016 18:42:00 +0800</pubDate>
+        <link>http://localhost:4000/mark/linux-3.18.6/2016/02/25/linux-kernel-working-process-of-assembly-code.html</link>
+        <guid isPermaLink="true">http://localhost:4000/mark/linux-3.18.6/2016/02/25/linux-kernel-working-process-of-assembly-code.html</guid>
         
         <category>linux</category>
         
@@ -1146,7 +1145,7 @@ int a,b;
         <category>experiment</category>
         
         
-        <category>linux</category>
+        <category>Linux-3.18.6</category>
         
       </item>
     
