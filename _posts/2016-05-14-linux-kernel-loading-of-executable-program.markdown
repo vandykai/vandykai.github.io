@@ -76,7 +76,7 @@ tags: [linux, linux-kernel, experiment]
         ...
     } else {//不需要动态链接
         elf_entry = loc->elf_ex.e_entry;
-    ｝
+    }
     ```
 
 wdk 原创作品转载请注明出处  
