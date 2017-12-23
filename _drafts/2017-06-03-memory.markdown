@@ -1,0 +1,11 @@
+修改文件拥有者和所属的组
+chown root:root file
+
+修改文件所属的组
+chgrp root file
+
+递归修改文件所属的组
+chgrp -R users test
+
+查看磁盘使用情况
+df -hl
