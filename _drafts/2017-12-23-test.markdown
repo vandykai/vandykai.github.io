@@ -1,0 +1,16 @@
+---
+
+layout: post
+title:  Test
+date:   2017-12-23 12:30:00
+categories: [Paper]
+tags: [nips, 2013]
+
+---
+
+
+<embed src="/mark/assets/pdf/2017-12-23-markov-decision-process/2017-12-23-markov-decision-process.pdf#page=1" type="application/pdf" width="100%" height=800px>
+
+<iframe src=/mark/assets/pdf/2017-12-23-markov-decision-process/2017-12-23-markov-decision-process.pdf#page=1" width="100%" height="100%">
+This browser does not support PDFs. Please download the PDF to view it: <a href="/pdf/sample-3pp.pdf">Download PDF</a>
+</iframe>
