@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Ruby On Rails</title>
+  <meta name="description" content="安装安装ruby安装sqlite3">
+
+  <link rel="stylesheet" href="/mark/css/main.css">
+  <link rel="stylesheet" href="/mark/css/pygments.css">
+  <link rel="shortcut icon" href="/mark/favicon.ico">
+  <link rel="canonical" href="http://localhost:4000/mark/web/2017/12/23/begin-ruby-on-rails.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/mark/">Blog</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/mark/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Ruby On Rails</h1>
+    <p class="post-meta">Dec 23, 2017</p>
+  </header>
+
+  <article class="post-content">
+    <h2>安装</h2>
+
+<ol>
+<li>安装ruby</li>
+<li><p>安装sqlite3</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>sudo apt-get install sqlite3
+sudo apt-get install libsqlite3-dev
+</code></pre></div></li>
+<li><p>安装rails</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>gem install rails
+rails --version
+</code></pre></div></li>
+<li><p>使用rails创建博客</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>rails new blog
+</code></pre></div></li>
+<li><p>启动web服务器</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>cd blog
+bin/rails server
+</code></pre></div></li>
+</ol>
+
+<h2>错误及处理</h2>
+<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:84:in `rescue in block (2 levels) in require&#39;: There was an error while trying to load the gem &#39;uglifier&#39;. (Bundler::GemRequireError)
+Gem Load Error is: Could not find a JavaScript runtime. See https://github.com/rails/execjs for a list of available runtimes.
+Backtrace for gem load error is:
+/var/lib/gems/2.3.0/gems/execjs-2.7.0/lib/execjs/runtimes.rb:58:in `autodetect&#39;
+/var/lib/gems/2.3.0/gems/execjs-2.7.0/lib/execjs.rb:5:in `&lt;module:ExecJS&gt;&#39;
+/var/lib/gems/2.3.0/gems/execjs-2.7.0/lib/execjs.rb:4:in `&lt;top (required)&gt;&#39;
+/var/lib/gems/2.3.0/gems/uglifier-4.1.1/lib/uglifier.rb:5:in `require&#39;
+/var/lib/gems/2.3.0/gems/uglifier-4.1.1/lib/uglifier.rb:5:in `&lt;top (required)&gt;&#39;
+/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:81:in `require&#39;
+/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:81:in `block (2 levels) in require&#39;
+/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:76:in `each&#39;
+/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:76:in `block in require&#39;
+/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:65:in `each&#39;
+/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:65:in `require&#39;
+/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler.rb:114:in `require&#39;
+/home/ez/blog/config/application.rb:7:in `&lt;top (required)&gt;&#39;
+/var/lib/gems/2.3.0/gems/railties-5.1.4/lib/rails/commands/server/server_command.rb:133:in `require&#39;
+...
+...
+</code></pre></div><div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>原因：没有JavaScript runtime
+解决方法：sudo apt-get install nodejs
+</code></pre></div>
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>Blog</li>
+          <li><a href="mailto:wdkrgst@gmail.com">wdkrgst@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text"></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

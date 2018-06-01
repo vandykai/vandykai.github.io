@@ -1,17 +1,45 @@
 body {
-    background-color: #f5f5d5;
+    background-color: #FFFFF8;
 }
-
-a {
-    width: auto;
-    font-size: 20px;
+#main {
+    width: 1280px;
+    clear: both;
+    margin: 10px auto;
+    overflow: hidden;
+}
+#left {
+    width: 10%;
+    float: left;
+}
+#center {
+    width: 80%;
+    float: left;
+}
+#right {
+    width: 10%;
+    float: left;
+}
+.center-row {
     line-height: 1.5;
-    font-weight: 300;
-    color: #111;
+    text-align: left;
 }
-
-.post-link {
+.center-row-name {
+    font-weight:bold;
+    font-size: 15px;
+    display:inline-block;
+    text-align: center;
+    width: 100px;
+}
+.center-row-link {
+    display:inline-block;
+    text-align: center;
+    width: 100px;
+}
+.href-link {
     position: relative;
+    font-size: 14px;
+    font-weight: 300;
+    color: #500a0a;
 }
 
 .inverse-color-font {
