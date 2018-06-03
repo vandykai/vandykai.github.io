@@ -9,7 +9,11 @@ body {
 }
 #left {
     width: 10%;
+    height: 400px;
     float: left;
+    font-size: 15px;
+    writing-mode: vertical-lr;
+    writing-mode: tb-lr;
 }
 #center {
     width: 80%;
@@ -17,10 +21,14 @@ body {
 }
 #right {
     width: 10%;
+    height: 400px;
     float: left;
+    font-size: 15px;
+    writing-mode: vertical-lr;
+    writing-mode: tb-lr;
 }
 .center-row {
-    line-height: 1.5;
+    line-height: 2.5;
     text-align: left;
 }
 .center-row-name {
@@ -33,7 +41,8 @@ body {
 .center-row-link {
     display:inline-block;
     text-align: center;
-    width: 100px;
+    width: 120px;
+    background-color: #f2e8ea;
 }
 .href-link {
     position: relative;
