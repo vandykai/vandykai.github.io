@@ -5,9 +5,39 @@
     <description></description>
     <link>http://localhost:4000/mark/</link>
     <atom:link href="http://localhost:4000/mark/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 01 Jun 2018 00:54:14 +0800</pubDate>
-    <lastBuildDate>Fri, 01 Jun 2018 00:54:14 +0800</lastBuildDate>
+    <pubDate>Fri, 24 Aug 2018 18:12:48 +0800</pubDate>
+    <lastBuildDate>Fri, 24 Aug 2018 18:12:48 +0800</lastBuildDate>
     <generator>Jekyll v3.4.3</generator>
+    
+      <item>
+        <title>Learning Deep Structured Semantic Models for Web Search using Clickthrough Data (pdf)</title>
+        <description>&lt;p&gt;&lt;embed src=&quot;/mark/assets/pdf/2018-08-11-learning-deep-structured-semantic-models-for-web-search-using-clickthrough-data/2018-08-11-learning-deep-structured-semantic-models-for-web-search-using-clickthrough-data.pdf#page=1&quot; type=&quot;application/pdf&quot; width=&quot;100%&quot; height=800px&gt;&lt;/p&gt;
+</description>
+        <pubDate>Wed, 23 May 2018 21:30:00 +0800</pubDate>
+        <link>http://localhost:4000/mark/paper/2018/05/23/learning-deep-structured-semantic-models-for-web-search-using-clickthrough-data.html</link>
+        <guid isPermaLink="true">http://localhost:4000/mark/paper/2018/05/23/learning-deep-structured-semantic-models-for-web-search-using-clickthrough-data.html</guid>
+        
+        <category>2014</category>
+        
+        
+        <category>Paper</category>
+        
+      </item>
+    
+      <item>
+        <title>Neural Networks and Physical Systems with Emergent Collective Computational Abilities (pdf)</title>
+        <description>&lt;p&gt;&lt;embed src=&quot;/mark/assets/pdf/2018-07-26-neural-networks-and-physical-systems-with-emergent-collective-computational-abilities/2018-07-26-neural-networks-and-physical-systems-with-emergent-collective-computational-abilities.pdf#page=1&quot; type=&quot;application/pdf&quot; width=&quot;100%&quot; height=800px&gt;&lt;/p&gt;
+</description>
+        <pubDate>Wed, 23 May 2018 21:30:00 +0800</pubDate>
+        <link>http://localhost:4000/mark/paper/2018/05/23/neural-networks-and-physical-systems-with-emergent-collective-computational-abilities.html</link>
+        <guid isPermaLink="true">http://localhost:4000/mark/paper/2018/05/23/neural-networks-and-physical-systems-with-emergent-collective-computational-abilities.html</guid>
+        
+        <category>2014</category>
+        
+        
+        <category>Paper</category>
+        
+      </item>
     
       <item>
         <title>Neural Turing Machines (pdf)</title>
@@ -332,219 +362,6 @@ $$h _{\theta }\left ( x \right ) = \theta _{0} + \theta _{1}x _{1} + \theta _{2}
         
         
         <category>Other</category>
-        
-      </item>
-    
-      <item>
-        <title>Machine Learning - 线性回归</title>
-        <description>&lt;h3&gt;假设函数&lt;/h3&gt;
-
-&lt;p&gt;\( h _ {\theta } \left ( x \right ) = \theta _ {0}x _ {0} + \theta _ {1}x _ {1} + \theta _ {2}x _ {2} + ... + \theta _ {n}x _ {n}\)&lt;/p&gt;
-
-&lt;p&gt;这里\( x _{0} \)恒等于1，表示为常数项。&lt;/p&gt;
-
-&lt;h3&gt;损失函数&lt;/h3&gt;
-
-&lt;p&gt;\( J \left ( \theta  \right )= \frac{1}{2m} \sum_{i=1}^{m} \left ( h _{\theta} \left ( x^{\left (i  \right )} \right ) - y^{\left (i  \right )} \right ) ^{2} \)&lt;/p&gt;
-
-&lt;p&gt;其中&lt;code&gt;m&lt;/code&gt;为样本数量&lt;/p&gt;
-
-&lt;h3&gt;目标&lt;/h3&gt;
-
-&lt;p&gt;\( \min J\left ( \theta  \right ) \)&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;梯度下降法
-
-&lt;ul&gt;
-&lt;li&gt;正统的方法是需要同步更新每个θ&lt;/li&gt;
-&lt;li&gt;\( \theta _ {j} = \theta _ {j} - \alpha \frac {1}{m} \sum_{i=1}^{m} \left ( h _ {\theta} \left ( x^{\left (i  \right )} \right ) - y^{\left (i  \right )} \right ) x _{j}^{\left (i  \right )} \)&lt;/br&gt;
-其中\( \alpha \) 为学习率&lt;/li&gt;
-&lt;li&gt;matlab代码如下&lt;/br&gt;
-&lt;code&gt;matlab
-theta=theta-(alpha/m*X&amp;#39;*(X*theta-y));
-&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;li&gt;正规方程法&lt;/br&gt;
-
-&lt;ul&gt;
-&lt;li&gt;也就是利用数学的方法，根据最小值在导数等于0的地方取得可直接求得结果，但是由于求n×n矩阵的逆运算复杂度为\( O\left ( n^{3} \right ) \),所以当特征很多时不宜用此方法，一般要求n小于10000&lt;/li&gt;
-&lt;li&gt;matlab代码如下&lt;/br&gt;
-&lt;code&gt;matlab
-theta=pinv(X&amp;#39;*X)*X&amp;#39;*y;
-&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;当矩阵X&amp;#39;*X的逆不存在时，一般是由于特征值之间具有线性相关性，提示我们重新选取特征值，或者是由于特征值太多而训练样本不足。&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-        <pubDate>Wed, 14 Jun 2017 23:06:00 +0800</pubDate>
-        <link>http://localhost:4000/mark/machine-learning/2017/06/14/machine-learning-linear-regression.html</link>
-        <guid isPermaLink="true">http://localhost:4000/mark/machine-learning/2017/06/14/machine-learning-linear-regression.html</guid>
-        
-        <category>AI</category>
-        
-        <category>machine-learning</category>
-        
-        
-        <category>Machine-Learning</category>
-        
-      </item>
-    
-      <item>
-        <title>Linux Kernel - 进程的切换和系统的一般执行过程</title>
-        <description>&lt;h3&gt;进程的调度时机与进程的切换&lt;/h3&gt;
-
-&lt;h4&gt;进程调度的时机&lt;/h4&gt;
-
-&lt;ul&gt;
-&lt;li&gt;中断处理过程（包括时钟中断、I/O中断、系统调用和异常）中，直接调用&lt;code&gt;schedule()&lt;/code&gt;,或者返回用户态时根据&lt;code&gt;need_resched&lt;/code&gt;标记调用&lt;code&gt;schedule()&lt;/code&gt;。&lt;/li&gt;
-&lt;li&gt;内核线程（只有内核态没有用户态的特殊进程）可以直接调用&lt;code&gt;schedule()&lt;/code&gt;进行进程切换，也可以在中断处理过程中进行调度，也就是说内核线程作为一类特殊的进程可以主动调度，也可以被动调度。&lt;/li&gt;
-&lt;li&gt;用户态进程无法实现主动调度，仅能通过陷入内核态后的某个时机点进行调度，即在中断处理过程中进行调度。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4&gt;进程的切换&lt;/h4&gt;
-
-&lt;ul&gt;
-&lt;li&gt;挂起正在CPU上执行的进程，与中断时保护现场是不同的，中断前后是在同一个进程上下文中，只是由用户态转向内核态执行。&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;进程上下文包含了进程执行需要的所有信息&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;用户地址空间：包括程序代码，数据，用户堆栈等。&lt;/li&gt;
-&lt;li&gt;控制信息：进程描述符，内核堆栈等。&lt;/li&gt;
-&lt;li&gt;硬件上下文（注意中断也要保存硬件上下文只是保存的方法不同）&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/kernel/sched/core.c#schedule&quot;&gt;&lt;code&gt;schedule()&lt;/code&gt;&lt;/a&gt;函数选择一个新的进程来运行，并调用&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/kernel/sched/core.c#context_switch&quot;&gt;&lt;code&gt;context_switch&lt;/code&gt;&lt;/a&gt;进行上下文的切换，其中的宏调用&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/arch/x86/include/asm/switch_to.h#switch_to&quot;&gt;&lt;code&gt;switch_to&lt;/code&gt;&lt;/a&gt;进行关键上下文切换。&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;asmlinkage&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__visible&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__sched&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;schedule&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task_struct&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tsk&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;sched_submit_work&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tsk&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;__schedule&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;__sched&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;__schedule&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task_struct&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;switch_count&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rq&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rq&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cpu&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;nl&quot;&gt;need_resched&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pick_next_task&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rq&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;likely&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;context_switch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rq&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* unlocks the rq */&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;inline&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;context_switch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rq&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rq&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task_struct&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;task_struct&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;prepare_task_switch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rq&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;context_tracking_task_switch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;cm&quot;&gt;/* Here we just switch the register state and the stack. */&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;switch_to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;...&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-C&quot; data-lang=&quot;C&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;cp&quot;&gt;#define switch_to(prev, next, last)&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;                                                                        \
-    &lt;span class=&quot;cm&quot;&gt;/*                                                                      \&lt;/span&gt;
-&lt;span class=&quot;cm&quot;&gt;     * Context-switching clobbers all registers, so we clobber              \&lt;/span&gt;
-&lt;span class=&quot;cm&quot;&gt;     * them explicitly, via unused output variables.                        \&lt;/span&gt;
-&lt;span class=&quot;cm&quot;&gt;     * (EAX and EBP is not listed because EBP is saved/restored             \&lt;/span&gt;
-&lt;span class=&quot;cm&quot;&gt;     * explicitly for wchan access and EAX is the return value of           \&lt;/span&gt;
-&lt;span class=&quot;cm&quot;&gt;     * __switch_to())                                                       \&lt;/span&gt;
-&lt;span class=&quot;cm&quot;&gt;     */&lt;/span&gt;                                                                     \
-    &lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ebx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ecx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;edx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;esi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;edi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;                                  \
-                                                                            \
-    &lt;span class=&quot;k&quot;&gt;asm&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;volatile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;                                                           \
-            &lt;span class=&quot;s&quot;&gt;&amp;quot;pushfl&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;    &lt;span class=&quot;cm&quot;&gt;/* save    flags */&lt;/span&gt;                             \
-            &lt;span class=&quot;s&quot;&gt;&amp;quot;pushl %%ebp&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;    &lt;span class=&quot;cm&quot;&gt;/* save    EBP   */&lt;/span&gt;                        \
-            &lt;span class=&quot;s&quot;&gt;&amp;quot;movl %%esp,%[prev_sp]&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;  &lt;span class=&quot;cm&quot;&gt;/* save    ESP   */&lt;/span&gt;                \
-            &lt;span class=&quot;s&quot;&gt;&amp;quot;movl %[next_sp],%%esp&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;  &lt;span class=&quot;cm&quot;&gt;/* restore ESP   */&lt;/span&gt;                \
-            &lt;span class=&quot;s&quot;&gt;&amp;quot;movl $1f,%[prev_ip]&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;  &lt;span class=&quot;cm&quot;&gt;/* save    EIP   */&lt;/span&gt;                  \
-            &lt;span class=&quot;s&quot;&gt;&amp;quot;pushl %[next_ip]&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;  &lt;span class=&quot;cm&quot;&gt;/* restore EIP   */&lt;/span&gt;                     \
-            &lt;span class=&quot;n&quot;&gt;__switch_canary&lt;/span&gt;                                                 \
-            &lt;span class=&quot;s&quot;&gt;&amp;quot;jmp __switch_to&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;  &lt;span class=&quot;cm&quot;&gt;/* regparm call  */&lt;/span&gt;                        \
-            &lt;span class=&quot;s&quot;&gt;&amp;quot;1:&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;                                                          \
-            &lt;span class=&quot;s&quot;&gt;&amp;quot;popl %%ebp&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;    &lt;span class=&quot;cm&quot;&gt;/* restore EBP   */&lt;/span&gt;                         \
-            &lt;span class=&quot;s&quot;&gt;&amp;quot;popfl&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;      &lt;span class=&quot;cm&quot;&gt;/* restore flags */&lt;/span&gt;                              \
-                                                                            \
-            &lt;span class=&quot;cm&quot;&gt;/* output parameters */&lt;/span&gt;                                         \
-            &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev_sp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;=m&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;thread&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;                             \
-              &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev_ip&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;=m&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;thread&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ip&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;                             \
-              &lt;span class=&quot;s&quot;&gt;&amp;quot;=a&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;last&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;                                                  \
-                                                                            \
-              &lt;span class=&quot;cm&quot;&gt;/* clobbered output registers: */&lt;/span&gt;                             \
-              &lt;span class=&quot;s&quot;&gt;&amp;quot;=b&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ebx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;=c&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ecx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;=d&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;edx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;                           \
-              &lt;span class=&quot;s&quot;&gt;&amp;quot;=S&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;esi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;=D&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;edi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;                                        \
-                                                                            \
-              &lt;span class=&quot;n&quot;&gt;__switch_canary_oparam&lt;/span&gt;                                        \
-                                                                            \
-              &lt;span class=&quot;cm&quot;&gt;/* input parameters: */&lt;/span&gt;                                       \
-            &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next_sp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;  &lt;span class=&quot;s&quot;&gt;&amp;quot;m&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;thread&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;                             \
-              &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next_ip&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;  &lt;span class=&quot;s&quot;&gt;&amp;quot;m&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;thread&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ip&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;                             \
-                                                                            \
-              &lt;span class=&quot;cm&quot;&gt;/* regparm parameters for __switch_to(): */&lt;/span&gt;                   \
-              &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;s&quot;&gt;&amp;quot;a&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;                                        \
-              &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;     &lt;span class=&quot;s&quot;&gt;&amp;quot;d&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;next&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;                                         \
-                                                                            \
-              &lt;span class=&quot;n&quot;&gt;__switch_canary_iparam&lt;/span&gt;                                        \
-                                                                            \
-            &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;cm&quot;&gt;/* reloaded segment registers */&lt;/span&gt;                              \
-              &lt;span class=&quot;s&quot;&gt;&amp;quot;memory&amp;quot;&lt;/span&gt;                                                      \
-    &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;                                                                      \
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;这里值得注意的是&lt;a href=&quot;http://codelab.shiyanlou.com/xref/linux-3.18.6/arch/x86/include/asm/switch_to.h#switch_to&quot;&gt;&lt;code&gt;switch_to(prev, next, last)&lt;/code&gt;&lt;/a&gt;中的&lt;code&gt;jmp __switch_to&lt;/code&gt;，实际上类似于函数，只不过参数通过寄存器传递，且因为没有&lt;code&gt;call&lt;/code&gt;语句所以不&lt;code&gt;pushl %eip*&lt;/code&gt;(*意在说明这条指令实际不存在，是伪指令)，但是&lt;code&gt;__switch_to&lt;/code&gt;末尾任然有条&lt;code&gt;ret&lt;/code&gt;语句，这样就把之前&lt;code&gt;pushl %[next_ip]&lt;/code&gt;的&lt;code&gt;[next_ip]&lt;/code&gt;&lt;code&gt;popl&lt;/code&gt;给了&lt;code&gt;eip&lt;/code&gt;。&lt;/p&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3&gt;Linux系统的一般运行过程。&lt;/h3&gt;
-
-&lt;h4&gt;最一般的情况：正在运行的用户态进程X切换到运行X用户态进程Y的过程&lt;/h4&gt;
-
-&lt;ol&gt;
-&lt;li&gt;正在运行的用户态进程X&lt;/li&gt;
-&lt;li&gt;发生中断——&lt;code&gt;save cs:eip/ss:esp/eflags(current) to kernel stack, then load cs:eip(entry of specific ISR) and ss:esp(point to kernel stack)&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;SAVE_ALL //保存现场&lt;/li&gt;
-&lt;li&gt;中断处理过程中或中断返回前调用了schedule()，其中的switch_to做了关键的进程上下文切换&lt;/li&gt;
-&lt;li&gt;标号1之后开始开始运行用户态进程Y（这里Y曾经通过以上步骤被切换出去过，因此可以从标号1继续执行）&lt;/li&gt;
-&lt;li&gt;restore_all //恢复现场&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;iret - pop cs:eip/ss:eip/eflags from kernel stack&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;继续运行用户态进程Y&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h4&gt;Linux系统执行过程中的几个特殊情况&lt;/h4&gt;
-
-&lt;ul&gt;
-&lt;li&gt;用户态进程与内核态线程之间互相切换，内核态线程不涉及到用户态到内核态的上下文切换，因为内核态线程没有用户态。&lt;/li&gt;
-&lt;li&gt;内核态线程之间互相切换。&lt;/li&gt;
-&lt;li&gt;内核线程主动调用schedule()（用户态进程不能主动调用schedule()），只有进程上下文的切换，没有发生中断上下文的切换。&lt;/li&gt;
-&lt;li&gt;创建子进程的系统调用在子进程中的执行起点及返回用户态，如fork，子进程从&lt;code&gt;ret_from_fork&lt;/code&gt;开始执行，而不是从标号1开始执行。&lt;/li&gt;
-&lt;li&gt;加载一个新的可执行程序后返回到用户态的情况。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4&gt;注意&lt;/h4&gt;
-
-&lt;ul&gt;
-&lt;li&gt;所有进程内核态空间是共享的。&lt;/li&gt;
-&lt;li&gt;内核态是各中断处理过程和内核线程的集合。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;wdk 原创作品转载请注明出处&lt;br&gt;
-相关链接 &lt;a href=&quot;http://mooc.study.163.com/course/USTC-1000029000&quot;&gt;《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Wed, 03 Aug 2016 05:16:00 +0800</pubDate>
-        <link>http://localhost:4000/mark/linux-3.18.6/2016/08/03/linux-kernel-process-switch-and-system-workflow.html</link>
-        <guid isPermaLink="true">http://localhost:4000/mark/linux-3.18.6/2016/08/03/linux-kernel-process-switch-and-system-workflow.html</guid>
-        
-        <category>linux</category>
-        
-        <category>linux-kernel</category>
-        
-        <category>experiment</category>
-        
-        
-        <category>Linux-3.18.6</category>
         
       </item>
     
