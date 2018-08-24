@@ -1,0 +1,12 @@
+---
+
+layout: post
+title:  Glossary
+date:   2018-06-05 21:07:00
+categories: [Paper]
+tags: [2014]
+
+---
+
+# LSH
+局部敏感性哈希，使得两个相似的东西哈希之后任然保持相似性不变。不同的相似比较方法对应不同的哈希方法
