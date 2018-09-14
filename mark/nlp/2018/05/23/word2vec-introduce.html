@@ -6,15 +6,15 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Design Pattern - OOP Principles</title>
-  <meta name="description" content="面向对象的原则">
+  <title>Word2Vec Introduce</title>
+  <meta name="description" content="背景one hot编码缺点：">
 
-  <link rel="stylesheet" href="/mark/css/main.css">
+  <link rel="stylesheet" href="/mark/css/main_pdf.css">
   <link rel="stylesheet" href="/mark/css/pygments.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://localhost:4000/mark/design-pattern/2016/01/05/design-model-oop-principles.html">
+  <link rel="canonical" href="http://localhost:4000/mark/nlp/2018/05/23/word2vec-introduce.html">
   <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
-  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
 </head>
 
@@ -63,24 +63,23 @@
         <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">Design Pattern - OOP Principles</h1>
-    <p class="post-meta">Jan 5, 2016</p>
+    <h1 class="post-title">Word2Vec Introduce</h1>
+    <p class="post-meta">May 23, 2018</p>
   </header>
 
   <article class="post-content">
-    <h2>面向对象的原则</h2>
+    <h2>背景</h2>
 
-<p><strong>总的原则</strong>-<strong>高内聚，低耦合</strong></p>
+<p><strong>one hot编码缺点</strong>：</p>
 
-<ol>
-<li><strong>单一职责原则（SRP，Single Responsibility Principle）</strong>：一个类实现一种功能，引起类变化的原因只有一种。<br></li>
-<li><strong>开闭原则（OCP，Open for Extension，Closed for Modification Principle）</strong>：对扩展（功能拓展）开放，对修改（指修改功能正常运行的代码）关闭。<br></li>
-<li><strong>依赖注入原则（DIP，Dependence Inversion Principle）</strong>：要依赖抽象，不要依赖具体，通过注入的方法实现抽象转具体（可参考spring中的配置式注入）。<br></li>
-<li><strong>里式替换原则（LSP，Liskov Substitution Principle）</strong>：抽象类出现的地方都可以用实现类来代替。<br></li>
-<li><strong>迪米特原则（LOD,Law of Demeter）</strong>：一个对象应该对其他对象尽可能少的了解。<br></li>
-<li><strong>接口分离原则（ISP，Interface Segregation Principle）</strong>：一个接口只提供一种对外的功能，典型的违背原则的例子是接口富余，也就是实现类中被强迫实现（或含有）自己不需要的接口中的方法。<br></li>
-<li><strong>组合优于继承（CARP，Composite/Aggregate Reuse Principle）</strong>：组合一般能比继承要更能降低依赖关系。</li>
-</ol>
+<ul>
+<li>编码没有将语义融入到词的表示当中</li>
+<li>维数爆炸</li>
+</ul>
+
+<p><strong>word embedding</strong></p>
+
+<p>如何将语义融入到词的表示当中? Harris于1954年提出的分布假说（distributional hypothesis）为这一设想提供了理论基础：上下文相似的词，其语义也相似。而基于基于分布假说的词表示方法，根据建模的不同，主要可以分为三类：基于矩阵的分布表示、基于聚类的分布表示和基于神经网络的分布表示。而word embedding一般来说就是一种基于神经网络的分布表示。</p>
 
   </article>
 

@@ -6,13 +6,13 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Neural Networks and Physical Systems with Emergent Collective Computational Abilities (pdf)</title>
-  <meta name="description" content="">
+  <title>Exploratory Data Analysis</title>
+  <meta name="description" content="基本分析root_path =r&#39;/home/kesci/input/titanic/&#39;train = pd.read_csv(root_path + &#39;train.csv&#39;)test = pd.read_excel(root_path + &#39;test.csv&#39;)t...">
 
   <link rel="stylesheet" href="/mark/css/main_pdf.css">
   <link rel="stylesheet" href="/mark/css/pygments.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://localhost:4000/mark/paper/2018/05/23/neural-networks-and-physical-systems-with-emergent-collective-computational-abilities.html">
+  <link rel="canonical" href="http://localhost:4000/mark/machine-learning/2018/08/26/exploratory-data-analysis.html">
   <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
@@ -63,12 +63,32 @@
         <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">Neural Networks and Physical Systems with Emergent Collective Computational Abilities (pdf)</h1>
-    <p class="post-meta">May 23, 2018</p>
+    <h1 class="post-title">Exploratory Data Analysis</h1>
+    <p class="post-meta">Aug 26, 2018</p>
   </header>
 
   <article class="post-content">
-    <p><embed src="/mark/assets/pdf/2018-07-26-neural-networks-and-physical-systems-with-emergent-collective-computational-abilities/2018-07-26-neural-networks-and-physical-systems-with-emergent-collective-computational-abilities.pdf#page=1" type="application/pdf" width="100%" height=800px></p>
+    <h2>基本分析</h2>
+<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>root_path =r&#39;/home/kesci/input/titanic/&#39;
+train = pd.read_csv(root_path + &#39;train.csv&#39;)
+test = pd.read_excel(root_path + &#39;test.csv&#39;)
+train.info()
+train.describe()
+train.count() != train.count().max() 看那些值有缺失
+train.describe().loc[&#39;count&#39;]==train.describe().loc[&#39;count&#39;].max() # 看那些数值属性值有缺失
+train.describe().loc[&#39;min&#39;]==train.describe().loc[&#39;max&#39;] # 查看那些数值属性是固定值
+</code></pre></div>
+<h2>缺失值填充</h2>
+
+<p>１. 对于Category型数据用众数进行填充</p>
+
+<p>２. 对于数值型数据用均值/中位数进行填充</p>
+
+<h2>散碎点</h2>
+
+<ul>
+<li>线上线下的效果差距却非常的大,这里面很大一部分原因在于,我们在做特征工程的时候,有一些特征在 训练集合上与label有很强的关系,但是却在测试集上却相对弱很多,我们将训练集进行拆分,分为训练集和验证机；用来模拟训练集和测试集的关系，如果在训练集和验证集上我们发现某特征与label的关系相差不大且都有一定的统计特性,我们就将其作为我们的好特征，即使它是弱特征也无所谓，因为即使过拟合也会在训练集和测试集上表现一致。</li>
+</ul>
 
   </article>
 

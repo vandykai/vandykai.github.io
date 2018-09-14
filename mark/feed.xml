@@ -5,17 +5,54 @@
     <description></description>
     <link>http://localhost:4000/mark/</link>
     <atom:link href="http://localhost:4000/mark/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 24 Aug 2018 18:12:48 +0800</pubDate>
-    <lastBuildDate>Fri, 24 Aug 2018 18:12:48 +0800</lastBuildDate>
+    <pubDate>Fri, 14 Sep 2018 15:39:11 +0800</pubDate>
+    <lastBuildDate>Fri, 14 Sep 2018 15:39:11 +0800</lastBuildDate>
     <generator>Jekyll v3.4.3</generator>
+    
+      <item>
+        <title>Exploratory Data Analysis</title>
+        <description>&lt;h2&gt;基本分析&lt;/h2&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;root_path =r&amp;#39;/home/kesci/input/titanic/&amp;#39;
+train = pd.read_csv(root_path + &amp;#39;train.csv&amp;#39;)
+test = pd.read_excel(root_path + &amp;#39;test.csv&amp;#39;)
+train.info()
+train.describe()
+train.count() != train.count().max() 看那些值有缺失
+train.describe().loc[&amp;#39;count&amp;#39;]==train.describe().loc[&amp;#39;count&amp;#39;].max() # 看那些数值属性值有缺失
+train.describe().loc[&amp;#39;min&amp;#39;]==train.describe().loc[&amp;#39;max&amp;#39;] # 查看那些数值属性是固定值
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;缺失值填充&lt;/h2&gt;
+
+&lt;p&gt;１. 对于Category型数据用众数进行填充&lt;/p&gt;
+
+&lt;p&gt;２. 对于数值型数据用均值/中位数进行填充&lt;/p&gt;
+
+&lt;h2&gt;散碎点&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;线上线下的效果差距却非常的大,这里面很大一部分原因在于,我们在做特征工程的时候,有一些特征在 训练集合上与label有很强的关系,但是却在测试集上却相对弱很多,我们将训练集进行拆分,分为训练集和验证机；用来模拟训练集和测试集的关系，如果在训练集和验证集上我们发现某特征与label的关系相差不大且都有一定的统计特性,我们就将其作为我们的好特征，即使它是弱特征也无所谓，因为即使过拟合也会在训练集和测试集上表现一致。&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Sun, 26 Aug 2018 22:30:00 +0800</pubDate>
+        <link>http://localhost:4000/mark/machine-learning/2018/08/26/exploratory-data-analysis.html</link>
+        <guid isPermaLink="true">http://localhost:4000/mark/machine-learning/2018/08/26/exploratory-data-analysis.html</guid>
+        
+        <category>AI</category>
+        
+        <category>machine-learning</category>
+        
+        
+        <category>Machine-Learning</category>
+        
+      </item>
     
       <item>
         <title>Learning Deep Structured Semantic Models for Web Search using Clickthrough Data (pdf)</title>
         <description>&lt;p&gt;&lt;embed src=&quot;/mark/assets/pdf/2018-08-11-learning-deep-structured-semantic-models-for-web-search-using-clickthrough-data/2018-08-11-learning-deep-structured-semantic-models-for-web-search-using-clickthrough-data.pdf#page=1&quot; type=&quot;application/pdf&quot; width=&quot;100%&quot; height=800px&gt;&lt;/p&gt;
 </description>
-        <pubDate>Wed, 23 May 2018 21:30:00 +0800</pubDate>
-        <link>http://localhost:4000/mark/paper/2018/05/23/learning-deep-structured-semantic-models-for-web-search-using-clickthrough-data.html</link>
-        <guid isPermaLink="true">http://localhost:4000/mark/paper/2018/05/23/learning-deep-structured-semantic-models-for-web-search-using-clickthrough-data.html</guid>
+        <pubDate>Sun, 12 Aug 2018 02:20:00 +0800</pubDate>
+        <link>http://localhost:4000/mark/paper/2018/08/12/learning-deep-structured-semantic-models-for-web-search-using-clickthrough-data.html</link>
+        <guid isPermaLink="true">http://localhost:4000/mark/paper/2018/08/12/learning-deep-structured-semantic-models-for-web-search-using-clickthrough-data.html</guid>
         
         <category>2014</category>
         
@@ -28,14 +65,42 @@
         <title>Neural Networks and Physical Systems with Emergent Collective Computational Abilities (pdf)</title>
         <description>&lt;p&gt;&lt;embed src=&quot;/mark/assets/pdf/2018-07-26-neural-networks-and-physical-systems-with-emergent-collective-computational-abilities/2018-07-26-neural-networks-and-physical-systems-with-emergent-collective-computational-abilities.pdf#page=1&quot; type=&quot;application/pdf&quot; width=&quot;100%&quot; height=800px&gt;&lt;/p&gt;
 </description>
-        <pubDate>Wed, 23 May 2018 21:30:00 +0800</pubDate>
-        <link>http://localhost:4000/mark/paper/2018/05/23/neural-networks-and-physical-systems-with-emergent-collective-computational-abilities.html</link>
-        <guid isPermaLink="true">http://localhost:4000/mark/paper/2018/05/23/neural-networks-and-physical-systems-with-emergent-collective-computational-abilities.html</guid>
+        <pubDate>Thu, 26 Jul 2018 23:10:00 +0800</pubDate>
+        <link>http://localhost:4000/mark/paper/2018/07/26/neural-networks-and-physical-systems-with-emergent-collective-computational-abilities.html</link>
+        <guid isPermaLink="true">http://localhost:4000/mark/paper/2018/07/26/neural-networks-and-physical-systems-with-emergent-collective-computational-abilities.html</guid>
         
         <category>2014</category>
         
         
         <category>Paper</category>
+        
+      </item>
+    
+      <item>
+        <title>Word2Vec Introduce</title>
+        <description>&lt;h2&gt;背景&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;one hot编码缺点&lt;/strong&gt;：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;编码没有将语义融入到词的表示当中&lt;/li&gt;
+&lt;li&gt;维数爆炸&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;word embedding&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;如何将语义融入到词的表示当中? Harris于1954年提出的分布假说（distributional hypothesis）为这一设想提供了理论基础：上下文相似的词，其语义也相似。而基于基于分布假说的词表示方法，根据建模的不同，主要可以分为三类：基于矩阵的分布表示、基于聚类的分布表示和基于神经网络的分布表示。而word embedding一般来说就是一种基于神经网络的分布表示。&lt;/p&gt;
+</description>
+        <pubDate>Wed, 23 May 2018 21:30:00 +0800</pubDate>
+        <link>http://localhost:4000/mark/nlp/2018/05/23/word2vec-introduce.html</link>
+        <guid isPermaLink="true">http://localhost:4000/mark/nlp/2018/05/23/word2vec-introduce.html</guid>
+        
+        <category>AI</category>
+        
+        <category>NLP</category>
+        
+        
+        <category>NLP</category>
         
       </item>
     
@@ -310,58 +375,6 @@ $$h _{S} \left ( t+1 \right ) = f \left (LN \left [ Wh \left ( t \right ) + Cx \
         
         
         <category>Paper</category>
-        
-      </item>
-    
-      <item>
-        <title>1/4</title>
-        <description>&lt;p&gt;寂静，叶落风随，嬉笑打闹无情的跨过时间的纵轴敲打着脑海，荡起一阵涟漪。&lt;/p&gt;
-
-&lt;p&gt;风紧呼，三年饮冰热血难凉，佳音何在，与君舞一曲，待重头，能奈若何？&lt;/p&gt;
-
-&lt;p&gt;手心汗未干，时间无法凝固，不过是一场回忆罢了，还是匆匆上车，走吧。&lt;/p&gt;
-
-&lt;p&gt;喊冤？这里没有阎王。&lt;/p&gt;
-
-&lt;p&gt;何去何从，身似柳絮随风飘，好歹挣扎一下吧，风停了，时间却没有&lt;/p&gt;
-</description>
-        <pubDate>Mon, 02 Oct 2017 19:00:00 +0800</pubDate>
-        <link>http://localhost:4000/mark/essay/2017/10/02/quarter-of-life.html</link>
-        <guid isPermaLink="true">http://localhost:4000/mark/essay/2017/10/02/quarter-of-life.html</guid>
-        
-        <category>mind</category>
-        
-        
-        <category>Essay</category>
-        
-      </item>
-    
-      <item>
-        <title>如何在Markdown中添加数学公式</title>
-        <description>&lt;h2&gt;三种方式&lt;/h2&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;&amp;lt;script type=&amp;quot;math/tex; mode=display&amp;quot;&amp;gt;h _{\theta }\left ( x \right ) = \theta _{0} + \theta _{1}x _{1} + \theta _{2}x _{2} + ... + \theta _{n}x _{n}&amp;lt;/script&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;效果：
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;h _{\theta }\left ( x \right ) = \theta _{0} + \theta _{1}x _{1} + \theta _{2}x _{2} + ... + \theta _{n}x _{n}&lt;/script&gt;&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;$$h _{\theta }\left ( x \right ) = \theta _{0} + \theta _{1}x _{1} + \theta _{2}x _{2} + ... + \theta _{n}x _{n}$$
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;效果：
-$$h _{\theta }\left ( x \right ) = \theta _{0} + \theta _{1}x _{1} + \theta _{2}x _{2} + ... + \theta _{n}x _{n}$$&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;\\(h _{\theta }\left ( x \right ) = \theta _{0} + \theta _{1}x _{1} + \theta _{2}x _{2} + ... + \theta _{n}x _{n}\\)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;效果：
-\(h _{\theta }\left ( x \right ) = \theta _{0} + \theta _{1}x _{1} + \theta _{2}x _{2} + ... + \theta _{n}x _{n}\)&lt;/p&gt;
-</description>
-        <pubDate>Sat, 17 Jun 2017 12:09:00 +0800</pubDate>
-        <link>http://localhost:4000/mark/other/2017/06/17/how-to-add-formula-in-markdown.html</link>
-        <guid isPermaLink="true">http://localhost:4000/mark/other/2017/06/17/how-to-add-formula-in-markdown.html</guid>
-        
-        <category>markdown</category>
-        
-        <category>formula</category>
-        
-        
-        <category>Other</category>
         
       </item>
     
