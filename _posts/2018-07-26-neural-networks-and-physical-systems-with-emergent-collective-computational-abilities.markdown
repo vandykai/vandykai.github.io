@@ -2,7 +2,7 @@
 
 layout: post_pdf
 title:  Neural Networks and Physical Systems with Emergent Collective Computational Abilities (pdf)
-date:   2018-05-23 13:30:00
+date:   2018-07-26 15:10:00
 categories: [Paper]
 tags: [2014]
 

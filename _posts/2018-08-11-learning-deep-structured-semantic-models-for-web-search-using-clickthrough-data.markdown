@@ -2,7 +2,7 @@
 
 layout: post_pdf
 title:  Learning Deep Structured Semantic Models for Web Search using Clickthrough Data (pdf)
-date:   2018-05-23 13:30:00
+date:   2018-08-11 18:20:00
 categories: [Paper]
 tags: [2014]
 
