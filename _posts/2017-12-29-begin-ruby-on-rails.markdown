@@ -4,9 +4,10 @@ layout: post
 title:  Ruby On Rails
 date:   2017-12-23 12:30:00
 categories: [Web]
-tags: [web ruby ruby-on-rails]
+tags: [web, ruby, ruby-on-rails]
 
 ---
+
 ## 安装
 1. 安装ruby
 2. 安装sqlite3
