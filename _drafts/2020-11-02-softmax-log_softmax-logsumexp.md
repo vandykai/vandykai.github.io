@@ -109,3 +109,85 @@ $$
 $$
 \frac{\partial LSE(X)}{\partial x_{i}} =\frac{\exp\left(x_{i}\right)}{\sum  _{j} ^{n}\exp\left(x_{j}\right)}= softmax\left(x_{i}\right)
 $$
+
+# 求导：
+## softmax求导
+$$
+S\left(x_{i}\right) = \frac{\exp\left(x_{i}\right)}{\sum  _{j} ^{n}\exp\left(x_{j}\right)}
+$$
+
+$$
+\begin{align}
+\frac{\partial S\left(x_{i}\right)}{\partial x_{j}}  
+&= \frac{\frac{\partial \exp\left(x_{i}\right)}{\partial x_{j}}\sum-\exp\left(x_{i}\right)\exp\left(x_{j}\right)}{\sum ^{2}} \\
+&= \frac{\frac{\partial \exp\left(x_{i}\right)}{\partial x_{j}}}{\sum}-\frac{\exp\left(x_{i}\right)}{\sum}\frac{\exp\left(x_{j}\right)}{\sum} \\
+&= \frac{\frac{\partial \exp\left(x_{i}\right)}{\partial x_{j}}}{\sum} - S\left(x_{i}\right)S\left(x_{j}\right) \\
+&=
+\begin{cases}
+S\left(x_{i}\right)(1-S\left(x_{j}\right)) & \text{if}\quad x_{i}=x_{j} \\ 
+-S\left(x_{i}\right)S\left(x_{j}\right) & \text{if}\quad x_{i}\neq x_{j}
+\end{cases}
+\end{align}
+$$
+
+## logsoftmax求导
+$$
+\begin{align}
+logS\left(x_{i}\right) 
+&= \log\frac{\exp\left(x_{i}\right)}{\sum  _{j} ^{n}\exp\left(x_{j}\right)} \\
+&= x_{i} - \log\sum  _{j} ^{n}\exp\left(x_{j}\right) \\
+\end{align}
+$$
+
+利用softmax的结果间接求导：
+$$
+\begin{align}
+\frac{\partial logS\left(x_{i}\right)}{\partial x_{j}}
+&= \frac{1}{S\left(x_{i}\right)}\frac{\partial S\left(x_{i}\right)}{\partial x_{j}}\\
+&=
+\begin{cases}
+\frac{1}{S\left(x_{i}\right)}S\left(x_{i}\right)(1-S\left(x_{j}\right)) & \text{if}\quad x_{i}=x_{j} \\ 
+-\frac{1}{S\left(x_{i}\right)}S\left(x_{i}\right)S\left(x_{j}\right) & \text{if}\quad x_{i}\neq x_{j}
+\end{cases}\\
+&=
+\begin{cases}
+1-S\left(x_{j}\right) & \text{if}\quad x_{i}=x_{j} \\ 
+-S\left(x_{j}\right) & \text{if}\quad x_{i}\neq x_{j}
+\end{cases}
+\end{align}
+$$
+
+也可利用上述化简式直接求导，结果一样
+
+## logsumexp求导
+$$
+LSE(x)=logsumexp(x) = \log\sum  _{i} ^{n}\exp\left(x_{i}\right)
+$$
+
+$$
+\begin{align}
+\frac{\partial LSE(x)}{\partial x_{j}}
+&= \frac{\exp\left(x_{j}\right)}{\sum  _{i} ^{n}\exp\left(x_{i}\right)}\\
+&= S\left(x_{j}\right)
+\end{align}
+$$
+
+ ## 附:交叉熵求导
+$$
+\begin{align}
+loss(x)
+& =-\sum _{i}^{n}y_{i}\log\frac{\exp\left(x_{i}\right)}{\sum  _{j} ^{n}\exp\left(x_{j}\right)} \\
+&= -\sum _{i}^{n}y_{i}logS\left(x_{i}\right)
+\end{align}
+$$
+
+$$
+\begin{align}
+\frac{\partial loss(x)}{\partial x_{j}}
+&= -\sum _{i}^{n}y_{i}\frac{\partial logS\left(x_{i}\right)}{\partial x_{j}} \\
+&= -\sum _{i \neq j}y_{i}\left(-S\left(x_{j}\right)\right) -y_{j}\left(1-S\left(x_{j}\right)\right) \\
+&=S\left(x_{j}\right)-y_{j}
+\end{align}
+$$
+
+可以看出导数就是\\(S\left(x_{j}\right)\\)与\\(y_{j}\\)的距离
