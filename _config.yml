@@ -10,5 +10,8 @@ encoding: utf-8
 # timezone: Asia/Chongqing
 # Build settings
 destination: ./_site/mark
-markdown: redcarpet
-highlighter: pygments
+markdown: kramdown
+# highlighter: pygments
+highlighter: rouge
+# kramdown:
+#  syntax_highlighter: rouge

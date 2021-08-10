@@ -16,7 +16,7 @@ tags: [linux, linux-kernel, experiment]
 - 函数的返回值默认使用eax寄存器存储返回给上一级函数
 - 汇编中对应的方法过程如下
 
-    ``` C
+    ```C
     method:
         enter
         // Real Code Here
@@ -26,7 +26,7 @@ tags: [linux, linux-kernel, experiment]
 
 - 指令实际做的事情列表：
 
-    ~~~ Java
+    ~~~
     push %eax
         subl $4, %esp
         movl %eax, (%esp)

@@ -7,7 +7,7 @@ categories: [AI]
 tags: [AI，NLP，Sampler]
 
 ---
-# 
+# 逻辑回归原理
 
 $$
 \begin{align}

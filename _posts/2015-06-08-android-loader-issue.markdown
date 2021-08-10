@@ -11,7 +11,7 @@ tags: [android, loader]
 
 所以正确的实现应该是应该重载AsyncLoader中的onStartLoading()方法,并调用forceLoad()方法。
 
-~~~
+~~~Java
 @Override
 protected void onStartLoading() {
     forceLoad();
@@ -21,7 +21,7 @@ protected void onStartLoading() {
 
 完整代码如下：
 
-~~~ Java
+~~~Java
 import android.content.AsyncTaskLoader;
 import android.content.Context;
 
@@ -50,7 +50,7 @@ public class MyLoader extends AsyncTaskLoader<String> {
 }
 ~~~
 
-~~~ Java
+~~~Java
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Loader;

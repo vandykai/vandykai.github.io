@@ -7,14 +7,14 @@ categories: [Design-Pattern]
 tags: [design-pattern, factory-method]
 
 ---
-##工厂方法模式
+## 工厂方法模式
 
 1. **适用范围**：当一个对象的创建和初始化工作比较复杂或者一个对象会被反复创建时，采用工厂方法模式是一个很好的选择。
 2. 工厂方法模式的思想是每个产品的创建都有一个具体的工厂类来实现，由此可能会想到为什么不在产品类里面提供一个创建自己的方法，这是由于不同的使用者可能创建时需要的参数不同，这时用工厂方法模式就可以直接再新建（符合开闭原则，只增加不修改）一些工厂来区分不同的参数，而由产品类自己创建就势必要提供很多创建方法，不符合开闭原则。
 
 2. 工厂方法模式的实现方式  
 
-    ~~~ Java
+    ~~~Java
     public class Product {
 
         public void commonMethod() {
@@ -24,25 +24,25 @@ tags: [design-pattern, factory-method]
     }
     ~~~
 
-    ~~~ Java
+    ~~~Java
     public class ProductOne extends Product{
         // empty
     }
     ~~~
 
-    ~~~ Java
+    ~~~Java
     public class ProductTwo extends Product{
         //empty
     }
     ~~~
-    ~~~ Java
+    ~~~Java
     public abstract class Creator {
 
         public abstract Product getProduct();
 
     }
     ~~~
-    ~~~ Java
+    ~~~Java
     public class ProductOneCreator extends Creator {
 
         @Override
@@ -54,7 +54,7 @@ tags: [design-pattern, factory-method]
 
     }
     ~~~
-    ~~~ Java
+    ~~~Java
     public class ProductTwoCreator extends Creator {
 
         @Override
@@ -66,7 +66,7 @@ tags: [design-pattern, factory-method]
 
     }
     ~~~
-    ~~~ Java
+    ~~~Java
     public class Client {
 
         public static void main(String args[]) {

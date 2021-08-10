@@ -1,2 +1,6 @@
 _site/mark
 .sass-cache
+yulib.config
+yulib.resource
+*.DS_Store
+.jekyll-cache

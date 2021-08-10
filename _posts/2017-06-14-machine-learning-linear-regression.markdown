@@ -27,16 +27,16 @@ tags: [AI, machine-learning]
 
 - 梯度下降法
     - 正统的方法是需要同步更新每个θ
-    - \\( \theta _ {j} = \theta _ {j} - \alpha \frac {1}{m} \sum_{i=1}^{m} \left ( h _ {\theta} \left ( x^{\left (i  \right )} \right ) - y^{\left (i  \right )} \right ) x _{j}^{\left (i  \right )} \\)</br>
+    - \\( \theta _ {j} = \theta _ {j} - \alpha \frac {1}{m} \sum_{i=1}^{m} \left ( h _ {\theta} \left ( x^{\left (i  \right )} \right ) - y^{\left (i  \right )} \right ) x _{j}^{\left (i  \right )} \\)
       其中\\( \alpha \\) 为学习率
-    - matlab代码如下</br>
-      ``` matlab
+    - matlab代码如下
+      ```matlab
       theta=theta-(alpha/m*X'*(X*theta-y));
       ```
-- 正规方程法</br>
+- 正规方程法
     - 也就是利用数学的方法，根据最小值在导数等于0的地方取得可直接求得结果，但是由于求n×n矩阵的逆运算复杂度为\\( O\left ( n^{3} \right ) \\),所以当特征很多时不宜用此方法，一般要求n小于10000
-    - matlab代码如下</br>
-      ``` matlab
+    - matlab代码如下
+      ```matlab
       theta=pinv(X'*X)*X'*y;
       ```
     - 当矩阵X'*X的逆不存在时，一般是由于特征值之间具有线性相关性，提示我们重新选取特征值，或者是由于特征值太多而训练样本不足。

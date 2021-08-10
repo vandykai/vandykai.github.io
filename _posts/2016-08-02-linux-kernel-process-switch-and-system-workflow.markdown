@@ -24,7 +24,7 @@ tags: [linux, linux-kernel, experiment]
 
 - [`schedule()`][1]函数选择一个新的进程来运行，并调用[`context_switch`][2]进行上下文的切换，其中的宏调用[`switch_to`][3]进行关键上下文切换。
 
-    ``` C
+    ```C
     asmlinkage __visible void __sched schedule(void) {
         struct task_struct *tsk = current;
 
@@ -33,7 +33,7 @@ tags: [linux, linux-kernel, experiment]
     }
     ```
 
-    ``` C
+    ```C
     static void __sched __schedule(void) {
         struct task_struct *prev, *next;
         unsigned long *switch_count;
@@ -52,7 +52,7 @@ tags: [linux, linux-kernel, experiment]
     }
     ```
 
-    ``` C
+    ```C
     static inline void context_switch(struct rq *rq, struct task_struct *prev, struct task_struct *next) {
         ...
         prepare_task_switch(rq, prev, next);
@@ -64,7 +64,7 @@ tags: [linux, linux-kernel, experiment]
     }
     ```
 
-    ``` C
+    ```C
     #define switch_to(prev, next, last)
     do {                                                                        \
         /*                                                                      \
@@ -115,6 +115,7 @@ tags: [linux, linux-kernel, experiment]
         );                                                                      \
     } while (0)
     ```
+    
     这里值得注意的是[`switch_to(prev, next, last)`][3]中的`jmp __switch_to`，实际上类似于函数，只不过参数通过寄存器传递，且因为没有`call`语句所以不`pushl %eip*`(*意在说明这条指令实际不存在，是伪指令)，但是`__switch_to`末尾任然有条`ret`语句，这样就把之前`pushl %[next_ip]`的`[next_ip]``popl`给了`eip`。
 
 ### Linux系统的一般运行过程。

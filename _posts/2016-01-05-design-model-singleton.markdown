@@ -94,5 +94,6 @@ tags: [design-pattern, singleton]
     }
 
     ~~~~
+
 5. 单例模式还有范围的概念，即在某一范围内才是单例，范围扩大了可能就不是单例了，常见的单例范围有application级别，session级别，request/response级别。  
 **小技巧**：可以利用thread的thread号为关键字存入HashMap来实现thread级别的单例。

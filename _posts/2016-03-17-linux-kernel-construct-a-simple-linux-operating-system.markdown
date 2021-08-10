@@ -66,7 +66,7 @@ gdb
 ## 实验分析
 ### main.c的部分代码如下（省略号为略去的代码）
 
-``` C
+```C
 asmlinkage __visible void __init start_kernel(void)
 {
     ...
@@ -83,7 +83,7 @@ asmlinkage __visible void __init start_kernel(void)
 
 ### rest_init 函数代码如下
 
-``` C
+```C
 static noinline void __init_refok rest_init(void)
 {
     int pid;

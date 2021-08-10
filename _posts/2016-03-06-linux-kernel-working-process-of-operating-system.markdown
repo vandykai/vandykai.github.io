@@ -16,7 +16,7 @@ tags: [linux, linux-kernel, experiment]
 
 ## 实验分析
 ### 自定义进程定义的代码如下
-``` C
+```C
 #define MAX_TASK_NUM        4
 #define KERNEL_STACK_SIZE   1024*8
 
@@ -37,7 +37,7 @@ typedef struct PCB{
 }tPCB;
 ```
 ### 自定义进程切换的核心代码如下
-``` C
+```C
 if(next->state == 0) {
     /* -1 unrunnable, 0 runnable, >0 stopped */
     my_current_task = next;
@@ -74,7 +74,8 @@ if(next->state == 0) {
 }
 ```
 ### 自定义进程切换代码简析
-计算机硬件三大法宝，存储程序计算机，函数调用堆栈，中断
+计算机硬件三大法宝：存储程序计算机，函数调用堆栈，中断
+
 操作系统的“两把剑”：中断上下文和进程上下文切换
 
 这里进程切换主要是保存当前进程的运行栈和准备好下一个进程的运行栈。

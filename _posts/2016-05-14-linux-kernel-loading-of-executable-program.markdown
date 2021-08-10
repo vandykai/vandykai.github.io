@@ -27,7 +27,7 @@ tags: [linux, linux-kernel, experiment]
 
     [`search_binary_handler`][7]根据文件头部信息寻找对应的文件格式解析模块。
 
-    ``` C
+    ```C
     list_for_each_entry(fmt, &formats, lh) {
         if (!try_module_get(fmt->module))
           continue;
@@ -42,7 +42,7 @@ tags: [linux, linux-kernel, experiment]
     对于ELF格式的可执行文件，语句`fmt->load_binary(bprm);`执行的应该是[`load_elf_binary(bprm);`][8]。
     `load_binary`是个函数指针。寻找对应的文件格式解析模块采用了设计模式中的**观察者模式**。如下为ELF格式的观察者初始化的过程：
 
-    ``` C
+    ```C
     static struct linux_binfmt elf_format = {
         .module     = THIS_MODULE,
         .load_binary    = load_elf_binary,
@@ -51,7 +51,7 @@ tags: [linux, linux-kernel, experiment]
         .min_coredump   = ELF_EXEC_PAGESIZE,
     };
     ```
-    ``` C
+    ```C
     static int __init init_elf_binfmt(void)
     {
         register_binfmt(&elf_format);
@@ -67,7 +67,7 @@ tags: [linux, linux-kernel, experiment]
 
 - 对于静态链接的可执行文件`elf_entry`就是ELF头中定义的起点，对于动态链接的可执行文件，先加载连接器ld，将CPU控制权交给ld来加载依赖库并完成动态链接，这部分不由内核完成，源代码如下：
 
-    ``` C
+    ```C
     if (elf_interpreter) {//需要动态链接
         unsigned long interp_map_addr = 0;
 

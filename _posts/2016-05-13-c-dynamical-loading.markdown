@@ -31,7 +31,7 @@ int LibApi();
 
 **libexample.c**
 
-``` C
+```C
 #include <stdio.h>
 #include "libexample.h"
 int LibApi() {

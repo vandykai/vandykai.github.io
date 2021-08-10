@@ -65,7 +65,7 @@ tags: [linux, linux-kernel, experiment]
 
     **mkdir.c**
 
-    ``` C
+    ```C
     #include <sys/stat.h>
     #include <sys/types.h>
     #include <stdio.h>
@@ -81,7 +81,7 @@ tags: [linux, linux-kernel, experiment]
 
     **mkdir-asm.c**
 
-    ``` C
+    ```C
     #include <sys/stat.h>
     #include <sys/types.h>
     #include <stdio.h>
@@ -116,7 +116,7 @@ mkdir.c 和 mkdir-asm.c 功能一致都是在当前目录下创建test文件夹�
 
 **fork-test.c**
 
-``` C
+```C
 #include <unistd.h>
 #include <stdio.h>
 int main() {
