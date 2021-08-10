@@ -7,13 +7,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Ruby On Rails</title>
-  <meta name="description" content="安装安装ruby安装sqlite3">
+  <meta name="description" content="安装  安装ruby  安装sqlite3">
 
   <link rel="stylesheet" href="/mark/css/main.css">
-  <link rel="stylesheet" href="/mark/css/pygments.css">
+  <link rel="stylesheet" href="/mark/css/syntax.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://localhost:4000/mark/web/2017/12/23/begin-ruby-on-rails.html">
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
+  <link rel="canonical" href="http://www.dosrc.com/mark/web/2017/12/23/begin-ruby-on-rails.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
   <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
 </head>
@@ -68,50 +68,64 @@
   </header>
 
   <article class="post-content">
-    <h2>安装</h2>
-
+    <h2 id="安装">安装</h2>
 <ol>
-<li>安装ruby</li>
-<li><p>安装sqlite3</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>sudo apt-get install sqlite3
-sudo apt-get install libsqlite3-dev
-</code></pre></div></li>
-<li><p>安装rails</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>gem install rails
-rails --version
-</code></pre></div></li>
-<li><p>使用rails创建博客</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>rails new blog
-</code></pre></div></li>
-<li><p>启动web服务器</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>cd blog
-bin/rails server
-</code></pre></div></li>
+  <li>安装ruby</li>
+  <li>
+    <p>安装sqlite3</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> sudo apt-get install sqlite3
+ sudo apt-get install libsqlite3-dev
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>安装rails</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> gem install rails
+ rails --version
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>使用rails创建博客</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> rails new blog
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>启动web服务器</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> cd blog
+ bin/rails server
+</code></pre></div>    </div>
+  </li>
 </ol>
 
-<h2>错误及处理</h2>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:84:in `rescue in block (2 levels) in require&#39;: There was an error while trying to load the gem &#39;uglifier&#39;. (Bundler::GemRequireError)
+<h2 id="错误及处理">错误及处理</h2>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:84:in `rescue in block (2 levels) in require': There was an error while trying to load the gem 'uglifier'. (Bundler::GemRequireError)
 Gem Load Error is: Could not find a JavaScript runtime. See https://github.com/rails/execjs for a list of available runtimes.
 Backtrace for gem load error is:
-/var/lib/gems/2.3.0/gems/execjs-2.7.0/lib/execjs/runtimes.rb:58:in `autodetect&#39;
-/var/lib/gems/2.3.0/gems/execjs-2.7.0/lib/execjs.rb:5:in `&lt;module:ExecJS&gt;&#39;
-/var/lib/gems/2.3.0/gems/execjs-2.7.0/lib/execjs.rb:4:in `&lt;top (required)&gt;&#39;
-/var/lib/gems/2.3.0/gems/uglifier-4.1.1/lib/uglifier.rb:5:in `require&#39;
-/var/lib/gems/2.3.0/gems/uglifier-4.1.1/lib/uglifier.rb:5:in `&lt;top (required)&gt;&#39;
-/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:81:in `require&#39;
-/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:81:in `block (2 levels) in require&#39;
-/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:76:in `each&#39;
-/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:76:in `block in require&#39;
-/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:65:in `each&#39;
-/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:65:in `require&#39;
-/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler.rb:114:in `require&#39;
-/home/ez/blog/config/application.rb:7:in `&lt;top (required)&gt;&#39;
-/var/lib/gems/2.3.0/gems/railties-5.1.4/lib/rails/commands/server/server_command.rb:133:in `require&#39;
+/var/lib/gems/2.3.0/gems/execjs-2.7.0/lib/execjs/runtimes.rb:58:in `autodetect'
+/var/lib/gems/2.3.0/gems/execjs-2.7.0/lib/execjs.rb:5:in `&lt;module:ExecJS&gt;'
+/var/lib/gems/2.3.0/gems/execjs-2.7.0/lib/execjs.rb:4:in `&lt;top (required)&gt;'
+/var/lib/gems/2.3.0/gems/uglifier-4.1.1/lib/uglifier.rb:5:in `require'
+/var/lib/gems/2.3.0/gems/uglifier-4.1.1/lib/uglifier.rb:5:in `&lt;top (required)&gt;'
+/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:81:in `require'
+/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:81:in `block (2 levels) in require'
+/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:76:in `each'
+/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:76:in `block in require'
+/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:65:in `each'
+/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:65:in `require'
+/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler.rb:114:in `require'
+/home/ez/blog/config/application.rb:7:in `&lt;top (required)&gt;'
+/var/lib/gems/2.3.0/gems/railties-5.1.4/lib/rails/commands/server/server_command.rb:133:in `require'
 ...
 ...
-</code></pre></div><div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>原因：没有JavaScript runtime
+
+</code></pre></div></div>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>原因：没有JavaScript runtime
 解决方法：sudo apt-get install nodejs
-</code></pre></div>
+</code></pre></div></div>
+
   </article>
 
 </div>

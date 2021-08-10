@@ -7,13 +7,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Linux Kernel - 可执行程序的加载过程</title>
-  <meta name="description" content="重点知识总结可执行文件的装载也是一个系统调用（execve），只不过和fork系统调用一样有一些特殊。Shell会调用execve将命令行参数和环境参数传递给可执行程序的main函数。库函数exec*都是execve的封装例程。">
+  <meta name="description" content="重点知识总结  可执行文件的装载也是一个系统调用（execve），只不过和fork系统调用一样有一些特殊。  Shell会调用execve将命令行参数和环境参数传递给可执行程序的main函数。  库函数exec*都是execve的封装例程。">
 
   <link rel="stylesheet" href="/mark/css/main.css">
-  <link rel="stylesheet" href="/mark/css/pygments.css">
+  <link rel="stylesheet" href="/mark/css/syntax.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://localhost:4000/mark/linux-3.18.6/2016/05/15/linux-kernel-loading-of-executable-program.html">
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
+  <link rel="canonical" href="http://www.dosrc.com/mark/linux-3.18.6/2016/05/15/linux-kernel-loading-of-executable-program.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
   <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
 </head>
@@ -68,79 +68,91 @@
   </header>
 
   <article class="post-content">
-    <h2>重点知识总结</h2>
-
+    <h2 id="重点知识总结">重点知识总结</h2>
 <ul>
-<li>可执行文件的装载也是一个系统调用（<code>execve</code>），只不过和<code>fork</code>系统调用一样有一些特殊。</li>
-<li>Shell会调用execve将命令行参数和环境参数传递给可执行程序的main函数。</li>
-<li>库函数exec*都是execve的封装例程。</li>
+  <li>可执行文件的装载也是一个系统调用（<code class="language-plaintext highlighter-rouge">execve</code>），只不过和<code class="language-plaintext highlighter-rouge">fork</code>系统调用一样有一些特殊。</li>
+  <li>Shell会调用execve将命令行参数和环境参数传递给可执行程序的main函数。</li>
+  <li>库函数exec*都是execve的封装例程。</li>
 </ul>
 
-<h3>可执行文件的文件格式，Shell环境，动态链接库。</h3>
-
+<h3 id="可执行文件的文件格式shell环境动态链接库">可执行文件的文件格式，Shell环境，动态链接库。</h3>
 <ul>
-<li>(<a href="http://www.xfocus.net/articles/200105/174.html">ELF文件格式</a>)，ELF格式的文件默认加载到进程空间的0X804800处。</li>
-<li>Shell环境：加载一个新程序会覆盖当前进程的用户进程空间，所以Shell命令行要加载一个新程序时，先要fork一个新进程，在新进程中加载新程序，否则Shell进程就被覆盖了，那么命令行参数和环境变量是如何进入新程序堆栈的。通过<code>Shell程序</code> -&gt; <code>execve</code> -&gt; <code>sys_execve</code> 然后在初始化新程序堆栈时拷贝进去。即先函数调用参数传递，再系统调用参数传递将命令行参数和环境变量传递进新程序堆栈。</li>
-<li><p>动态链接库：分为装载时动态链接和运行时动态链接，如何在64位环境下编译32位动态链接库参看下面链接。</p>
+  <li>(<a href="http://www.xfocus.net/articles/200105/174.html">ELF文件格式</a>)，ELF格式的文件默认加载到进程空间的0X804800处。</li>
+  <li>Shell环境：加载一个新程序会覆盖当前进程的用户进程空间，所以Shell命令行要加载一个新程序时，先要fork一个新进程，在新进程中加载新程序，否则Shell进程就被覆盖了，那么命令行参数和环境变量是如何进入新程序堆栈的。通过<code class="language-plaintext highlighter-rouge">Shell程序</code> -&gt; <code class="language-plaintext highlighter-rouge">execve</code> -&gt; <code class="language-plaintext highlighter-rouge">sys_execve</code> 然后在初始化新程序堆栈时拷贝进去。即先函数调用参数传递，再系统调用参数传递将命令行参数和环境变量传递进新程序堆栈。</li>
+  <li>
+    <p>动态链接库：分为装载时动态链接和运行时动态链接，如何在64位环境下编译32位动态链接库参看下面链接。</p>
 
-<p><a href="/mark/gramar/2016/05/13/c-dynamical-loading.html">动态链接</a></p></li>
+    <p><a href="/mark/gramar/2016/05/13/c-dynamical-loading.html">动态链接</a></p>
+  </li>
 </ul>
 
-<h3>可执行文件的文件格式的解析。</h3>
-
+<h3 id="可执行文件的文件格式的解析">可执行文件的文件格式的解析。</h3>
 <ul>
-<li><p>寻找文件格式对应的解析模块，如下：</p>
+  <li>
+    <p>寻找文件格式对应的解析模块，如下：</p>
 
-<p><a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#1604"><code>sys_execve</code></a> -&gt; <a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#do_execve"><code>do_execve</code></a> -&gt; <a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#do_execve_common"><code>do_execve_common</code></a> -&gt; <a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#exec_binprm"><code>exec_binprm</code></a> -&gt; <a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#search_binary_handler"><code>search_binary_handler</code></a></p>
+    <p><a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#1604"><code class="language-plaintext highlighter-rouge">sys_execve</code></a> -&gt; <a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#do_execve"><code class="language-plaintext highlighter-rouge">do_execve</code></a> -&gt; <a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#do_execve_common"><code class="language-plaintext highlighter-rouge">do_execve_common</code></a> -&gt; <a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#exec_binprm"><code class="language-plaintext highlighter-rouge">exec_binprm</code></a> -&gt; <a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#search_binary_handler"><code class="language-plaintext highlighter-rouge">search_binary_handler</code></a></p>
 
-<p><a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#search_binary_handler"><code>search_binary_handler</code></a>根据文件头部信息寻找对应的文件格式解析模块。</p>
-<div class="highlight"><pre><code class="language-C" data-lang="C"><span></span><span class="n">list_for_each_entry</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">formats</span><span class="p">,</span> <span class="n">lh</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">try_module_get</span><span class="p">(</span><span class="n">fmt</span><span class="o">-&gt;</span><span class="n">module</span><span class="p">))</span>
-      <span class="k">continue</span><span class="p">;</span>
-    <span class="n">read_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">binfmt_lock</span><span class="p">);</span>
-    <span class="n">bprm</span><span class="o">-&gt;</span><span class="n">recursion_depth</span><span class="o">++</span><span class="p">;</span>
-    <span class="n">retval</span> <span class="o">=</span> <span class="n">fmt</span><span class="o">-&gt;</span><span class="n">load_binary</span><span class="p">(</span><span class="n">bprm</span><span class="p">);</span>
-    <span class="n">read_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">binfmt_lock</span><span class="p">);</span>
-    <span class="p">...</span>
-  <span class="p">}</span>
-</code></pre></div>
-<p>对于ELF格式的可执行文件，语句<code>fmt-&gt;load_binary(bprm);</code>执行的应该是<a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/binfmt_elf.c#load_elf_binary"><code>load_elf_binary(bprm);</code></a>。
-<code>load_binary</code>是个函数指针。寻找对应的文件格式解析模块采用了设计模式中的<strong>观察者模式</strong>。如下为ELF格式的观察者初始化的过程：</p>
-<div class="highlight"><pre><code class="language-C" data-lang="C"><span></span><span class="k">static</span> <span class="k">struct</span> <span class="n">linux_binfmt</span> <span class="n">elf_format</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="p">.</span><span class="n">module</span>     <span class="o">=</span> <span class="n">THIS_MODULE</span><span class="p">,</span>
-    <span class="p">.</span><span class="n">load_binary</span>    <span class="o">=</span> <span class="n">load_elf_binary</span><span class="p">,</span>
-    <span class="p">.</span><span class="n">load_shlib</span> <span class="o">=</span> <span class="n">load_elf_library</span><span class="p">,</span>
-    <span class="p">.</span><span class="n">core_dump</span>  <span class="o">=</span> <span class="n">elf_core_dump</span><span class="p">,</span>
-    <span class="p">.</span><span class="n">min_coredump</span>   <span class="o">=</span> <span class="n">ELF_EXEC_PAGESIZE</span><span class="p">,</span>
-<span class="p">};</span>
-</code></pre></div><div class="highlight"><pre><code class="language-C" data-lang="C"><span></span><span class="k">static</span> <span class="kt">int</span> <span class="n">__init</span> <span class="nf">init_elf_binfmt</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="n">register_binfmt</span><span class="p">(</span><span class="o">&amp;</span><span class="n">elf_format</span><span class="p">);</span>
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div>
-<p>这里不同的文件格式解析模块就是观察者，可执行文件就是被观察者，<code>list_for_each_entry</code>遍历文件格式解析模块向其发送通知，通知文件格式解析模块来解析当前的可执行文件，只不过这里只通知对应的文件解析模块（对应的观察者），而不是所有的文件格式解析模块（所有的观察者）。</p></li>
+    <p><a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#search_binary_handler"><code class="language-plaintext highlighter-rouge">search_binary_handler</code></a>根据文件头部信息寻找对应的文件格式解析模块。</p>
+
+    <pre><code class="language-C">  list_for_each_entry(fmt, &amp;formats, lh) {
+      if (!try_module_get(fmt-&gt;module))
+        continue;
+      read_unlock(&amp;binfmt_lock);
+      bprm-&gt;recursion_depth++;
+      retval = fmt-&gt;load_binary(bprm);
+      read_lock(&amp;binfmt_lock);
+      ...
+    }
+</code></pre>
+
+    <p>对于ELF格式的可执行文件，语句<code class="language-plaintext highlighter-rouge">fmt-&gt;load_binary(bprm);</code>执行的应该是<a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/binfmt_elf.c#load_elf_binary"><code class="language-plaintext highlighter-rouge">load_elf_binary(bprm);</code></a>。
+  <code class="language-plaintext highlighter-rouge">load_binary</code>是个函数指针。寻找对应的文件格式解析模块采用了设计模式中的<strong>观察者模式</strong>。如下为ELF格式的观察者初始化的过程：</p>
+
+    <pre><code class="language-C">  static struct linux_binfmt elf_format = {
+      .module     = THIS_MODULE,
+      .load_binary    = load_elf_binary,
+      .load_shlib = load_elf_library,
+      .core_dump  = elf_core_dump,
+      .min_coredump   = ELF_EXEC_PAGESIZE,
+  };
+</code></pre>
+    <pre><code class="language-C">  static int __init init_elf_binfmt(void)
+  {
+      register_binfmt(&amp;elf_format);
+      return 0;
+  }
+</code></pre>
+
+    <p>这里不同的文件格式解析模块就是观察者，可执行文件就是被观察者，<code class="language-plaintext highlighter-rouge">list_for_each_entry</code>遍历文件格式解析模块向其发送通知，通知文件格式解析模块来解析当前的可执行文件，只不过这里只通知对应的文件解析模块（对应的观察者），而不是所有的文件格式解析模块（所有的观察者）。</p>
+  </li>
 </ul>
 
-<h3>可执行文件的执行起点</h3>
+<h3 id="可执行文件的执行起点">可执行文件的执行起点</h3>
 
 <ul>
-<li><p>上面已经说了，对于ELF格式的文件。执行到<code>fmt-&gt;load_binary(bprm);</code>,实际上执行的是<a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/binfmt_elf.c#load_elf_binary"><code>load_elf_binary(bprm);</code></a>，在<a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/binfmt_elf.c#load_elf_binary"><code>load_elf_binary(bprm);</code></a>函数中的<code>start_thread(regs, elf_entry, bprm-&gt;p);</code>语句指明了可执行文件的起点。函数原型<a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/arch/x86/kernel/process_32.c#start_thread"><code>start_thread(struct pt_regs *regs, unsigned long new_ip, unsigned long new_sp)</code></a>中的第二个参数就是新程序的起点，它通过修改内核堆栈中EIP的值作为新程序的起点，<code>execve</code>系统调用返回到用户态就从这里开始执行。</p></li>
-<li><p>对于静态链接的可执行文件<code>elf_entry</code>就是ELF头中定义的起点，对于动态链接的可执行文件，先加载连接器ld，将CPU控制权交给ld来加载依赖库并完成动态链接，这部分不由内核完成，源代码如下：</p>
-<div class="highlight"><pre><code class="language-C" data-lang="C"><span></span><span class="k">if</span> <span class="p">(</span><span class="n">elf_interpreter</span><span class="p">)</span> <span class="p">{</span><span class="c1">//需要动态链接</span>
-    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">interp_map_addr</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <li>
+    <p>上面已经说了，对于ELF格式的文件。执行到<code class="language-plaintext highlighter-rouge">fmt-&gt;load_binary(bprm);</code>,实际上执行的是<a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/binfmt_elf.c#load_elf_binary"><code class="language-plaintext highlighter-rouge">load_elf_binary(bprm);</code></a>，在<a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/binfmt_elf.c#load_elf_binary"><code class="language-plaintext highlighter-rouge">load_elf_binary(bprm);</code></a>函数中的<code class="language-plaintext highlighter-rouge">start_thread(regs, elf_entry, bprm-&gt;p);</code>语句指明了可执行文件的起点。函数原型<a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/arch/x86/kernel/process_32.c#start_thread"><code class="language-plaintext highlighter-rouge">start_thread(struct pt_regs *regs, unsigned long new_ip, unsigned long new_sp)</code></a>中的第二个参数就是新程序的起点，它通过修改内核堆栈中EIP的值作为新程序的起点，<code class="language-plaintext highlighter-rouge">execve</code>系统调用返回到用户态就从这里开始执行。</p>
+  </li>
+  <li>
+    <p>对于静态链接的可执行文件<code class="language-plaintext highlighter-rouge">elf_entry</code>就是ELF头中定义的起点，对于动态链接的可执行文件，先加载连接器ld，将CPU控制权交给ld来加载依赖库并完成动态链接，这部分不由内核完成，源代码如下：</p>
 
-    <span class="n">elf_entry</span> <span class="o">=</span> <span class="n">load_elf_interp</span><span class="p">(</span><span class="o">&amp;</span><span class="n">loc</span><span class="o">-&gt;</span><span class="n">interp_elf_ex</span><span class="p">,</span>
-            <span class="n">interpreter</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">interp_map_addr</span><span class="p">,</span> <span class="n">load_bias</span><span class="p">);</span>
-    <span class="p">...</span>
-<span class="p">}</span> <span class="k">else</span> <span class="p">{</span><span class="c1">//不需要动态链接</span>
-    <span class="n">elf_entry</span> <span class="o">=</span> <span class="n">loc</span><span class="o">-&gt;</span><span class="n">elf_ex</span><span class="p">.</span><span class="n">e_entry</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div></li>
+    <pre><code class="language-C">  if (elf_interpreter) {//需要动态链接
+      unsigned long interp_map_addr = 0;
+
+      elf_entry = load_elf_interp(&amp;loc-&gt;interp_elf_ex,
+              interpreter, &amp;interp_map_addr, load_bias);
+      ...
+  } else {//不需要动态链接
+      elf_entry = loc-&gt;elf_ex.e_entry;
+  }
+</code></pre>
+  </li>
 </ul>
 
-<p>wdk 原创作品转载请注明出处<br>
+<p>wdk 原创作品转载请注明出处<br />
 相关链接 <a href="http://mooc.study.163.com/course/USTC-1000029000">《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000</a></p>
+
 
   </article>
 

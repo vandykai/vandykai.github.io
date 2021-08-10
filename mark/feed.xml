@@ -3,39 +3,156 @@
   <channel>
     <title>Blog</title>
     <description></description>
-    <link>http://localhost:4000/mark/</link>
-    <atom:link href="http://localhost:4000/mark/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 14 Sep 2018 15:39:11 +0800</pubDate>
-    <lastBuildDate>Fri, 14 Sep 2018 15:39:11 +0800</lastBuildDate>
-    <generator>Jekyll v3.4.3</generator>
+    <link>http://www.dosrc.com/mark/</link>
+    <atom:link href="http://www.dosrc.com/mark/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Tue, 10 Aug 2021 17:25:15 +0800</pubDate>
+    <lastBuildDate>Tue, 10 Aug 2021 17:25:15 +0800</lastBuildDate>
+    <generator>Jekyll v4.2.0</generator>
+    
+      <item>
+        <title>Rank Metrics&amp;Loss</title>
+        <description>&lt;h2 id=&quot;排序评价&quot;&gt;排序评价&lt;/h2&gt;
+&lt;h3 id=&quot;precisionk&quot;&gt;Precision@K&lt;/h3&gt;
+
+\[precision@k=\frac{count_{pos}}{k}\]
+
+&lt;p&gt;其中\(count_{pos}\)为topk中正例个数，是否是正例使用threshold来判别。&lt;/p&gt;
+
+\[\begin{cases}
+ &amp;amp; pos, &amp;amp;\text{if} &amp;amp; label &amp;gt;threshold \\ 
+ &amp;amp; neg, &amp;amp;\text{if} &amp;amp; label&amp;lt;= threshold
+\end{cases}\]
+
+&lt;p&gt;取值范围\([0,1]\)&lt;/p&gt;
+
+&lt;h3 id=&quot;averageprecision&quot;&gt;AveragePrecision&lt;/h3&gt;
+
+\[AveragePrecision = \frac{1}{N}\sum_{k=1}^{N} precision@k\]
+
+&lt;p&gt;取值范围\([0,1]\)&lt;/p&gt;
+
+&lt;h3 id=&quot;meanaverageprecision&quot;&gt;MeanAveragePrecision&lt;/h3&gt;
+
+\[MeanAveragePrecision = \frac{1}{N}\sum_{k\in position_{label=pos}}^{N} precision@k\]
+
+&lt;p&gt;其中\(  position_{label&amp;gt;threshold} \)为所有正例被排序的位置&lt;/p&gt;
+
+&lt;p&gt;含义：分别计算precision@k（k为推荐序列中正例被排序的位置）的平均值。
+例如：排序了5个，其中1，3，5为正例，则
+MeanAveragePrecision=mean([precision@1,precision@3,precision@5])&lt;/p&gt;
+
+&lt;p&gt;取值范围\([0,1]\)&lt;/p&gt;
+
+&lt;h3 id=&quot;meanreciprocalrank&quot;&gt;MeanReciprocalRank&lt;/h3&gt;
+
+\[MeanReciprocalRank=\frac{1}{k}\]
+
+&lt;p&gt;k为排序中第一个正例位置&lt;/p&gt;
+
+&lt;p&gt;取值范围\((0,1]\)&lt;/p&gt;
+&lt;h3 id=&quot;cumulativegain&quot;&gt;CumulativeGain&lt;/h3&gt;
+
+\[CG_{k} = \sum_{i=1}^{k}rel_{i}\]
+
+&lt;p&gt;\(rel_{i}\)是第\( i \)个位置的评分&lt;/p&gt;
+
+&lt;p&gt;取值范围\([0,+\propto)\)&lt;/p&gt;
+
+&lt;p&gt;缺点：前后位置得分未做区分&lt;/p&gt;
+
+&lt;h3 id=&quot;discountedcumulativegain&quot;&gt;DiscountedCumulativeGain&lt;/h3&gt;
+
+\[DCG_{k} = \sum_{i=1}^{k}\frac{2^{rel_{i}}-1}{\log_{2}\left(i+1\right)}\]
+
+&lt;p&gt;\(rel_{i}\)是第\( i \)个位置的评分&lt;/p&gt;
+
+&lt;p&gt;取值范围\([0,+\propto)\)&lt;/p&gt;
+
+&lt;p&gt;缺点：不同算法得分不好做比较&lt;/p&gt;
+
+&lt;h3 id=&quot;normalizeddiscountedcumulativegain&quot;&gt;NormalizedDiscountedCumulativeGain&lt;/h3&gt;
+
+\[nDCG_{k} = \frac{DCG_{k}}{IDCG_{k}}\]
+
+&lt;p&gt;\(IDCG_{k}\)是按评分rank的理想得分，相当于做得分的归一化&lt;/p&gt;
+
+\[IDCG_{k} = \sum_{i=1}^{\left|  REL_{k}\right|}\frac{2^{rel_{i}}-1}{\log_{2}\left(i+1\right)}\]
+
+&lt;h2 id=&quot;排序损失&quot;&gt;排序损失&lt;/h2&gt;
+&lt;h3 id=&quot;rankcrossentropyloss&quot;&gt;RankCrossEntropyLoss&lt;/h3&gt;
+&lt;p&gt;example：一个正例样本1， 和多个负例样本0 label = [1,0,0,0…]&lt;/p&gt;
+
+\[RankCrossEntropyLoss = CrossEntropy(pred, label)\]
+
+&lt;p&gt;注意：此处必须构造数据为一个正样本1和多个负样本0，这样才满足概率分布的形式。&lt;/p&gt;
+
+&lt;h3 id=&quot;rankhingeloss&quot;&gt;RankHingeLoss&lt;/h3&gt;
+
+\[y = 
+\begin{cases}
+ &amp;amp; 1, &amp;amp;\text{if} &amp;amp; x_{1}^{\ast} &amp;gt;= x_{2}^{\ast} \\ 
+ &amp;amp;-1, &amp;amp;\text{if} &amp;amp; x_{1}^{\ast} &amp;lt; x_{2}^{\ast}
+\end{cases} \\
+loss(x1,x2,y)=\max(0,−y∗(x1−x2)+margin)\]
+
+&lt;p&gt;这里\(x_{1}^{\ast}, x_{2}^{\ast}\)表示实际的label得分，\(x_{1}, x_{2}\)表示预测得分&lt;/p&gt;
+
+</description>
+        <pubDate>Thu, 29 Jul 2021 00:19:00 +0800</pubDate>
+        <link>http://www.dosrc.com/mark/ai/2021/07/29/rank-metrics.html</link>
+        <guid isPermaLink="true">http://www.dosrc.com/mark/ai/2021/07/29/rank-metrics.html</guid>
+        
+        <category>AI，NLP，Rank</category>
+        
+        
+        <category>AI</category>
+        
+      </item>
+    
+      <item>
+        <title>午后小记</title>
+        <description>&lt;p&gt;午后，刚醒不久，一束阳光悄悄爬到了我的桌子上，耳机里放着我想去桂林，衣服穿的不多不少，天气不冷不热，工作也不紧不慢，竟是难得的轻松惬意。&lt;/p&gt;
+
+&lt;p&gt;一个人最好活得像夏天，心中永远向着太阳，可以汗流浃背，也可以在阴凉地听虫鸣鸟叫，看大头蚂蚁穿梭在祖祖辈辈耕种过的土地上。&lt;/p&gt;
+
+&lt;p&gt;最后再来一首我被青春撞了一下腰&lt;/p&gt;
+</description>
+        <pubDate>Wed, 31 Mar 2021 22:06:00 +0800</pubDate>
+        <link>http://www.dosrc.com/mark/essay/2021/03/31/sunshine.html</link>
+        <guid isPermaLink="true">http://www.dosrc.com/mark/essay/2021/03/31/sunshine.html</guid>
+        
+        <category>mind</category>
+        
+        
+        <category>Essay</category>
+        
+      </item>
     
       <item>
         <title>Exploratory Data Analysis</title>
-        <description>&lt;h2&gt;基本分析&lt;/h2&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;root_path =r&amp;#39;/home/kesci/input/titanic/&amp;#39;
-train = pd.read_csv(root_path + &amp;#39;train.csv&amp;#39;)
-test = pd.read_excel(root_path + &amp;#39;test.csv&amp;#39;)
+        <description>&lt;h2 id=&quot;基本分析&quot;&gt;基本分析&lt;/h2&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;root_path =r'/home/kesci/input/titanic/'
+train = pd.read_csv(root_path + 'train.csv')
+test = pd.read_excel(root_path + 'test.csv')
 train.info()
 train.describe()
 train.count() != train.count().max() 看那些值有缺失
-train.describe().loc[&amp;#39;count&amp;#39;]==train.describe().loc[&amp;#39;count&amp;#39;].max() # 看那些数值属性值有缺失
-train.describe().loc[&amp;#39;min&amp;#39;]==train.describe().loc[&amp;#39;max&amp;#39;] # 查看那些数值属性是固定值
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;h2&gt;缺失值填充&lt;/h2&gt;
-
+train.describe().loc['count']==train.describe().loc['count'].max() # 看那些数值属性值有缺失
+train.describe().loc['min']==train.describe().loc['max'] # 查看那些数值属性是固定值
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h2 id=&quot;缺失值填充&quot;&gt;缺失值填充&lt;/h2&gt;
 &lt;p&gt;１. 对于Category型数据用众数进行填充&lt;/p&gt;
 
 &lt;p&gt;２. 对于数值型数据用均值/中位数进行填充&lt;/p&gt;
 
-&lt;h2&gt;散碎点&lt;/h2&gt;
-
+&lt;h2 id=&quot;散碎点&quot;&gt;散碎点&lt;/h2&gt;
 &lt;ul&gt;
-&lt;li&gt;线上线下的效果差距却非常的大,这里面很大一部分原因在于,我们在做特征工程的时候,有一些特征在 训练集合上与label有很强的关系,但是却在测试集上却相对弱很多,我们将训练集进行拆分,分为训练集和验证机；用来模拟训练集和测试集的关系，如果在训练集和验证集上我们发现某特征与label的关系相差不大且都有一定的统计特性,我们就将其作为我们的好特征，即使它是弱特征也无所谓，因为即使过拟合也会在训练集和测试集上表现一致。&lt;/li&gt;
+  &lt;li&gt;线上线下的效果差距却非常的大,这里面很大一部分原因在于,我们在做特征工程的时候,有一些特征在 训练集合上与label有很强的关系,但是却在测试集上却相对弱很多,我们将训练集进行拆分,分为训练集和验证机；用来模拟训练集和测试集的关系，如果在训练集和验证集上我们发现某特征与label的关系相差不大且都有一定的统计特性,我们就将其作为我们的好特征，即使它是弱特征也无所谓，因为即使过拟合也会在训练集和测试集上表现一致。&lt;/li&gt;
 &lt;/ul&gt;
 </description>
         <pubDate>Sun, 26 Aug 2018 22:30:00 +0800</pubDate>
-        <link>http://localhost:4000/mark/machine-learning/2018/08/26/exploratory-data-analysis.html</link>
-        <guid isPermaLink="true">http://localhost:4000/mark/machine-learning/2018/08/26/exploratory-data-analysis.html</guid>
+        <link>http://www.dosrc.com/mark/machine-learning/2018/08/26/exploratory-data-analysis.html</link>
+        <guid isPermaLink="true">http://www.dosrc.com/mark/machine-learning/2018/08/26/exploratory-data-analysis.html</guid>
         
         <category>AI</category>
         
@@ -48,11 +165,12 @@ train.describe().loc[&amp;#39;min&amp;#39;]==train.describe().loc[&amp;#39;max&a
     
       <item>
         <title>Learning Deep Structured Semantic Models for Web Search using Clickthrough Data (pdf)</title>
-        <description>&lt;p&gt;&lt;embed src=&quot;/mark/assets/pdf/2018-08-11-learning-deep-structured-semantic-models-for-web-search-using-clickthrough-data/2018-08-11-learning-deep-structured-semantic-models-for-web-search-using-clickthrough-data.pdf#page=1&quot; type=&quot;application/pdf&quot; width=&quot;100%&quot; height=800px&gt;&lt;/p&gt;
+        <description>&lt;embed src=&quot;/mark/assets/pdf/2018-08-11-learning-deep-structured-semantic-models-for-web-search-using-clickthrough-data/2018-08-11-learning-deep-structured-semantic-models-for-web-search-using-clickthrough-data.pdf#page=1&quot; type=&quot;application/pdf&quot; width=&quot;100%&quot; height=&quot;800px&quot; /&gt;
+
 </description>
         <pubDate>Sun, 12 Aug 2018 02:20:00 +0800</pubDate>
-        <link>http://localhost:4000/mark/paper/2018/08/12/learning-deep-structured-semantic-models-for-web-search-using-clickthrough-data.html</link>
-        <guid isPermaLink="true">http://localhost:4000/mark/paper/2018/08/12/learning-deep-structured-semantic-models-for-web-search-using-clickthrough-data.html</guid>
+        <link>http://www.dosrc.com/mark/paper/2018/08/12/learning-deep-structured-semantic-models-for-web-search-using-clickthrough-data.html</link>
+        <guid isPermaLink="true">http://www.dosrc.com/mark/paper/2018/08/12/learning-deep-structured-semantic-models-for-web-search-using-clickthrough-data.html</guid>
         
         <category>2014</category>
         
@@ -63,11 +181,12 @@ train.describe().loc[&amp;#39;min&amp;#39;]==train.describe().loc[&amp;#39;max&a
     
       <item>
         <title>Neural Networks and Physical Systems with Emergent Collective Computational Abilities (pdf)</title>
-        <description>&lt;p&gt;&lt;embed src=&quot;/mark/assets/pdf/2018-07-26-neural-networks-and-physical-systems-with-emergent-collective-computational-abilities/2018-07-26-neural-networks-and-physical-systems-with-emergent-collective-computational-abilities.pdf#page=1&quot; type=&quot;application/pdf&quot; width=&quot;100%&quot; height=800px&gt;&lt;/p&gt;
+        <description>&lt;embed src=&quot;/mark/assets/pdf/2018-07-26-neural-networks-and-physical-systems-with-emergent-collective-computational-abilities/2018-07-26-neural-networks-and-physical-systems-with-emergent-collective-computational-abilities.pdf#page=1&quot; type=&quot;application/pdf&quot; width=&quot;100%&quot; height=&quot;800px&quot; /&gt;
+
 </description>
         <pubDate>Thu, 26 Jul 2018 23:10:00 +0800</pubDate>
-        <link>http://localhost:4000/mark/paper/2018/07/26/neural-networks-and-physical-systems-with-emergent-collective-computational-abilities.html</link>
-        <guid isPermaLink="true">http://localhost:4000/mark/paper/2018/07/26/neural-networks-and-physical-systems-with-emergent-collective-computational-abilities.html</guid>
+        <link>http://www.dosrc.com/mark/paper/2018/07/26/neural-networks-and-physical-systems-with-emergent-collective-computational-abilities.html</link>
+        <guid isPermaLink="true">http://www.dosrc.com/mark/paper/2018/07/26/neural-networks-and-physical-systems-with-emergent-collective-computational-abilities.html</guid>
         
         <category>2014</category>
         
@@ -78,13 +197,12 @@ train.describe().loc[&amp;#39;min&amp;#39;]==train.describe().loc[&amp;#39;max&a
     
       <item>
         <title>Word2Vec Introduce</title>
-        <description>&lt;h2&gt;背景&lt;/h2&gt;
-
+        <description>&lt;h2 id=&quot;背景&quot;&gt;背景&lt;/h2&gt;
 &lt;p&gt;&lt;strong&gt;one hot编码缺点&lt;/strong&gt;：&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;编码没有将语义融入到词的表示当中&lt;/li&gt;
-&lt;li&gt;维数爆炸&lt;/li&gt;
+  &lt;li&gt;编码没有将语义融入到词的表示当中&lt;/li&gt;
+  &lt;li&gt;维数爆炸&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;&lt;strong&gt;word embedding&lt;/strong&gt;&lt;/p&gt;
@@ -92,8 +210,8 @@ train.describe().loc[&amp;#39;min&amp;#39;]==train.describe().loc[&amp;#39;max&a
 &lt;p&gt;如何将语义融入到词的表示当中? Harris于1954年提出的分布假说（distributional hypothesis）为这一设想提供了理论基础：上下文相似的词，其语义也相似。而基于基于分布假说的词表示方法，根据建模的不同，主要可以分为三类：基于矩阵的分布表示、基于聚类的分布表示和基于神经网络的分布表示。而word embedding一般来说就是一种基于神经网络的分布表示。&lt;/p&gt;
 </description>
         <pubDate>Wed, 23 May 2018 21:30:00 +0800</pubDate>
-        <link>http://localhost:4000/mark/nlp/2018/05/23/word2vec-introduce.html</link>
-        <guid isPermaLink="true">http://localhost:4000/mark/nlp/2018/05/23/word2vec-introduce.html</guid>
+        <link>http://www.dosrc.com/mark/nlp/2018/05/23/word2vec-introduce.html</link>
+        <guid isPermaLink="true">http://www.dosrc.com/mark/nlp/2018/05/23/word2vec-introduce.html</guid>
         
         <category>AI</category>
         
@@ -106,11 +224,12 @@ train.describe().loc[&amp;#39;min&amp;#39;]==train.describe().loc[&amp;#39;max&a
     
       <item>
         <title>Neural Turing Machines (pdf)</title>
-        <description>&lt;p&gt;&lt;embed src=&quot;/mark/assets/pdf/2018-05-23-neural-turing-machines/2018-05-23-neural-turing-machines.pdf#page=1&quot; type=&quot;application/pdf&quot; width=&quot;100%&quot; height=800px&gt;&lt;/p&gt;
+        <description>&lt;embed src=&quot;/mark/assets/pdf/2018-05-23-neural-turing-machines/2018-05-23-neural-turing-machines.pdf#page=1&quot; type=&quot;application/pdf&quot; width=&quot;100%&quot; height=&quot;800px&quot; /&gt;
+
 </description>
         <pubDate>Wed, 23 May 2018 21:30:00 +0800</pubDate>
-        <link>http://localhost:4000/mark/paper/2018/05/23/neural-turing-machines.html</link>
-        <guid isPermaLink="true">http://localhost:4000/mark/paper/2018/05/23/neural-turing-machines.html</guid>
+        <link>http://www.dosrc.com/mark/paper/2018/05/23/neural-turing-machines.html</link>
+        <guid isPermaLink="true">http://www.dosrc.com/mark/paper/2018/05/23/neural-turing-machines.html</guid>
         
         <category>2014</category>
         
@@ -121,11 +240,12 @@ train.describe().loc[&amp;#39;min&amp;#39;]==train.describe().loc[&amp;#39;max&a
     
       <item>
         <title>Machine Learning And Its Application In Image Processing (pdf)</title>
-        <description>&lt;p&gt;&lt;embed src=&quot;/mark/assets/pdf/2017-06-29-machine-learning-and-its-application-in-image-processing/2017-06-29-machine-learning-and-its-application-in-image-processing.pdf#page=1&quot; type=&quot;application/pdf&quot; width=&quot;100%&quot; height=800px&gt;&lt;/p&gt;
+        <description>&lt;embed src=&quot;/mark/assets/pdf/2017-06-29-machine-learning-and-its-application-in-image-processing/2017-06-29-machine-learning-and-its-application-in-image-processing.pdf#page=1&quot; type=&quot;application/pdf&quot; width=&quot;100%&quot; height=&quot;800px&quot; /&gt;
+
 </description>
         <pubDate>Wed, 23 May 2018 21:30:00 +0800</pubDate>
-        <link>http://localhost:4000/mark/ai/2018/05/23/machine-learning-and-its-application-in-image-processing.html</link>
-        <guid isPermaLink="true">http://localhost:4000/mark/ai/2018/05/23/machine-learning-and-its-application-in-image-processing.html</guid>
+        <link>http://www.dosrc.com/mark/ai/2018/05/23/machine-learning-and-its-application-in-image-processing.html</link>
+        <guid isPermaLink="true">http://www.dosrc.com/mark/ai/2018/05/23/machine-learning-and-its-application-in-image-processing.html</guid>
         
         <category>AI</category>
         
@@ -138,55 +258,73 @@ train.describe().loc[&amp;#39;min&amp;#39;]==train.describe().loc[&amp;#39;max&a
     
       <item>
         <title>Ruby On Rails</title>
-        <description>&lt;h2&gt;安装&lt;/h2&gt;
-
+        <description>&lt;h2 id=&quot;安装&quot;&gt;安装&lt;/h2&gt;
 &lt;ol&gt;
-&lt;li&gt;安装ruby&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;安装sqlite3&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;sudo apt-get install sqlite3
-sudo apt-get install libsqlite3-dev
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;安装rails&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;gem install rails
-rails --version
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;使用rails创建博客&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;rails new blog
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;启动web服务器&lt;/p&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;cd blog
-bin/rails server
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+  &lt;li&gt;安装ruby&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;安装sqlite3&lt;/p&gt;
+
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; sudo apt-get install sqlite3
+ sudo apt-get install libsqlite3-dev
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;安装rails&lt;/p&gt;
+
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; gem install rails
+ rails --version
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;使用rails创建博客&lt;/p&gt;
+
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; rails new blog
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;启动web服务器&lt;/p&gt;
+
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; cd blog
+ bin/rails server
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h2&gt;错误及处理&lt;/h2&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:84:in `rescue in block (2 levels) in require&amp;#39;: There was an error while trying to load the gem &amp;#39;uglifier&amp;#39;. (Bundler::GemRequireError)
+&lt;h2 id=&quot;错误及处理&quot;&gt;错误及处理&lt;/h2&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:84:in `rescue in block (2 levels) in require': There was an error while trying to load the gem 'uglifier'. (Bundler::GemRequireError)
 Gem Load Error is: Could not find a JavaScript runtime. See https://github.com/rails/execjs for a list of available runtimes.
 Backtrace for gem load error is:
-/var/lib/gems/2.3.0/gems/execjs-2.7.0/lib/execjs/runtimes.rb:58:in `autodetect&amp;#39;
-/var/lib/gems/2.3.0/gems/execjs-2.7.0/lib/execjs.rb:5:in `&amp;lt;module:ExecJS&amp;gt;&amp;#39;
-/var/lib/gems/2.3.0/gems/execjs-2.7.0/lib/execjs.rb:4:in `&amp;lt;top (required)&amp;gt;&amp;#39;
-/var/lib/gems/2.3.0/gems/uglifier-4.1.1/lib/uglifier.rb:5:in `require&amp;#39;
-/var/lib/gems/2.3.0/gems/uglifier-4.1.1/lib/uglifier.rb:5:in `&amp;lt;top (required)&amp;gt;&amp;#39;
-/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:81:in `require&amp;#39;
-/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:81:in `block (2 levels) in require&amp;#39;
-/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:76:in `each&amp;#39;
-/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:76:in `block in require&amp;#39;
-/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:65:in `each&amp;#39;
-/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:65:in `require&amp;#39;
-/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler.rb:114:in `require&amp;#39;
-/home/ez/blog/config/application.rb:7:in `&amp;lt;top (required)&amp;gt;&amp;#39;
-/var/lib/gems/2.3.0/gems/railties-5.1.4/lib/rails/commands/server/server_command.rb:133:in `require&amp;#39;
+/var/lib/gems/2.3.0/gems/execjs-2.7.0/lib/execjs/runtimes.rb:58:in `autodetect'
+/var/lib/gems/2.3.0/gems/execjs-2.7.0/lib/execjs.rb:5:in `&amp;lt;module:ExecJS&amp;gt;'
+/var/lib/gems/2.3.0/gems/execjs-2.7.0/lib/execjs.rb:4:in `&amp;lt;top (required)&amp;gt;'
+/var/lib/gems/2.3.0/gems/uglifier-4.1.1/lib/uglifier.rb:5:in `require'
+/var/lib/gems/2.3.0/gems/uglifier-4.1.1/lib/uglifier.rb:5:in `&amp;lt;top (required)&amp;gt;'
+/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:81:in `require'
+/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:81:in `block (2 levels) in require'
+/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:76:in `each'
+/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:76:in `block in require'
+/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:65:in `each'
+/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:65:in `require'
+/var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler.rb:114:in `require'
+/home/ez/blog/config/application.rb:7:in `&amp;lt;top (required)&amp;gt;'
+/var/lib/gems/2.3.0/gems/railties-5.1.4/lib/rails/commands/server/server_command.rb:133:in `require'
 ...
 ...
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;&lt;span&gt;&lt;/span&gt;原因：没有JavaScript runtime
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;原因：没有JavaScript runtime
 解决方法：sudo apt-get install nodejs
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+</description>
         <pubDate>Sat, 23 Dec 2017 20:30:00 +0800</pubDate>
-        <link>http://localhost:4000/mark/web/2017/12/23/begin-ruby-on-rails.html</link>
-        <guid isPermaLink="true">http://localhost:4000/mark/web/2017/12/23/begin-ruby-on-rails.html</guid>
+        <link>http://www.dosrc.com/mark/web/2017/12/23/begin-ruby-on-rails.html</link>
+        <guid isPermaLink="true">http://www.dosrc.com/mark/web/2017/12/23/begin-ruby-on-rails.html</guid>
         
-        <category>web ruby ruby-on-rails</category>
+        <category>web</category>
+        
+        <category>ruby</category>
+        
+        <category>ruby-on-rails</category>
         
         
         <category>Web</category>
@@ -195,183 +333,16 @@ Backtrace for gem load error is:
     
       <item>
         <title>Playing Atari with Deep Reinforcement Learning (pdf)</title>
-        <description>&lt;p&gt;&lt;embed src=&quot;/mark/assets/pdf/2017-12-23-playing-atari-with-deep-reinforcement-learning/2017-12-23-playing-atari-with-deep-reinforcement-learning.pdf&quot; type=&quot;application/pdf&quot; width=&quot;100%&quot; height=800px&gt;&lt;/p&gt;
+        <description>&lt;embed src=&quot;/mark/assets/pdf/2017-12-23-playing-atari-with-deep-reinforcement-learning/2017-12-23-playing-atari-with-deep-reinforcement-learning.pdf&quot; type=&quot;application/pdf&quot; width=&quot;100%&quot; height=&quot;800px&quot; /&gt;
+
 </description>
         <pubDate>Sat, 23 Dec 2017 20:30:00 +0800</pubDate>
-        <link>http://localhost:4000/mark/paper/2017/12/23/playing-atari-with-deep-reinforcement-learning.html</link>
-        <guid isPermaLink="true">http://localhost:4000/mark/paper/2017/12/23/playing-atari-with-deep-reinforcement-learning.html</guid>
+        <link>http://www.dosrc.com/mark/paper/2017/12/23/playing-atari-with-deep-reinforcement-learning.html</link>
+        <guid isPermaLink="true">http://www.dosrc.com/mark/paper/2017/12/23/playing-atari-with-deep-reinforcement-learning.html</guid>
         
         <category>nips</category>
         
         <category>2013</category>
-        
-        
-        <category>Paper</category>
-        
-      </item>
-    
-      <item>
-        <title>Reinforcement Learning - Markov Decision Process  (pdf)</title>
-        <description>&lt;p&gt;&lt;embed src=&quot;/mark/assets/pdf/2017-12-23-markov-decision-process/2017-12-23-markov-decision-process.pdf#page=1&quot; type=&quot;application/pdf&quot; width=&quot;100%&quot; height=800px&gt;&lt;/p&gt;
-</description>
-        <pubDate>Sat, 23 Dec 2017 20:30:00 +0800</pubDate>
-        <link>http://localhost:4000/mark/reinforcement-learning/2017/12/23/markov-decision-process.html</link>
-        <guid isPermaLink="true">http://localhost:4000/mark/reinforcement-learning/2017/12/23/markov-decision-process.html</guid>
-        
-        <category>MDP</category>
-        
-        
-        <category>Reinforcement-Learning</category>
-        
-      </item>
-    
-      <item>
-        <title>Using Fast Weights to Attend to the Recent Past</title>
-        <description>&lt;h2&gt;论文相关信息&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://papers.nips.cc/paper/by-source-2016-2143&quot;&gt;&lt;strong&gt;论文nips链接&lt;/strong&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://papers.nips.cc/paper/6057-using-fast-weights-to-attend-to-the-recent-past.pdf&quot;&gt;&lt;strong&gt;论文pdf链接&lt;/strong&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2&gt;相关知识&lt;/h2&gt;
-
-&lt;p&gt;&lt;strong&gt;记忆分类&lt;/strong&gt;&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;瞬时记忆，又称为感觉记忆或者感觉登记——也就是你现在看到、听到感觉到的一切信息在人脑中的反应。&lt;/li&gt;
-&lt;li&gt;短时记忆——请你现在回忆看这个答案前你再看什么？这就是短时记忆，一般持续15~30秒。（没有复述的情况下）&lt;/li&gt;
-&lt;li&gt;长时记忆——也就是一分钟以上的记忆，最长可以达到终身。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;以上定义来自于《普通心理学》北京师范出版社·彭聃龄&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;循环神经网络&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/mark/assets/images/2017-11-07-using-fast-weights-to-attend-to-the-recent-Past/RNN.png&quot; alt=&quot;RNN&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;长短时记忆网络&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/mark/assets/images/2017-11-07-using-fast-weights-to-attend-to-the-recent-Past/LSTM.png&quot; alt=&quot;LSTM&quot;&gt;&lt;/p&gt;
-
-&lt;h2&gt;论文理解&lt;/h2&gt;
-
-&lt;p&gt;普通的循环神经网络有两种记忆类型，即短期记忆和长期记忆。隐藏层的神经元负责保持短期记忆，每次迭代都更新，记忆容量为\(O(H)\)，其中\(H\)是隐藏层神经元的个数。权重向量保持着长期记忆，记忆容量为\(O(H ^{2})+O(IH)+O(HO)\)，其中\(I\)和\(O\)是输入和输出单元的个数。LSTM增加了各种门和状态信息，使得记忆可以保存的更久，但是它的短期记忆容量依旧为\(O(H)\)。从生理学上来说，人的记忆并不是存储在神经元中。生理学上表明，大脑的短期记忆的某一种实现方式是：通过突出末梢的\([Ca ^{2+}]]\)去极化建立短期记忆，而又通过递质的损耗来遗忘。这也就是说大脑的短期记忆并不是存储于神经元中的，而是存储在突触的变化中。这样短期记忆的容量就可以达到\(O(H ^{2})\)。&lt;/p&gt;
-
-&lt;h3&gt;快速联想记忆&lt;/h3&gt;
-
-&lt;p&gt;1970-1980年的主流思想是，记忆不是以简单的拷贝神经活动的模式存储的，而是在需要时从存有信息的权重中重建的。\(O(N ^{2})\)个权重至多存储\(O(N)\)个实值向量，每个向量有\(O(N)\)个分量。至于实际存储容量能够达到什么程度则取决于我们采用的存储规则。由于我们觉得一个简单的，无迭代的存规则比最大化容量要重要一些，所以我们采用外积规则来存储隐藏快速衰减的神经向量。&lt;/p&gt;
-
-&lt;h4&gt;快速联想记忆的优势：&lt;/h4&gt;
-
-&lt;ol&gt;
-&lt;li&gt;对于像神经图灵机，神经堆栈，记忆网络这些模型暂时没有生理学的依据，但是大脑实现快速联想记忆却是有依据的即通过突触的变化。&lt;/li&gt;
-&lt;li&gt;在快速联想记忆中，我们不必决定什么时候读记忆什么时候写记忆，快速联想记忆时时刻刻都在更新。每当输入变化时，都可以通过模型反应到隐藏状态中去。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h4&gt;模型&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;/mark/assets/images/2017-11-07-using-fast-weights-to-attend-to-the-recent-Past/fast-associative-memory-model.png&quot; alt=&quot;fast-associative-memory-model&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;迭代公式&lt;/strong&gt;
-$$A \left ( t \right ) = \lambda  A \left ( t-1 \right ) + \eta h \left ( t \right ) h \left ( t \right ) ^{T}$$&lt;/p&gt;
-
-&lt;p&gt;$$(Assuming\ A\ is\ 0\ at\ the\ beginning\ of\ the\ sequence)$$&lt;/p&gt;
-
-&lt;p&gt;$$\Longrightarrow A \left ( t \right ) = \eta  \sum _{\tau = 1} ^{\tau = t} \lambda ^{t- \tau} h \left ( \tau \right ) h \left ( \tau \right ) ^{T}$$&lt;/p&gt;
-
-&lt;p&gt;$$h _{0} \left ( t+1 \right ) = f \left ( Wh \left ( t \right ) + Cx \left ( t \right ) \right )$$&lt;/p&gt;
-
-&lt;p&gt;$$h _{S} \left ( t+1 \right ) = f \left ( \left [ Wh \left ( t \right ) + Cx \left ( t \right ) \right ] + A \left ( t \right ) h _{S-1} \left ( t+1 \right ) \right ) $$&lt;/p&gt;
-
-&lt;p&gt;$$h \left ( t+1 \right ) = h _{S} \left ( t+1 \right )$$&lt;/p&gt;
-
-&lt;p&gt;$$A \left ( t \right ) h _{s-1} \left ( t+1 \right ) = \eta  \sum _{\tau = 1} ^{\tau = t} \lambda ^{t- \tau} h \left ( \tau \right ) \left [ h \left ( \tau \right ) ^{T} h _{s-1} \left ( t+1 \right ) \right ]$$&lt;/p&gt;
-
-&lt;p&gt;其中\(A \left ( t \right )\)不需要训练，是随着时间和输入更新的
-&lt;strong&gt;Layer normalized fast weight&lt;/strong&gt;
-快速联想记忆网络的一个可能潜在的问题是两个隐藏向量的标量积可能会消失或者爆炸，而最近提出的layer normalization在处理这样的问题时表现出色，并且可以减少训练时间，所以我们在快速联想记忆网络中使用这一技术如下：
-$$h _{S} \left ( t+1 \right ) = f \left (LN \left [ Wh \left ( t \right ) + Cx \left ( t \right ) + A \left ( t \right ) h _{S-1} \left ( t+1 \right ) \right ] \right ) $$
-其中\(LN\left [\cdot \right ] \)代表layer normalization。&lt;/p&gt;
-
-&lt;h3&gt;实验结果&lt;/h3&gt;
-
-&lt;ol&gt;
-&lt;li&gt;&lt;p&gt;联想检索&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/mark/assets/images/2017-11-07-using-fast-weights-to-attend-to-the-recent-Past/associative-retrieval.png&quot; alt=&quot;associative-retrieval&quot;&gt;
-&lt;img src=&quot;/mark/assets/images/2017-11-07-using-fast-weights-to-attend-to-the-recent-Past/associative-retrieval-result.png&quot; alt=&quot;associative-retrieva-resultl&quot;&gt;&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;在视觉注意力模型中综合瞥见&lt;/p&gt;
-
-&lt;p&gt;视觉注意力模型能将注意力集中在图像的某些重要的部分，而忽略图像的混乱的背景，该模型不仅决定它下一步要看什么，而且要把所看的东西都记住以便进行正确的图像分类。视觉注意力模型能在大量图像输入中找出多个图像并进行正确分类。但是它的瞥见策略过于简单，只能使用单一尺度的瞥见，并且扫描图像的方式也过于死板。相对来说人眼的运动就复杂多了，人眼可以看同一东西的不同尺度，并且能够将看到的东西给予不同的重要程度划分。但是这要求我们能具有短期的记忆能记住我们在刚开始的一系列瞥见中发现了什么。
-典型的视觉注意力模型，比较复杂且效果的方差比较大，为了证明快速联想记忆对视觉注意力模型有助益，我们让提前定义好了视觉注意力模型的控制信号，所以模型不需要学习下一步要看什么，这样可以更加明显的看出快速权重的作用。
-&lt;img src=&quot;/mark/assets/images/2017-11-07-using-fast-weights-to-attend-to-the-recent-Past/integrating-glimpses-in-visual-attention-models-result.png&quot; alt=&quot;integrating-glimpses-in-visual-attention-models-result&quot;&gt;&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;面部表情识别
-&lt;img src=&quot;/mark/assets/images/2017-11-07-using-fast-weights-to-attend-to-the-recent-Past/facial-expression-recognition-result.png&quot; alt=&quot;facial-expression-recognition-result&quot;&gt;&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;具有记忆的智能体
-&lt;img src=&quot;/mark/assets/images/2017-11-07-using-fast-weights-to-attend-to-the-recent-Past/agents-with-memory-result.png&quot; alt=&quot;agents-with-memory-result&quot;&gt;&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h3&gt;扩展阅读&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;A-LSTM&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;visual attention models(模型)&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Negative log likelihood（评价指标）&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;batch normalization(归一化)&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;layer normalization(归一化)&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Asynchronous advantage actor-critic method(训练方法)&lt;/p&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2&gt;作者信息&lt;/h2&gt;
-
-&lt;p&gt;&lt;strong&gt;Jimmy Ba:&lt;/strong&gt;University of Toronto&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;Using Fast Weights to Attend to the Recent Past (2016)&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Learning Wake-Sleep Recurrent Attention Models (2015)&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Do Deep Nets Really Need to be Deep? (2014)&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Adaptive dropout for training deep neural networks (2013)&lt;/p&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;strong&gt;Geoffrey Hinton:&lt;/strong&gt;University of Toronto and Google Brain&lt;/p&gt;
-
-&lt;p&gt;计算机学家和心理学家，反向传播算法和对比散度算法的发明人之一，深度学习的积极推动者。盖茨比计算神经科学中心的创始人，多伦多大学计算机系教授。对神经网络的研究的其它贡献包括Boltzmann机器，分布式表征，时滞神经网络，混合专家、变分学习，专家产品和深信网络。研究兴趣是用丰富传感器输入的非监督式多层神经网络学习程序。可以说是Deep Learning学派的开山祖师爷。&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;Attend, Infer, Repeat: Fast Scene Understanding with Generative Models (2016)&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;A Better Way to Pretrain Deep Boltzmann Machines (2012)&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;ImageNet Classification with Deep Convolutional Neural Networks (2012)&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Gated Softmax Classification (2010)&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Generating more realistic images using gated MRF&amp;#39;s (2010)&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Learning to combine foveal glimpses with a third-order Boltzmann machine (2010)&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Phone Recognition with the Mean-Covariance Restricted Boltzmann Machine (2010)&lt;/p&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;strong&gt;Volodymyr Mnih:&lt;/strong&gt;Google DeepMind&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;Learning values across many orders of magnitude (2016)&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Strategic Attentive Writer for Learning Macro-Actions (2016)&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Recurrent Models of Visual Attention (2014)&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Generating more realistic images using gated MRF&amp;#39;s (2010)&lt;/p&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;strong&gt;Joel Leibo:&lt;/strong&gt;Google DeepMind&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;Learning invariant representations and applications to face verification (2013)&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;Why The Brain Separates Face Recognition From Object Recognition (2011)&lt;/p&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;strong&gt;Catalin Ionescu:&lt;/strong&gt;Google DeepMind&lt;/p&gt;
-</description>
-        <pubDate>Tue, 07 Nov 2017 04:21:00 +0800</pubDate>
-        <link>http://localhost:4000/mark/paper/2017/11/07/using-fast-weights-to-attend-to-the-recent-past.html</link>
-        <guid isPermaLink="true">http://localhost:4000/mark/paper/2017/11/07/using-fast-weights-to-attend-to-the-recent-past.html</guid>
-        
-        <category>nips</category>
-        
-        <category>2016</category>
         
         
         <category>Paper</category>

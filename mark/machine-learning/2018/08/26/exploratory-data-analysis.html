@@ -7,13 +7,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Exploratory Data Analysis</title>
-  <meta name="description" content="基本分析root_path =r&#39;/home/kesci/input/titanic/&#39;train = pd.read_csv(root_path + &#39;train.csv&#39;)test = pd.read_excel(root_path + &#39;test.csv&#39;)t...">
+  <meta name="description" content="基本分析root_path =r'/home/kesci/input/titanic/'train = pd.read_csv(root_path + 'train.csv')test = pd.read_excel(root_path + 'test.csv')train.info()train.describ...">
 
   <link rel="stylesheet" href="/mark/css/main_pdf.css">
   <link rel="stylesheet" href="/mark/css/pygments.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://localhost:4000/mark/machine-learning/2018/08/26/exploratory-data-analysis.html">
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
+  <link rel="canonical" href="http://www.dosrc.com/mark/machine-learning/2018/08/26/exploratory-data-analysis.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
 </head>
@@ -68,26 +68,24 @@
   </header>
 
   <article class="post-content">
-    <h2>基本分析</h2>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>root_path =r&#39;/home/kesci/input/titanic/&#39;
-train = pd.read_csv(root_path + &#39;train.csv&#39;)
-test = pd.read_excel(root_path + &#39;test.csv&#39;)
+    <h2 id="基本分析">基本分析</h2>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root_path =r'/home/kesci/input/titanic/'
+train = pd.read_csv(root_path + 'train.csv')
+test = pd.read_excel(root_path + 'test.csv')
 train.info()
 train.describe()
 train.count() != train.count().max() 看那些值有缺失
-train.describe().loc[&#39;count&#39;]==train.describe().loc[&#39;count&#39;].max() # 看那些数值属性值有缺失
-train.describe().loc[&#39;min&#39;]==train.describe().loc[&#39;max&#39;] # 查看那些数值属性是固定值
-</code></pre></div>
-<h2>缺失值填充</h2>
-
+train.describe().loc['count']==train.describe().loc['count'].max() # 看那些数值属性值有缺失
+train.describe().loc['min']==train.describe().loc['max'] # 查看那些数值属性是固定值
+</code></pre></div></div>
+<h2 id="缺失值填充">缺失值填充</h2>
 <p>１. 对于Category型数据用众数进行填充</p>
 
 <p>２. 对于数值型数据用均值/中位数进行填充</p>
 
-<h2>散碎点</h2>
-
+<h2 id="散碎点">散碎点</h2>
 <ul>
-<li>线上线下的效果差距却非常的大,这里面很大一部分原因在于,我们在做特征工程的时候,有一些特征在 训练集合上与label有很强的关系,但是却在测试集上却相对弱很多,我们将训练集进行拆分,分为训练集和验证机；用来模拟训练集和测试集的关系，如果在训练集和验证集上我们发现某特征与label的关系相差不大且都有一定的统计特性,我们就将其作为我们的好特征，即使它是弱特征也无所谓，因为即使过拟合也会在训练集和测试集上表现一致。</li>
+  <li>线上线下的效果差距却非常的大,这里面很大一部分原因在于,我们在做特征工程的时候,有一些特征在 训练集合上与label有很强的关系,但是却在测试集上却相对弱很多,我们将训练集进行拆分,分为训练集和验证机；用来模拟训练集和测试集的关系，如果在训练集和验证集上我们发现某特征与label的关系相差不大且都有一定的统计特性,我们就将其作为我们的好特征，即使它是弱特征也无所谓，因为即使过拟合也会在训练集和测试集上表现一致。</li>
 </ul>
 
   </article>

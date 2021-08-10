@@ -7,13 +7,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Linux Kernel - C语言对应汇编源代码分析</title>
-  <meta name="description" content="重点知识总结CS(code segment register)是代码段寄存器,CPU在实际取指令时根据cs:eip来准确定位一个指令。b，w，l，p，分别指8位，16位，32位，64位，如movl指移动32位的数据。AT&amp;T汇编格式与Intel汇编格式略有不同，Linux使用的是AT&amp;T汇编格式。...">
+  <meta name="description" content="重点知识总结  CS(code segment register)是代码段寄存器,CPU在实际取指令时根据cs:eip来准确定位一个指令。  b，w，l，p，分别指8位，16位，32位，64位，如movl指移动32位的数据。  AT&amp;T汇编格式与Intel汇编格式略有不同，Linux使用的是AT&amp;...">
 
   <link rel="stylesheet" href="/mark/css/main.css">
-  <link rel="stylesheet" href="/mark/css/pygments.css">
+  <link rel="stylesheet" href="/mark/css/syntax.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://localhost:4000/mark/linux-3.18.6/2016/02/25/linux-kernel-working-process-of-assembly-code.html">
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
+  <link rel="canonical" href="http://www.dosrc.com/mark/linux-3.18.6/2016/02/25/linux-kernel-working-process-of-assembly-code.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
   <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
 </head>
@@ -68,63 +68,69 @@
   </header>
 
   <article class="post-content">
-    <h2>重点知识总结</h2>
-
+    <h2 id="重点知识总结">重点知识总结</h2>
 <ul>
-<li>CS(code segment register)是代码段寄存器,CPU在实际取指令时根据cs:eip来准确定位一个指令。</li>
-<li>b，w，l，p，分别指8位，16位，32位，64位，如movl指移动32位的数据。</li>
-<li><strong>AT&amp;T</strong>汇编格式与<strong>Intel</strong>汇编格式略有不同，Linux使用的是<strong>AT&amp;T</strong>汇编格式。</li>
-<li>eip寄存器不能被直接修改，只能通过特殊指令间接修改，如通过call与ret指令。</li>
-<li>函数的返回值默认使用eax寄存器存储返回给上一级函数</li>
-<li><p>汇编中对应的方法过程如下</p>
-<div class="highlight"><pre><code class="language-C" data-lang="C"><span></span><span class="nl">method</span><span class="p">:</span>
-    <span class="n">enter</span>
-    <span class="c1">// Real Code Here</span>
-    <span class="n">leave</span>
-    <span class="n">ret</span>
-</code></pre></div></li>
-<li><p>指令实际做的事情列表：</p>
-<div class="highlight"><pre><code class="language-Java" data-lang="Java"><span></span><span class="n">push</span> <span class="o">%</span><span class="n">eax</span>
-    <span class="n">subl</span> <span class="n">$4</span><span class="o">,</span> <span class="o">%</span><span class="n">esp</span>
-    <span class="n">movl</span> <span class="o">%</span><span class="n">eax</span><span class="o">,</span> <span class="o">(%</span><span class="n">esp</span><span class="o">)</span>
-<span class="n">pop</span> <span class="o">%</span><span class="n">eax</span>
-    <span class="nf">movl</span> <span class="o">(%</span><span class="n">esp</span><span class="o">),</span> <span class="o">%</span><span class="n">eax</span>
-    <span class="n">addl</span> <span class="n">$4</span><span class="o">,</span> <span class="o">%</span><span class="n">esp</span>
-<span class="n">call</span> <span class="mh">0x12345</span>
-    <span class="n">pushl</span> <span class="o">%</span><span class="n">eip</span><span class="o">*</span>  <span class="cm">/* 这里eip后面的*意在说明这条指令实际不存在，是伪指令，下同 */</span>
-    <span class="n">movl</span> <span class="n">$0x12345</span><span class="o">,</span> <span class="o">%</span><span class="n">eip</span><span class="o">*</span>
-<span class="n">ret</span>
-    <span class="n">popl</span> <span class="o">%</span><span class="n">eip</span><span class="o">*</span>
-<span class="n">enter</span>
-    <span class="n">pushl</span> <span class="o">%</span><span class="n">ebp</span>
-    <span class="n">movl</span> <span class="o">%</span><span class="n">esp</span><span class="o">,</span> <span class="o">%</span><span class="n">ebp</span>
-<span class="n">leave</span>
-    <span class="n">movl</span> <span class="o">%</span><span class="n">ebp</span><span class="o">,</span> <span class="o">%</span><span class="n">esp</span>
-    <span class="n">popl</span> <span class="o">%</span><span class="n">ebp</span>
-</code></pre></div></li>
+  <li>CS(code segment register)是代码段寄存器,CPU在实际取指令时根据cs:eip来准确定位一个指令。</li>
+  <li>b，w，l，p，分别指8位，16位，32位，64位，如movl指移动32位的数据。</li>
+  <li><strong>AT&amp;T</strong>汇编格式与<strong>Intel</strong>汇编格式略有不同，Linux使用的是<strong>AT&amp;T</strong>汇编格式。</li>
+  <li>eip寄存器不能被直接修改，只能通过特殊指令间接修改，如通过call与ret指令。</li>
+  <li>函数的返回值默认使用eax寄存器存储返回给上一级函数</li>
+  <li>
+    <p>汇编中对应的方法过程如下</p>
+
+    <pre><code class="language-C">  method:
+      enter
+      // Real Code Here
+      leave
+      ret
+</code></pre>
+  </li>
+  <li>
+    <p>指令实际做的事情列表：</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  push %eax
+      subl $4, %esp
+      movl %eax, (%esp)
+  pop %eax
+      movl (%esp), %eax
+      addl $4, %esp
+  call 0x12345
+      pushl %eip*  /* 这里eip后面的*意在说明这条指令实际不存在，是伪指令，下同 */
+      movl $0x12345, %eip*
+  ret
+      popl %eip*
+  enter
+      pushl %ebp
+      movl %esp, %ebp
+  leave
+      movl %ebp, %esp
+      popl %ebp
+</code></pre></div>    </div>
+  </li>
 </ul>
 
-<h3>实验分析</h3>
-
+<h3 id="实验分析">实验分析</h3>
 <p>C程序源代码如下图</p>
 
-<p><img src="/mark/assets/images/2016-02-25-linux-kernel-working-process-of-assembly-code/main-c.png" alt="main.c">
+<p><img src="/mark/assets/images/2016-02-25-linux-kernel-working-process-of-assembly-code/main-c.png" alt="main.c" />
 汇编源代码如下图</p>
 
-<p><img src="/mark/assets/images/2016-02-25-linux-kernel-working-process-of-assembly-code/main-s.png" alt="main.s">
+<p><img src="/mark/assets/images/2016-02-25-linux-kernel-working-process-of-assembly-code/main-s.png" alt="main.s" />
 从图中可以看出，C程序方法对应的汇编方法一般过程如下：</p>
-<div class="highlight"><pre><code class="language-C" data-lang="C"><span></span><span class="nl">method</span><span class="p">:</span>
-        <span class="n">enter</span>
-        <span class="c1">// Real Code Here</span>
-        <span class="n">leave</span>
-        <span class="n">ret</span>
-</code></pre></div>
-<p>若方法中不再调用另一方法也即汇编代码中不调用call语句，那么<code>leave</code>语句可优化为<code>popl %ebp</code>。</p>
 
-<p>参数传递通过堆栈完成，一个参数，则通过<code>8(%ebp)</code>取参数，两个参数则通过<code>12(%ebp)</code>, <code>8(*ebp)</code>分别取出第一和第二个参数。</p>
+<pre><code class="language-C">method:
+        enter
+        // Real Code Here
+        leave
+        ret
+</code></pre>
+<p>若方法中不再调用另一方法也即汇编代码中不调用call语句，那么<code class="language-plaintext highlighter-rouge">leave</code>语句可优化为<code class="language-plaintext highlighter-rouge">popl %ebp</code>。</p>
 
-<p>wdk 原创作品转载请注明出处<br>
+<p>参数传递通过堆栈完成，一个参数，则通过<code class="language-plaintext highlighter-rouge">8(%ebp)</code>取参数，两个参数则通过<code class="language-plaintext highlighter-rouge">12(%ebp)</code>, <code class="language-plaintext highlighter-rouge">8(*ebp)</code>分别取出第一和第二个参数。</p>
+
+<p>wdk 原创作品转载请注明出处<br />
 相关链接 <a href="http://mooc.study.163.com/course/USTC-1000029000">《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000</a></p>
+
 
   </article>
 

@@ -10,10 +10,10 @@
   <meta name="description" content="用好异常获取调用方法信息的方式：">
 
   <link rel="stylesheet" href="/mark/css/main.css">
-  <link rel="stylesheet" href="/mark/css/pygments.css">
+  <link rel="stylesheet" href="/mark/css/syntax.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://localhost:4000/mark/j2ee/2016/01/13/web-note-well-use-of-exception.html">
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
+  <link rel="canonical" href="http://www.dosrc.com/mark/j2ee/2016/01/13/web-note-well-use-of-exception.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
   <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
 </head>
@@ -68,63 +68,67 @@
   </header>
 
   <article class="post-content">
-    <h2>用好异常</h2>
-
+    <h2 id="用好异常">用好异常</h2>
 <p>获取调用方法信息的方式：</p>
 
-<p>方法一. 利用方法的返回值。<br>
-方法二. 利用调用方法时传递给方法的参数。<br>
+<p>方法一. 利用方法的返回值。<br />
+方法二. 利用调用方法时传递给方法的参数。<br />
 方法三. 利用异常。</p>
 
 <p>实际项目中一般用到方法一和方法三就足够了，正面的业务逻辑通过方法的返回值来进行参数的传递，如登陆时帐号和密码均正确的情况，反面的业务逻辑，或数据格式检查的业务逻辑通过异常来传递信息。</p>
 
 <p>方法三实际代码如下：</p>
-<div class="highlight"><pre><code class="language-Java" data-lang="Java"><span></span><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserService</span> <span class="o">{</span>
 
-    <span class="kd">public</span> <span class="n">User</span> <span class="nf">login</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">,</span> <span class="n">String</span> <span class="n">password</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IllegalParamterException</span><span class="o">,</span> <span class="n">ServiceException</span> <span class="o">{</span>
-        <span class="n">IllegalParamterException</span> <span class="n">illegalParamterException</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IllegalParamterException</span><span class="o">();</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">isNullOrEmpty</span><span class="o">(</span><span class="n">name</span><span class="o">))</span> <span class="o">{</span>
-            <span class="n">illegalParamterException</span><span class="o">.</span><span class="na">addIllegalFields</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">,</span> <span class="s">&quot;name is required&quot;</span><span class="o">);</span>
-        <span class="o">}</span>
+<pre><code class="language-Java">public class UserService {
 
-        <span class="k">if</span> <span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">isNullOrEmpty</span><span class="o">(</span><span class="n">password</span><span class="o">))</span> <span class="o">{</span>
-            <span class="n">illegalParamterException</span><span class="o">.</span><span class="na">addIllegalFields</span><span class="o">(</span><span class="s">&quot;password&quot;</span><span class="o">,</span> <span class="s">&quot;password is required&quot;</span><span class="o">);</span>
-        <span class="o">}</span>
+    public User login(String name, String password) throws IllegalParamterException, ServiceException {
+        IllegalParamterException illegalParamterException = new IllegalParamterException();
+        if (StringUtils.isNullOrEmpty(name)) {
+            illegalParamterException.addIllegalFields("name", "name is required");
+        }
 
-        <span class="k">if</span> <span class="o">(</span><span class="n">illegalParamterException</span><span class="o">.</span><span class="na">hasIllegalField</span><span class="o">())</span> <span class="o">{</span>
-            <span class="k">throw</span> <span class="n">illegalParamterException</span><span class="o">;</span>
-        <span class="o">}</span>
-        <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="k">new</span> <span class="n">UserDao</span><span class="o">().</span><span class="na">getUserByName</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">user</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="o">!</span><span class="n">password</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getPassword</span><span class="o">()))</span> <span class="o">{</span>
-            <span class="k">throw</span> <span class="k">new</span> <span class="n">ServiceException</span><span class="o">(</span><span class="mi">1000</span><span class="o">,</span> <span class="s">&quot;Name or password wrong&quot;</span><span class="o">);</span>
-        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="n">user</span><span class="o">;</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></div><div class="highlight"><pre><code class="language-Java" data-lang="Java"><span></span><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doPost</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">ServletException</span><span class="o">,</span> <span class="n">IOException</span> <span class="o">{</span>
+        if (StringUtils.isNullOrEmpty(password)) {
+            illegalParamterException.addIllegalFields("password", "password is required");
+        }
 
-    <span class="n">String</span> <span class="n">name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getParameter</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">);</span>
-    <span class="n">String</span> <span class="n">password</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getParameter</span><span class="o">(</span><span class="s">&quot;password&quot;</span><span class="o">);</span>
+        if (illegalParamterException.hasIllegalField()) {
+            throw illegalParamterException;
+        }
+        User user = new UserDao().getUserByName(name);
+        if (user == null || !password.equals(user.getPassword())) {
+            throw new ServiceException(1000, "Name or password wrong");
+        } else {
+            return user;
+        }
+    }
+}
 
-    <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-    <span class="k">try</span> <span class="o">{</span>
-        <span class="n">user</span> <span class="o">=</span> <span class="k">new</span> <span class="n">UserService</span><span class="o">().</span><span class="na">login</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">password</span><span class="o">);</span>
-        <span class="n">user</span><span class="o">.</span><span class="na">setPassword</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
-        <span class="n">HttpSession</span> <span class="n">httpSession</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getSession</span><span class="o">();</span>
-        <span class="n">httpSession</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="n">Constants</span><span class="o">.</span><span class="na">USER</span><span class="o">,</span> <span class="n">user</span><span class="o">);</span>
-        <span class="n">response</span><span class="o">.</span><span class="na">sendRedirect</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">getContextPath</span><span class="o">()+</span> <span class="s">&quot;/showmybook&quot;</span><span class="o">);;</span>
-    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">IllegalParamterException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">illegalFields</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">getIllegalFields</span><span class="o">();</span>
-        <span class="n">request</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="n">Constants</span><span class="o">.</span><span class="na">ILLEGAL_FIELDS</span><span class="o">,</span> <span class="n">illegalFields</span><span class="o">);</span>
-        <span class="n">request</span><span class="o">.</span><span class="na">getRequestDispatcher</span><span class="o">(</span><span class="n">LOGIN_PAGE</span><span class="o">).</span><span class="na">forward</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
-        <span class="k">return</span><span class="o">;</span>
-    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">ServiceException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">request</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="n">Constants</span><span class="o">.</span><span class="na">TIP_MESSAGE</span><span class="o">,</span> <span class="n">e</span><span class="o">.</span><span class="na">getMessage</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;[&quot;</span> <span class="o">+</span> <span class="n">e</span><span class="o">.</span><span class="na">getCode</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;]&quot;</span><span class="o">);</span>
-        <span class="n">request</span><span class="o">.</span><span class="na">getRequestDispatcher</span><span class="o">(</span><span class="n">LOGIN_PAGE</span><span class="o">).</span><span class="na">forward</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></div>
+</code></pre>
+
+<pre><code class="language-Java">protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+    String name = request.getParameter("name");
+    String password = request.getParameter("password");
+
+    User user = null;
+    try {
+        user = new UserService().login(name, password);
+        user.setPassword(null);
+        HttpSession httpSession = request.getSession();
+        httpSession.setAttribute(Constants.USER, user);
+        response.sendRedirect(request.getContextPath()+ "/showmybook");;
+    } catch (IllegalParamterException e) {
+        Map&lt;String, String&gt; illegalFields = e.getIllegalFields();
+        request.setAttribute(Constants.ILLEGAL_FIELDS, illegalFields);
+        request.getRequestDispatcher(LOGIN_PAGE).forward(request, response);
+        return;
+    } catch (ServiceException e) {
+        request.setAttribute(Constants.TIP_MESSAGE, e.getMessage() + "[" + e.getCode() + "]");
+        request.getRequestDispatcher(LOGIN_PAGE).forward(request, response);
+    }
+}
+</code></pre>
+
   </article>
 
 </div>

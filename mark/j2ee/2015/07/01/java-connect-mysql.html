@@ -7,13 +7,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Java 连接 MySQL</title>
-  <meta name="description" content="下载对应Java的MySQL驱动包，在官方下载地址页面上选择Java对应的 Connector/J。进入下载页面，选择Platform为Platform Independent，下载压缩包，压缩包下的mysql-connector-java-XXX.jar即为我们需要的jar包。添加jar包完整代码如下">
+  <meta name="description" content="  下载对应Java的MySQL驱动包，在官方下载地址页面上选择Java对应的 Connector/J。进入下载页面，选择Platform为Platform Independent，下载压缩包，压缩包下的mysql-connector-java-XXX.jar即为我们需要的jar包。  添加jar包  完整代码如下">
 
   <link rel="stylesheet" href="/mark/css/main.css">
-  <link rel="stylesheet" href="/mark/css/pygments.css">
+  <link rel="stylesheet" href="/mark/css/syntax.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://localhost:4000/mark/j2ee/2015/07/01/java-connect-mysql.html">
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
+  <link rel="canonical" href="http://www.dosrc.com/mark/j2ee/2015/07/01/java-connect-mysql.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
   <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
 </head>
@@ -69,73 +69,79 @@
 
   <article class="post-content">
     <ol>
-<li>下载对应Java的MySQL驱动包，在<a href="http://dev.mysql.com/downloads/connector/">官方下载地址</a>页面上选择Java对应的 Connector/J。进入下载页面，选择Platform为Platform Independent，下载压缩包，压缩包下的mysql-connector-java-XXX.jar即为我们需要的jar包。</li>
-<li>添加jar包</li>
-<li><p>完整代码如下</p>
-<div class="highlight"><pre><code class="language-Java" data-lang="Java"><span></span><span class="kn">import</span> <span class="nn">java.sql.Connection</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.sql.DriverManager</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.sql.PreparedStatement</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.sql.ResultSet</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">java.sql.SQLException</span><span class="o">;</span>
+  <li>下载对应Java的MySQL驱动包，在<a href="http://dev.mysql.com/downloads/connector/">官方下载地址</a>页面上选择Java对应的 Connector/J。进入下载页面，选择Platform为Platform Independent，下载压缩包，压缩包下的mysql-connector-java-XXX.jar即为我们需要的jar包。</li>
+  <li>添加jar包</li>
+  <li>
+    <p>完整代码如下</p>
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestConnectMySQL</span> <span class="o">{</span>
+    <pre><code class="language-Java">
+ import java.sql.Connection;
+ import java.sql.DriverManager;
+ import java.sql.PreparedStatement;
+ import java.sql.ResultSet;
+ import java.sql.SQLException;
 
-    <span class="cm">/**</span>
-<span class="cm">     * Database URL        ---&gt; &quot;localhost&quot;</span>
-<span class="cm">     * Port                ---&gt; &quot;3306&quot;</span>
-<span class="cm">     * Schema(database)    ---&gt; &quot;test&quot;</span>
-<span class="cm">     * User                ---&gt; &quot;root&quot;</span>
-<span class="cm">     * Password            ---&gt; &quot;&quot;</span>
-<span class="cm">     *                     </span>
-<span class="cm">     * @param sql</span>
-<span class="cm">     */</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">querySQL</span><span class="o">(</span><span class="n">String</span> <span class="n">sql</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">Connection</span> <span class="n">connection</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-        <span class="n">PreparedStatement</span> <span class="n">preparedStatement</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-        <span class="n">ResultSet</span> <span class="n">resultSet</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-        <span class="k">try</span> <span class="o">{</span>
-            <span class="c1">// Load driver</span>
-            <span class="n">Class</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="s">&quot;com.mysql.jdbc.Driver&quot;</span><span class="o">);</span>
+ public class TestConnectMySQL {
 
-            <span class="c1">// Connect and get connection</span>
-            <span class="n">String</span> <span class="n">url</span> <span class="o">=</span> <span class="s">&quot;jdbc:mysql://localhost:3306/test&quot;</span><span class="o">;</span>
-            <span class="n">connection</span> <span class="o">=</span> <span class="n">DriverManager</span><span class="o">.</span><span class="na">getConnection</span><span class="o">(</span><span class="n">url</span><span class="o">,</span> <span class="s">&quot;root&quot;</span><span class="o">,</span> <span class="s">&quot;&quot;</span><span class="o">);</span>
+     /**
+      * Database URL        ---&gt; "localhost"
+      * Port                ---&gt; "3306"
+      * Schema(database)    ---&gt; "test"
+      * User                ---&gt; "root"
+      * Password            ---&gt; ""
+      *                     
+      * @param sql
+      */
+     public static void querySQL(String sql) {
+         Connection connection = null;
+         PreparedStatement preparedStatement = null;
+         ResultSet resultSet = null;
+         try {
+             // Load driver
+             Class.forName("com.mysql.jdbc.Driver");
 
-            <span class="c1">// Prepare for the compiled sql statement</span>
-            <span class="n">preparedStatement</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="na">prepareCall</span><span class="o">(</span><span class="n">sql</span><span class="o">);</span>
-            <span class="c1">// preparedStatement.setString(1, &quot;paramter&quot;);</span>
+             // Connect and get connection
+             String url = "jdbc:mysql://localhost:3306/test";
+             connection = DriverManager.getConnection(url, "root", "");
 
-            <span class="c1">// Execute and get the resultSet</span>
-            <span class="n">resultSet</span> <span class="o">=</span> <span class="n">preparedStatement</span><span class="o">.</span><span class="na">executeQuery</span><span class="o">();</span>
-            <span class="k">if</span> <span class="o">(</span><span class="n">resultSet</span><span class="o">.</span><span class="na">next</span><span class="o">())</span> <span class="o">{</span>
-                <span class="c1">// int id = resultSet.getInt(1);</span>
-            <span class="o">}</span>
-        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
-            <span class="k">try</span> <span class="o">{</span>
-                <span class="k">if</span> <span class="o">(</span><span class="n">resultSet</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-                    <span class="n">resultSet</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
-                <span class="o">}</span>
-                <span class="k">if</span> <span class="o">(</span><span class="n">preparedStatement</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-                    <span class="n">preparedStatement</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
-                <span class="o">}</span>
-                <span class="k">if</span> <span class="o">(</span><span class="n">connection</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-                    <span class="n">connection</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
-                <span class="o">}</span>
-            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
-                <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
+             // Prepare for the compiled sql statement
+             preparedStatement = connection.prepareCall(sql);
+             // preparedStatement.setString(1, "paramter");
 
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">String</span> <span class="n">sql</span> <span class="o">=</span> <span class="s">&quot;SELECT * FROM `user`&quot;</span><span class="o">;</span> <span class="c1">// 其中`为反引号，字段和表名都应该加上</span>
-        <span class="n">TestConnectMySQL</span><span class="o">.</span><span class="na">querySQL</span><span class="o">(</span><span class="n">sql</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</code></pre></div></li>
+             // Execute and get the resultSet
+             resultSet = preparedStatement.executeQuery();
+             if (resultSet.next()) {
+                 // int id = resultSet.getInt(1);
+             }
+         } catch (Exception e) {
+             e.printStackTrace();
+         } finally {
+             try {
+                 if (resultSet != null) {
+                     resultSet.close();
+                 }
+                 if (preparedStatement != null) {
+                     preparedStatement.close();
+                 }
+                 if (connection != null) {
+                     connection.close();
+                 }
+             } catch (SQLException e) {
+                 e.printStackTrace();
+             }
+         }
+     }
+
+     public static void main(String[] args) {
+         String sql = "SELECT * FROM `user`"; // 其中`为反引号，字段和表名都应该加上
+         TestConnectMySQL.querySQL(sql);
+     }
+ }
+
+</code></pre>
+  </li>
 </ol>
+
 
   </article>
 

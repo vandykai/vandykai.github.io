@@ -10,10 +10,10 @@
   <meta name="description" content="重点知识总结">
 
   <link rel="stylesheet" href="/mark/css/main.css">
-  <link rel="stylesheet" href="/mark/css/pygments.css">
+  <link rel="stylesheet" href="/mark/css/syntax.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://localhost:4000/mark/linux-3.18.6/2016/03/17/linux-kernel-construct-a-simple-linux-operating-system.html">
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
+  <link rel="canonical" href="http://www.dosrc.com/mark/linux-3.18.6/2016/03/17/linux-kernel-construct-a-simple-linux-operating-system.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
   <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
 </head>
@@ -68,13 +68,13 @@
   </header>
 
   <article class="post-content">
-    <h2>重点知识总结</h2>
+    <h2 id="重点知识总结">重点知识总结</h2>
 
-<h3>Linux内核源码简介</h3>
+<h3 id="linux内核源码简介">Linux内核源码简介</h3>
 
 <p><a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/">内核源代码linux-3.18.6</a></p>
 
-<h4>各个文件夹模块的用途（部分）</h4>
+<p>####各个文件夹模块的用途（部分）</p>
 
 <p><strong>arch</strong> -(archetecture)与具体cpu相关，其内的x86文件夹是目前重点关注的,若只是关注这一个文件夹，分析时可以把其它文件夹删除</p>
 
@@ -106,79 +106,87 @@
 
 <p><strong>tools</strong> - 工具</p>
 
-<h3>使用gdb跟踪调试内核，其中的rootfs.img 为自制的根文件系统</h3>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>qemu -kernel linux-3.18.6/arch/x86/boot/bzImage -initrd rootfs.img -s -S # 关于-s和-S选项的说明：
+<h3 id="使用gdb跟踪调试内核其中的rootfsimg-为自制的根文件系统">使用gdb跟踪调试内核，其中的rootfs.img 为自制的根文件系统</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>qemu -kernel linux-3.18.6/arch/x86/boot/bzImage -initrd rootfs.img -s -S # 关于-s和-S选项的说明：
 # -S freeze CPU at startup (use ’c’ to start execution)
 # -s shorthand for -gdb tcp::1234 若不想使用1234端口，则可以使用-gdb tcp:xxxx来取代-s选项
-</code></pre></div>
+</code></pre></div></div>
+
 <p>另开一个shell窗口</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>gdb
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gdb
 （gdb）file linux-3.18.6/vmlinux # 在gdb界面中targe remote之前加载符号表
 （gdb）target remote:1234 # 建立gdb和gdbserver之间的连接,按c 让qemu上的Linux继续运行
 （gdb）break start_kernel # 断点的设置可以在target remote之前，也可以在之后
-</code></pre></div>
-<h2>实验分析</h2>
+</code></pre></div></div>
 
-<h3>main.c的部分代码如下（省略号为略去的代码）</h3>
-<div class="highlight"><pre><code class="language-C" data-lang="C"><span></span><span class="n">asmlinkage</span> <span class="n">__visible</span> <span class="kt">void</span> <span class="n">__init</span> <span class="nf">start_kernel</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="p">...</span>
-    <span class="n">set_task_stack_end_magic</span><span class="p">(</span><span class="o">&amp;</span><span class="n">init_task</span><span class="p">);</span>
-    <span class="p">...</span>
-    <span class="n">trap_init</span><span class="p">();</span>
-    <span class="n">mm_init</span><span class="p">();</span>
-    <span class="p">...</span>
-    <span class="n">sched_init</span><span class="p">();</span>
-    <span class="p">...</span>
-    <span class="n">rest_init</span><span class="p">();</span>
-<span class="p">}</span>
-</code></pre></div>
-<h3>rest_init 函数代码如下</h3>
-<div class="highlight"><pre><code class="language-C" data-lang="C"><span></span><span class="k">static</span> <span class="n">noinline</span> <span class="kt">void</span> <span class="n">__init_refok</span> <span class="nf">rest_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="kt">int</span> <span class="n">pid</span><span class="p">;</span>
+<h2 id="实验分析">实验分析</h2>
+<h3 id="mainc的部分代码如下省略号为略去的代码">main.c的部分代码如下（省略号为略去的代码）</h3>
 
-    <span class="n">rcu_scheduler_starting</span><span class="p">();</span>
-    <span class="cm">/*</span>
-<span class="cm">     * We need to spawn init first so that it obtains pid 1, however</span>
-<span class="cm">     * the init task will end up wanting to create kthreads, which, if</span>
-<span class="cm">     * we schedule it before we create kthreadd, will OOPS.</span>
-<span class="cm">     */</span>
-    <span class="n">kernel_thread</span><span class="p">(</span><span class="n">kernel_init</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">CLONE_FS</span><span class="p">);</span>
-    <span class="n">numa_default_policy</span><span class="p">();</span>
-    <span class="n">pid</span> <span class="o">=</span> <span class="n">kernel_thread</span><span class="p">(</span><span class="n">kthreadd</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">CLONE_FS</span> <span class="o">|</span> <span class="n">CLONE_FILES</span><span class="p">);</span>
-    <span class="n">rcu_read_lock</span><span class="p">();</span>
-    <span class="n">kthreadd_task</span> <span class="o">=</span> <span class="n">find_task_by_pid_ns</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">init_pid_ns</span><span class="p">);</span>
-    <span class="n">rcu_read_unlock</span><span class="p">();</span>
-    <span class="n">complete</span><span class="p">(</span><span class="o">&amp;</span><span class="n">kthreadd_done</span><span class="p">);</span>
+<pre><code class="language-C">asmlinkage __visible void __init start_kernel(void)
+{
+    ...
+    set_task_stack_end_magic(&amp;init_task);
+    ...
+    trap_init();
+    mm_init();
+    ...
+    sched_init();
+    ...
+    rest_init();
+}
+</code></pre>
 
-    <span class="cm">/*</span>
-<span class="cm">     * The boot idle thread must execute schedule()</span>
-<span class="cm">     * at least once to get things moving:</span>
-<span class="cm">     */</span>
-    <span class="n">init_idle_bootup_task</span><span class="p">(</span><span class="n">current</span><span class="p">);</span>
-    <span class="n">schedule_preempt_disabled</span><span class="p">();</span>
-    <span class="cm">/* Call into cpu_idle with preempt disabled */</span>
-    <span class="n">cpu_startup_entry</span><span class="p">(</span><span class="n">CPUHP_ONLINE</span><span class="p">);</span>
-<span class="p">}</span>
-</code></pre></div>
-<h3>代码分析</h3>
+<h3 id="rest_init-函数代码如下">rest_init 函数代码如下</h3>
+
+<pre><code class="language-C">static noinline void __init_refok rest_init(void)
+{
+    int pid;
+
+    rcu_scheduler_starting();
+    /*
+     * We need to spawn init first so that it obtains pid 1, however
+     * the init task will end up wanting to create kthreads, which, if
+     * we schedule it before we create kthreadd, will OOPS.
+     */
+    kernel_thread(kernel_init, NULL, CLONE_FS);
+    numa_default_policy();
+    pid = kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);
+    rcu_read_lock();
+    kthreadd_task = find_task_by_pid_ns(pid, &amp;init_pid_ns);
+    rcu_read_unlock();
+    complete(&amp;kthreadd_done);
+
+    /*
+     * The boot idle thread must execute schedule()
+     * at least once to get things moving:
+     */
+    init_idle_bootup_task(current);
+    schedule_preempt_disabled();
+    /* Call into cpu_idle with preempt disabled */
+    cpu_startup_entry(CPUHP_ONLINE);
+}
+</code></pre>
+
+<h3 id="代码分析">代码分析</h3>
 
 <ul>
-<li><code>start_kernel/set_task_stack_end_magic(&amp;init_task); init_task</code>即手工创建的PCB，即0号进程，即最终的idle进程</li>
-<li>不管分析内核的哪一部分都会涉及到<code>start_kernel</code></li>
-<li><code>start_kernel/trap_init</code> 涉及到中断的初始化，其中的<code>set_system_trap_gate</code>是设置系统调用的</li>
-<li><code>start_kernel/mm_init</code> 内存管理模块的初始化</li>
-<li><code>start_kernel/sched_init</code> 调度模块的初始化</li>
-<li><code>rest_init/kernel_thread(kernel_init, NULL, CLONE_FS);</code> 创建用户态1号进程</li>
-<li><code>rest_init/kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);</code> 创建内核态2号进程</li>
-<li>之后若没有其他事情做，就进入<code>cpu_startup_entry(CPUHP_ONLINE);</code>，此时0号进程就进入<code>while(1)</code>循环</li>
+  <li><code class="language-plaintext highlighter-rouge">start_kernel/set_task_stack_end_magic(&amp;init_task); init_task</code>即手工创建的PCB，即0号进程，即最终的idle进程</li>
+  <li>不管分析内核的哪一部分都会涉及到<code class="language-plaintext highlighter-rouge">start_kernel</code></li>
+  <li><code class="language-plaintext highlighter-rouge">start_kernel/trap_init</code> 涉及到中断的初始化，其中的<code class="language-plaintext highlighter-rouge">set_system_trap_gate</code>是设置系统调用的</li>
+  <li><code class="language-plaintext highlighter-rouge">start_kernel/mm_init</code> 内存管理模块的初始化</li>
+  <li><code class="language-plaintext highlighter-rouge">start_kernel/sched_init</code> 调度模块的初始化</li>
+  <li><code class="language-plaintext highlighter-rouge">rest_init/kernel_thread(kernel_init, NULL, CLONE_FS);</code> 创建用户态1号进程</li>
+  <li><code class="language-plaintext highlighter-rouge">rest_init/kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);</code> 创建内核态2号进程</li>
+  <li>之后若没有其他事情做，就进入<code class="language-plaintext highlighter-rouge">cpu_startup_entry(CPUHP_ONLINE);</code>，此时0号进程就进入<code class="language-plaintext highlighter-rouge">while(1)</code>循环</li>
 </ul>
 
-<p>这里面内核启动后通过<code>set_task_stack_end_magic(&amp;init_task);</code>初始化了0号进程，0号进程通过<code>kernel_thread(kernel_init, NULL, CLONE_FS);</code>和<code>kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);</code>分别创建了1号进程（所有用户态进程的祖先）和2号进程（所有内核线程的祖先）。之后若无事做就进入<code>while(1)</code>循环保持运行。</p>
+<p>这里面内核启动后通过<code class="language-plaintext highlighter-rouge">set_task_stack_end_magic(&amp;init_task);</code>初始化了0号进程，0号进程通过<code class="language-plaintext highlighter-rouge">kernel_thread(kernel_init, NULL, CLONE_FS);</code>和<code class="language-plaintext highlighter-rouge">kernel_thread(kthreadd, NULL, CLONE_FS | CLONE_FILES);</code>分别创建了1号进程（所有用户态进程的祖先）和2号进程（所有内核线程的祖先）。之后若无事做就进入<code class="language-plaintext highlighter-rouge">while(1)</code>循环保持运行。</p>
 
-<p>wdk 原创作品转载请注明出处<br>
+<p>wdk 原创作品转载请注明出处<br />
 相关链接 <a href="http://mooc.study.163.com/course/USTC-1000029000">《Linux内核分析》MOOC课程http://mooc.study.163.com/course/USTC-1000029000</a></p>
+
 
   </article>
 

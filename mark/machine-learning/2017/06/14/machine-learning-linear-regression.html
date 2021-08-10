@@ -10,10 +10,10 @@
   <meta name="description" content="假设函数">
 
   <link rel="stylesheet" href="/mark/css/main.css">
-  <link rel="stylesheet" href="/mark/css/pygments.css">
+  <link rel="stylesheet" href="/mark/css/syntax.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://localhost:4000/mark/machine-learning/2017/06/14/machine-learning-linear-regression.html">
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
+  <link rel="canonical" href="http://www.dosrc.com/mark/machine-learning/2017/06/14/machine-learning-linear-regression.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
   <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
 </head>
@@ -68,45 +68,46 @@
   </header>
 
   <article class="post-content">
-    <h3>假设函数</h3>
+    <h3 id="假设函数">假设函数</h3>
 
-<p>\( h _ {\theta } \left ( x \right ) = \theta _ {0}x _ {0} + \theta _ {1}x _ {1} + \theta _ {2}x _ {2} + ... + \theta _ {n}x _ {n}\)</p>
+<p>\( h _ {\theta } \left ( x \right ) = \theta _ {0}x _ {0} + \theta _ {1}x _ {1} + \theta _ {2}x _ {2} + … + \theta _ {n}x _ {n}\)</p>
 
 <p>这里\( x _{0} \)恒等于1，表示为常数项。</p>
 
-<h3>损失函数</h3>
+<h3 id="损失函数">损失函数</h3>
 
 <p>\( J \left ( \theta  \right )= \frac{1}{2m} \sum_{i=1}^{m} \left ( h _{\theta} \left ( x^{\left (i  \right )} \right ) - y^{\left (i  \right )} \right ) ^{2} \)</p>
 
-<p>其中<code>m</code>为样本数量</p>
+<p>其中<code class="language-plaintext highlighter-rouge">m</code>为样本数量</p>
 
-<h3>目标</h3>
+<h3 id="目标">目标</h3>
 
 <p>\( \min J\left ( \theta  \right ) \)</p>
 
 <ul>
-<li>梯度下降法
-
-<ul>
-<li>正统的方法是需要同步更新每个θ</li>
-<li>\( \theta _ {j} = \theta _ {j} - \alpha \frac {1}{m} \sum_{i=1}^{m} \left ( h _ {\theta} \left ( x^{\left (i  \right )} \right ) - y^{\left (i  \right )} \right ) x _{j}^{\left (i  \right )} \)</br>
+  <li>梯度下降法
+    <ul>
+      <li>正统的方法是需要同步更新每个θ</li>
+      <li>\( \theta _ {j} = \theta _ {j} - \alpha \frac {1}{m} \sum_{i=1}^{m} \left ( h _ {\theta} \left ( x^{\left (i  \right )} \right ) - y^{\left (i  \right )} \right ) x _{j}^{\left (i  \right )} \)
 其中\( \alpha \) 为学习率</li>
-<li>matlab代码如下</br>
-<code>matlab
-theta=theta-(alpha/m*X&#39;*(X*theta-y));
-</code></li>
-</ul></li>
-<li>正规方程法</br>
-
-<ul>
-<li>也就是利用数学的方法，根据最小值在导数等于0的地方取得可直接求得结果，但是由于求n×n矩阵的逆运算复杂度为\( O\left ( n^{3} \right ) \),所以当特征很多时不宜用此方法，一般要求n小于10000</li>
-<li>matlab代码如下</br>
-<code>matlab
-theta=pinv(X&#39;*X)*X&#39;*y;
-</code></li>
-<li>当矩阵X&#39;*X的逆不存在时，一般是由于特征值之间具有线性相关性，提示我们重新选取特征值，或者是由于特征值太多而训练样本不足。</li>
-</ul></li>
+      <li>matlab代码如下
+        <div class="language-matlab highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">theta</span><span class="o">=</span><span class="n">theta</span><span class="o">-</span><span class="p">(</span><span class="nb">alpha</span><span class="p">/</span><span class="n">m</span><span class="o">*</span><span class="n">X</span><span class="o">'*</span><span class="p">(</span><span class="n">X</span><span class="o">*</span><span class="n">theta</span><span class="o">-</span><span class="n">y</span><span class="p">));</span>
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+  <li>正规方程法
+    <ul>
+      <li>也就是利用数学的方法，根据最小值在导数等于0的地方取得可直接求得结果，但是由于求n×n矩阵的逆运算复杂度为\( O\left ( n^{3} \right ) \),所以当特征很多时不宜用此方法，一般要求n小于10000</li>
+      <li>matlab代码如下
+        <div class="language-matlab highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">theta</span><span class="o">=</span><span class="nb">pinv</span><span class="p">(</span><span class="n">X</span><span class="s1">'*X)*X'</span><span class="o">*</span><span class="n">y</span><span class="p">;</span>
+</code></pre></div>        </div>
+      </li>
+      <li>当矩阵X’*X的逆不存在时，一般是由于特征值之间具有线性相关性，提示我们重新选取特征值，或者是由于特征值太多而训练样本不足。</li>
+    </ul>
+  </li>
 </ul>
+
 
   </article>
 

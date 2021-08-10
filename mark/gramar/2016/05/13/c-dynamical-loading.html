@@ -10,10 +10,10 @@
   <meta name="description" content="动态链接：">
 
   <link rel="stylesheet" href="/mark/css/main.css">
-  <link rel="stylesheet" href="/mark/css/pygments.css">
+  <link rel="stylesheet" href="/mark/css/syntax.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://localhost:4000/mark/gramar/2016/05/13/c-dynamical-loading.html">
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
+  <link rel="canonical" href="http://www.dosrc.com/mark/gramar/2016/05/13/c-dynamical-loading.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
   <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
 </head>
@@ -68,81 +68,91 @@
   </header>
 
   <article class="post-content">
-    <h2>动态链接：</h2>
+    <h2 id="动态链接">动态链接：</h2>
 
 <p>动态链接分为装载时动态链接和运行时动态链接，在64位环境下编译32位动态链接库如下（32位下只需去掉-m32 这个编译选项）</p>
 
 <p><strong>libexample.h</strong></p>
-<div class="highlight"><pre><code class="language-C" data-lang="C"><span></span><span class="cp">#ifndef _LIB_EXAMPLE_H_</span>
-<span class="cp">#define _LIB_EXAMPLE_H_</span>
-<span class="cp">#define SUCCESS 0</span>
-<span class="cp">#define FAILURE (-1)</span>
-<span class="cp">#ifdef __cplusplus</span>
-<span class="k">extern</span> <span class="s">&quot;C&quot;</span> <span class="p">{</span>
-<span class="cp">#endif</span>
-<span class="kt">int</span> <span class="n">LibApi</span><span class="p">();</span>
-<span class="cp">#ifdef __cplusplus</span>
-<span class="p">}</span>
-<span class="cp">#endif</span>
-<span class="cp">#endif </span><span class="cm">/* _LIB_EXAMPLE_H_ */</span><span class="cp"></span>
-</code></pre></div>
+
+<pre><code class="language-C">#ifndef _LIB_EXAMPLE_H_
+#define _LIB_EXAMPLE_H_
+#define SUCCESS 0
+#define FAILURE (-1)
+#ifdef __cplusplus
+extern "C" {
+#endif
+int LibApi();
+#ifdef __cplusplus
+}
+#endif
+#endif /* _LIB_EXAMPLE_H_ */
+</code></pre>
+
 <p><strong>libexample.c</strong></p>
-<div class="highlight"><pre><code class="language-C" data-lang="C"><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&quot;libexample.h&quot;</span><span class="cp"></span>
-<span class="kt">int</span> <span class="nf">LibApi</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;This Is A Library Api!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-    <span class="k">return</span> <span class="n">SUCCESS</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div>
-<p><code>gcc -shared libexample.c -o liblibexample.so -m32</code></p>
+
+<pre><code class="language-C">#include &lt;stdio.h&gt;
+#include "libexample.h"
+int LibApi() {
+    printf("This Is A Library Api!\n");
+    return SUCCESS;
+}
+</code></pre>
+
+<p><code class="language-plaintext highlighter-rouge">gcc -shared libexample.c -o liblibexample.so -m32</code></p>
 
 <p>注意这里编译成的.so文件命名规则是源文件前面加上lib即libample -&gt; liblibexample。
 无论是装载时动态链接还是运行时动态链接，库文件的编译方法都是一样的，区别在于怎么使用它们。</p>
 
 <p><strong>装载时的动态链接举例</strong></p>
-<div class="highlight"><pre><code class="language-C" data-lang="C"><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&quot;libexample.h&quot;</span><span class="cp"></span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;This is a main program!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-  <span class="n">LibApi</span><span class="p">();</span>
-  <span class="k">return</span> <span class="n">SUCCESS</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div><div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>gcc main.c -o main -L/path/to/your/dir -llibexample -m32
+
+<pre><code class="language-C">#include &lt;stdio.h&gt;
+#include "libexample.h"
+int main() {
+  printf("This is a main program!\n");
+  LibApi();
+  return SUCCESS;
+}
+</code></pre>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcc main.c -o main -L/path/to/your/dir -llibexample -m32
 # 编译main，/path/to/your/dir可用.代替。
 # 注意这里只提供libexample的-L（库对应的接口头文件所在目录）和-l（库名，如liblibexample.so去掉lib和.so的部分）。
 $ export LD_LIBRARY_PATH=$PWD
 # 将当前目录加入默认路径，否则main找不到依赖的库文件，当然也可以将库文件copy到默认路径下。
 $ ./main
-</code></pre></div>
-<p><strong>运行时的动态链接举例</strong></p>
-<div class="highlight"><pre><code class="language-C" data-lang="C"><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
-<span class="cp">#include</span> <span class="cpf">&lt;dlfcn.h&gt;</span><span class="cp"></span>
+</code></pre></div></div>
 
-<span class="cp">#define SUCCESS 0</span>
-<span class="cp">#define FAILURE (-1)</span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;This is a main program!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-    <span class="kt">void</span> <span class="o">*</span> <span class="n">handle</span> <span class="o">=</span> <span class="n">dlopen</span><span class="p">(</span><span class="s">&quot;liblibexample.so&quot;</span><span class="p">,</span><span class="n">RTLD_NOW</span><span class="p">);</span>
-    <span class="k">if</span><span class="p">(</span><span class="n">handle</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;open lib liblibexample.so error :%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">dlerror</span><span class="p">());</span>
-        <span class="k">return</span> <span class="n">FAILURE</span><span class="p">;</span>
-    <span class="p">}</span>
-    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">func</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
-    <span class="kt">char</span> <span class="o">*</span> <span class="n">error</span><span class="p">;</span>
-    <span class="n">func</span> <span class="o">=</span> <span class="n">dlsym</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span><span class="s">&quot;LibApi&quot;</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">((</span><span class="n">error</span> <span class="o">=</span> <span class="n">dlerror</span><span class="p">())</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;LibApi not found:%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="n">error</span><span class="p">);</span>
-    <span class="p">}</span>
-    <span class="n">func</span><span class="p">();</span>
-    <span class="n">dlclose</span><span class="p">(</span><span class="n">handle</span><span class="p">);</span>
-    <span class="k">return</span> <span class="n">SUCCESS</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div><div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>gcc main.c -o main -ldl -m32
+<p><strong>运行时的动态链接举例</strong></p>
+
+<pre><code class="language-C">#include &lt;stdio.h&gt;
+#include &lt;dlfcn.h&gt;
+
+#define SUCCESS 0
+#define FAILURE (-1)
+int main() {
+    printf("This is a main program!\n");
+    void * handle = dlopen("liblibexample.so",RTLD_NOW);
+    if(handle == NULL) {
+        printf("open lib liblibexample.so error :%s\n",dlerror());
+        return FAILURE;
+    }
+    int (*func)(void);
+    char * error;
+    func = dlsym(handle,"LibApi");
+    if ((error = dlerror()) != NULL) {
+        printf("LibApi not found:%s\n",error);
+    }
+    func();
+    dlclose(handle);
+    return SUCCESS;
+}
+</code></pre>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcc main.c -o main -ldl -m32
 # -ldl选项，表示生成的对象模块使用运行时动态链接。
 $ export LD_LIBRARY_PATH=$PWD
 # 将当前目录加入默认路径，否则main找不到依赖的库文件，当然也可以将库文件copy到默认路径下。
 $ ./main
-</code></pre></div>
+</code></pre></div></div>
+
   </article>
 
 </div>

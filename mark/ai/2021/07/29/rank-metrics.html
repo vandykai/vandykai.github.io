@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Rank Metrics&Loss</title>
+  <meta name="description" content="排序评价Precision@K">
+
+  <link rel="stylesheet" href="/mark/css/main.css">
+  <link rel="stylesheet" href="/mark/css/syntax.css">
+  <link rel="shortcut icon" href="/mark/favicon.ico">
+  <link rel="canonical" href="http://www.dosrc.com/mark/ai/2021/07/29/rank-metrics.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
+  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/mark/">Blog</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/mark/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Rank Metrics&Loss</h1>
+    <p class="post-meta">Jul 29, 2021</p>
+  </header>
+
+  <article class="post-content">
+    <h2 id="排序评价">排序评价</h2>
+<h3 id="precisionk">Precision@K</h3>
+
+\[precision@k=\frac{count_{pos}}{k}\]
+
+<p>其中\(count_{pos}\)为topk中正例个数，是否是正例使用threshold来判别。</p>
+
+\[\begin{cases}
+ &amp; pos, &amp;\text{if} &amp; label &gt;threshold \\ 
+ &amp; neg, &amp;\text{if} &amp; label&lt;= threshold
+\end{cases}\]
+
+<p>取值范围\([0,1]\)</p>
+
+<h3 id="averageprecision">AveragePrecision</h3>
+
+\[AveragePrecision = \frac{1}{N}\sum_{k=1}^{N} precision@k\]
+
+<p>取值范围\([0,1]\)</p>
+
+<h3 id="meanaverageprecision">MeanAveragePrecision</h3>
+
+\[MeanAveragePrecision = \frac{1}{N}\sum_{k\in position_{label=pos}}^{N} precision@k\]
+
+<p>其中\(  position_{label&gt;threshold} \)为所有正例被排序的位置</p>
+
+<p>含义：分别计算precision@k（k为推荐序列中正例被排序的位置）的平均值。
+例如：排序了5个，其中1，3，5为正例，则
+MeanAveragePrecision=mean([precision@1,precision@3,precision@5])</p>
+
+<p>取值范围\([0,1]\)</p>
+
+<h3 id="meanreciprocalrank">MeanReciprocalRank</h3>
+
+\[MeanReciprocalRank=\frac{1}{k}\]
+
+<p>k为排序中第一个正例位置</p>
+
+<p>取值范围\((0,1]\)</p>
+<h3 id="cumulativegain">CumulativeGain</h3>
+
+\[CG_{k} = \sum_{i=1}^{k}rel_{i}\]
+
+<p>\(rel_{i}\)是第\( i \)个位置的评分</p>
+
+<p>取值范围\([0,+\propto)\)</p>
+
+<p>缺点：前后位置得分未做区分</p>
+
+<h3 id="discountedcumulativegain">DiscountedCumulativeGain</h3>
+
+\[DCG_{k} = \sum_{i=1}^{k}\frac{2^{rel_{i}}-1}{\log_{2}\left(i+1\right)}\]
+
+<p>\(rel_{i}\)是第\( i \)个位置的评分</p>
+
+<p>取值范围\([0,+\propto)\)</p>
+
+<p>缺点：不同算法得分不好做比较</p>
+
+<h3 id="normalizeddiscountedcumulativegain">NormalizedDiscountedCumulativeGain</h3>
+
+\[nDCG_{k} = \frac{DCG_{k}}{IDCG_{k}}\]
+
+<p>\(IDCG_{k}\)是按评分rank的理想得分，相当于做得分的归一化</p>
+
+\[IDCG_{k} = \sum_{i=1}^{\left|  REL_{k}\right|}\frac{2^{rel_{i}}-1}{\log_{2}\left(i+1\right)}\]
+
+<h2 id="排序损失">排序损失</h2>
+<h3 id="rankcrossentropyloss">RankCrossEntropyLoss</h3>
+<p>example：一个正例样本1， 和多个负例样本0 label = [1,0,0,0…]</p>
+
+\[RankCrossEntropyLoss = CrossEntropy(pred, label)\]
+
+<p>注意：此处必须构造数据为一个正样本1和多个负样本0，这样才满足概率分布的形式。</p>
+
+<h3 id="rankhingeloss">RankHingeLoss</h3>
+
+\[y = 
+\begin{cases}
+ &amp; 1, &amp;\text{if} &amp; x_{1}^{\ast} &gt;= x_{2}^{\ast} \\ 
+ &amp;-1, &amp;\text{if} &amp; x_{1}^{\ast} &lt; x_{2}^{\ast}
+\end{cases} \\
+loss(x1,x2,y)=\max(0,−y∗(x1−x2)+margin)\]
+
+<p>这里\(x_{1}^{\ast}, x_{2}^{\ast}\)表示实际的label得分，\(x_{1}, x_{2}\)表示预测得分</p>
+
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>Blog</li>
+          <li><a href="mailto:wdkrgst@gmail.com">wdkrgst@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text"></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
