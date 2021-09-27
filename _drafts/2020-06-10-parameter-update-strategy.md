@@ -151,6 +151,7 @@ $$
 \theta_{t+1}=\theta_{t}-\frac{\eta}{\sqrt{\hat{v_{t}}}+\epsilon }\hat{m_{t}}
 $$
 
+由于\\(m_{0}\\)和\\(v_{0}\\)都被初始化为0，所以\\(\hat{m_{t}}\\)和\\(\hat{v_{t}}\\)其实是在做纠偏，详见[adam][5]论文第3节
 #### AdamW
 权重衰减算法和\\(L_{2}\\)正则并不是同一个算法，虽然在SGD中，二者具有等价的形似，但是放在Adam优化算法中来说，二者区别较大，对于\\(L_{2}\\)正则的系数，Adam算法中除以了\\(\sqrt{\hat{v_{t}}}+\epsilon\\)，这可能导致大的参数值（大的参数值很可能对应大的梯度）反而正则化系数更小，所以可能权重衰减算法会在Adam优化算法中表现更好。在这之前，主流深度学习库实现的都是\\(L_{2}\\)正则，为了正确的修正使用权重衰减，提出了AdamW，此外AdamW对衰减系数也做了一定的优化。
 ### batch_size 和lr 的关系
@@ -204,5 +205,6 @@ $$
 [2]: /mark/assets/images/2020-06-10-parameter-update-strategy/cyclical_learning_rates.png
 [3]: /mark/assets/images/2020-06-10-parameter-update-strategy/batch_size_effect.png
 [4]: /mark/assets/images/2020-06-10-parameter-update-strategy/lr_finder.png
+[5]: https://arxiv.org/pdf/1412.6980.pdf
 
 

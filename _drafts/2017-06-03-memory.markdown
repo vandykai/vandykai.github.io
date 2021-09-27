@@ -1,11 +1,16 @@
-修改文件拥有者和所属的组
-chown root:root file
+#### 修改文件拥有者和所属的组
+`chown root:root file`
 
-修改文件所属的组
-chgrp root file
+#### 修改文件所属的组
+`chgrp root file`
 
-递归修改文件所属的组
-chgrp -R users test
+#### 递归修改文件所属的组
+`chgrp -R users test`
 
-查看磁盘使用情况
-df -hl
+#### 查看磁盘使用情况
+`df -hl`
+
+#### GPU设置Persistence-Mode
+解决训练过程中无故NAN问题，GPU上有此问题，CPU没有
+开启：`nvidia-smi -pm 1`
+关闭：`nvidia-smi -pm 0`

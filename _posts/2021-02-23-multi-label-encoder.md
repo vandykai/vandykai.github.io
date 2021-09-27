@@ -8,6 +8,8 @@ tags: [AI， NLP]
 
 ---
 
+### Multi-Hot 编码效率对比
+
 ```python
 import random
 import torch
