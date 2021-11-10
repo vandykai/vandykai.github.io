@@ -8,7 +8,7 @@ tags: [AI]
 typora-root-url: ../_site
 ---
 
-|           | labeled    |  unlabeled |
+| target\source | labeled    |  unlabeled |
 | --------- | :------: | :----: |
 | labeled   | Model Fine-tuning<br>Multi-task Learning |Self-taught learning|
 | unlabeled | Domain-adversarial training<br>Zero-shot Learning | Self-taught Clustering |
@@ -40,9 +40,25 @@ SourceData: $(x^{s},y^{s})$  数据量多
 
 #### Layer Transfer
 
-复制某些层的参数，训练时冻结。不同的任务需要迁移的Layer位置是不一样的。
+复制某些层的参数，训练时冻结或者设置不同的学习率。不同的任务需要迁移的Layer位置是不一样的。
 比如语音识别中，通常保留后面几层的参数，训练前面几层的参数。因为后几层是从发音方式到文字的转变。前几层是从声音讯号到发音方式的转变。
 图像分类的话，通常是保留前面几层的参数，训练后面几层的参数。前几层的参数是在做模式匹配，比较通用。
+
+How to Fine-Tune BERT for Text Classification: https://arxiv.org/pdf/1905.05583.pdf
+
+How transferable are features in deep neural networks?: https://arxiv.org/pdf/1411.1792.pdf
+
+<img src="/mark/assets/images/2021-10-27-transfer-learning/layer-transfer-symbol-means.png" alt="image-20211110005407259" style="zoom:50%;" />
+
+<img src="/mark/assets/images/2021-10-27-transfer-learning/layer-transfer-random-split-result.png" alt="image-20211110012639363" style="zoom:50%;" />
+
+<img src="/mark/assets/images/2021-10-27-transfer-learning/layer-transfer-domain-split-result.png" alt="image-20211110005431207" style="zoom:50%;" />
+
+左上角是man-made object数据集（A）和natural object（B）的结果
+
+较高的那条线是base B和AnB, 低的是base A和BnA。
+
+右上角是不迁移，而采用随机初始化前n层参数，并冻结的结果（之前有人发了一篇论文说随机初始化参数也能取得好结果，the combination of random convolutional filters, rectification, pooling, and local normalization can work almost as well as learned features）。
 
 ## Multitask Learning
 
@@ -56,7 +72,7 @@ SourceData: $(x^{s},y^{s})$
 
 不同任务共享参数层
 
-<img src="/mark/assets/images/2021-10-27-transfer-learning/multi-task-learn-share-input-5649614.png" alt="multi-task-learn-share-input" style="zoom:33%;" align="center"/>
+<img src="/mark/assets/images/2021-10-27-transfer-learning/multi-task-learn-share-input.png" alt="multi-task-learn-share-input" style="zoom:33%;" align="center"/>
 
 <img src="/mark/assets/images/2021-10-27-transfer-learning/multi-task-learn-share-middle.png" alt="multi-task-learn-share-middle" style="zoom:33%;" align="center" />
 
@@ -76,9 +92,9 @@ progressive Neural Networks
 
 #### 适用场景：
 
-TargetData: $(x^{t},y^{t})$
+TargetData: $(x^{t})$
 
-SourceData: $(x^{s})$ 
+SourceData: $(x^{s},,y^{s})$ 
 
 $y^{t}, y^{s}$相同，是同样的任务，但是$x^{t},x^{s}$分布不一样
 
@@ -94,9 +110,9 @@ $y^{t}, y^{s}$相同，是同样的任务，但是$x^{t},x^{s}$分布不一样
 
 2. domain classifier难以区分的种类也有很多种，如若feature extractor能让提取到的特征更容易用于后续的label predictor，显然这样的feature extractor是更好的。
 
-   ![image-20211107124132386](/../assets/images/2021-10-27-transfer-learning/image-20211107124132386.png)
+   <img src="/mark/assets/images/2021-10-27-transfer-learning/domain-adversarial-training-boundary.png" alt="image-20211107124132386" style="zoom: 33%;" />
 
-   ![image-20211107123835381](/../assets/images/2021-10-27-transfer-learning/image-20211107123835381.png)
+   <img src="/mark/assets/images/2021-10-27-transfer-learning/domain-adversarial-training-entropy.png" alt="image-20211107123835381" style="zoom: 33%;" />
 
    A DIRT-T Approach To Unsupervised Domain Adaptation: https://arxiv.org/pdf/1802.08735.pdf
 
@@ -106,9 +122,9 @@ $y^{t}, y^{s}$相同，是同样的任务，但是$x^{t},x^{s}$分布不一样
 
 #### 适用场景：
 
-TargetData: $(x^{t},y^{t})$
+TargetData: $(x^{t})$
 
-SourceData: $(x^{s})$ 
+SourceData: $(x^{s},y^{s})$ 
 
 $y^{t}, y^{s}$不同，任务不一样，$x^{t},x^{s}$分布一致
 
@@ -132,11 +148,56 @@ $$f^{*}, g^{*}=argmin_{f,g}\sum {\left \|f(x^{n})-g(y^{n}) \right \|}_{2}$$
 
 上面的损失函数只让$f(x^{n})-g(y^{n})$之间尽可能小，但是没有考虑到类间间隔
 
-$$f^{*}, g^{*}=argmin_{f,g}\sum_{1}^{n} {0,k-f(x^{n})\cdot g(x^{n})+max_{n \neq m}f(x^{n})\cdot g(x^{m})}$$
+$$f^{*}, g^{*}=argmin_{f,g}\sum_{1}^{n} max(0,k-f(x^{n})\cdot g(x^{n})+max_{n \neq m}f(x^{n})\cdot g(x^{m}))$$
+
+
+
+
+
+##  Self-taught learning
+
+Self-taught Learning: Transfer Learning from Unlabeled Data: http://ai.stanford.edu/~hllee/icml07-selftaughtlearning.pdf
+
+Self-taught learning有别于之前的semi-supervised learning，semi-supervised learning假设source data的unlable data可以被打上和target data一样的标签
+
+
+
+下图框起来的图片是有标签的，没框起来的是没标签的
+
+<img src="/mark/assets/images/2021-10-27-transfer-learning/self-taught-data-compare.png" alt="image-20211110163556092" style="zoom:50%;" />
+
+框架：
+
+TargetData: $\{(x^{1}_{l},y^{1},\dots,(x^{k}_{l},y^{k})\}$
+
+SourceData: $(x^{s}_{u})$ 
+
+在SourceData上建立优化目标：
+$$
+minimize_{V,w} \quad \sum_{i}\left \|x^{(i)}_{u} - \sum_{j}w^{(i)}_{j}V_{j} \right \| + \beta\left \|w^{(i)} \right \|_{1}
+$$
+
+$$
+s.t. \quad \left \|V_{j} \right \|_2 \leq  1, \forall j \in 1,\dots,s
+$$
+
+其中$V_{j}$是$n$维的基向量，$V=\{V_{1}, V_{2},\dots,V_{s}\}$
+
+
+
+对TargetData数据，求出对应的$w$作为新的表示，优化目标如下：
+$$
+\hat{w}(x^{(i)}_{l}) = argmin_{w^{(i)}} \quad \left \|x^{(i)}_{l} - \sum_{j}w^{(i)}_{j}V_{j} \right \| + \beta\left \|w^{(i)} \right \|_{1}
+$$
+这种方法称之为Sparde Coding，算法流程如下：
+
+<img src="/mark/assets/images/2021-10-27-transfer-learning/self-taught-sparse-coding.png" alt="image-20211110174634127" style="zoom:50%;" />
 
 
 
 ## Domain Adaptation
+
+适用场景：对Target Domain有所了解
 
 TargetData: $(x^{t},y^{t})$
 
@@ -145,6 +206,21 @@ SourceData: $(x^{s},x^{t})$
 Domain shift
 
 $x^{t},x^{s}$分布不一样
+
+Domain Adaptation Method
+
+1. Discrepancy-based Methods
+   1. Deep Domain Confusion (MMD)
+   2. Deep Adaptation Networks
+   3. CORAL, CMD
+2. Adversarial-based methods
+   1. Simultaneous Deep Transfer Across Domains and Tasks
+      1. Domain Confusion
+      2. Label Correlation
+   2. Domain Adversarial Training of Neural Networks (quick recap)
+   3. PixelDA
+3. Reconstruction-based ethods
+   1. Deep Separation Networks
 
 $y^{t},y^{s}$分布不一样， 比如训练集上label(0):label(1) = 1:1，测试集上label(0):label(1) = 5:1，比如标签多了
 
@@ -155,6 +231,8 @@ https://openaccess.thecvf.com/content_CVPR_2019/html/You_Universal_Domain_Adapta
 
 
 ## Domain Generalization
+
+适用场景：对Target Domain毫无了解
 
 训练集有许多domain https://ieeexplore.ieee.org/document/8578664
 
