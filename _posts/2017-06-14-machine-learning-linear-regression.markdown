@@ -11,30 +11,30 @@ tags: [AI, machine-learning]
 
 ### 假设函数
 
-\\( h _ {\theta } \left ( x \right ) = \theta _ {0}x _ {0} + \theta _ {1}x _ {1} + \theta _ {2}x _ {2} + ... + \theta _ {n}x _ {n}\\)
+$ h _ {\theta } \left ( x \right ) = \theta _ {0}x _ {0} + \theta _ {1}x _ {1} + \theta _ {2}x _ {2} + ... + \theta _ {n}x _ {n}$
 
-这里\\( x _{0} \\)恒等于1，表示为常数项。
+这里$ x _{0} $恒等于1，表示为常数项。
 
 ### 损失函数
 
-\\( J \left ( \theta  \right )= \frac{1}{2m} \sum_{i=1}^{m} \left ( h _{\theta} \left ( x^{\left (i  \right )} \right ) - y^{\left (i  \right )} \right ) ^{2} \\)
+$ J \left ( \theta  \right )= \frac{1}{2m} \sum_{i=1}^{m} \left ( h _{\theta} \left ( x^{\left (i  \right )} \right ) - y^{\left (i  \right )} \right ) ^{2} $
 
 其中`m`为样本数量
 
 ### 目标
 
-\\( \min J\left ( \theta  \right ) \\)
+$ \min J\left ( \theta  \right ) $
 
 - 梯度下降法
     - 正统的方法是需要同步更新每个θ
-    - \\( \theta _ {j} = \theta _ {j} - \alpha \frac {1}{m} \sum_{i=1}^{m} \left ( h _ {\theta} \left ( x^{\left (i  \right )} \right ) - y^{\left (i  \right )} \right ) x _{j}^{\left (i  \right )} \\)
-      其中\\( \alpha \\) 为学习率
+    - $ \theta _ {j} = \theta _ {j} - \alpha \frac {1}{m} \sum_{i=1}^{m} \left ( h _ {\theta} \left ( x^{\left (i  \right )} \right ) - y^{\left (i  \right )} \right ) x _{j}^{\left (i  \right )} $
+      其中$ \alpha $ 为学习率
     - matlab代码如下
       ```matlab
       theta=theta-(alpha/m*X'*(X*theta-y));
       ```
 - 正规方程法
-    - 也就是利用数学的方法，根据最小值在导数等于0的地方取得可直接求得结果，但是由于求n×n矩阵的逆运算复杂度为\\( O\left ( n^{3} \right ) \\),所以当特征很多时不宜用此方法，一般要求n小于10000
+    - 也就是利用数学的方法，根据最小值在导数等于0的地方取得可直接求得结果，但是由于求n×n矩阵的逆运算复杂度为$ O\left ( n^{3} \right ) $,所以当特征很多时不宜用此方法，一般要求n小于10000
     - matlab代码如下
       ```matlab
       theta=pinv(X'*X)*X'*y;

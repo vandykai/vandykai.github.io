@@ -24,8 +24,8 @@ $$h _{\theta }\left ( x \right ) = \theta _{0} + \theta _{1}x _{1} + \theta _{2}
 $$h _{\theta }\left ( x \right ) = \theta _{0} + \theta _{1}x _{1} + \theta _{2}x _{2} + ... + \theta _{n}x _{n}$$
 
 ```
-\\(h _{\theta }\left ( x \right ) = \theta _{0} + \theta _{1}x _{1} + \theta _{2}x _{2} + ... + \theta _{n}x _{n}\\)
+$h _{\theta }\left ( x \right ) = \theta _{0} + \theta _{1}x _{1} + \theta _{2}x _{2} + ... + \theta _{n}x _{n}$
 ```
 
 效果：
-\\(h _{\theta }\left ( x \right ) = \theta _{0} + \theta _{1}x _{1} + \theta _{2}x _{2} + ... + \theta _{n}x _{n}\\)
+$h _{\theta }\left ( x \right ) = \theta _{0} + \theta _{1}x _{1} + \theta _{2}x _{2} + ... + \theta _{n}x _{n}$

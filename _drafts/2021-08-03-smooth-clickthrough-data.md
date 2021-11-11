@@ -24,6 +24,6 @@ tags: [AI，NLP，Rank, WebSearch]
 思想：co-clikcs，点击了同一个文档的query我们认为是相似的。我们就可以使用固定的公式来找到这些相似的query，当作是对改文档的点击数据。与使用固定的公式来找到相似的query不同的是，这里采用随机游走的方法。
 
 具体如下：
-假设数据中总的query有m个，文档有n个。那么可以构建一个query到document的转移矩阵 \\(A=A_{ij},\quad A_{ij}=p(d_{j}|q_{i})\\)， 同理可以构建一个document到query的转移矩阵\\(B=B_{ji},\quad B_{ij}=p(q_{i}|d_{j})\\)，那么query到query两步可达的转移矩阵为\\(AB\\)
+假设数据中总的query有m个，文档有n个。那么可以构建一个query到document的转移矩阵 $A=A_{ij},\quad A_{ij}=p(d_{j}|q_{i})$， 同理可以构建一个document到query的转移矩阵$B=B_{ji},\quad B_{ij}=p(q_{i}|d_{j})$，那么query到query两步可达的转移矩阵为$AB$
 
 ### Discounting

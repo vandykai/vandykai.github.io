@@ -15,13 +15,13 @@ $$
 softmax\left(x_{i}\right) = \frac{\exp\left(x_{i}\right)}{\sum  _{j} ^{n}\exp\left(x_{j}\right)}
 $$
 
-但是实际使用计算机计算时会有两个问题，一个是exp计算容易向上溢出，超出float的表达范围，一个是分母容易向下溢出，比如当\\(x _{j}\\)都是比较大的负数时，可能导致分母为0。一个简单的技巧是：
+但是实际使用计算机计算时会有两个问题，一个是exp计算容易向上溢出，超出float的表达范围，一个是分母容易向下溢出，比如当$x _{j}$都是比较大的负数时，可能导致分母为0。一个简单的技巧是：
 $$
 x_{max} = \max(x)\\
 softmax\left(x_{i}\right)= \frac{\exp\left(x_{i}-x_{max}\right)}{\sum  _{j} ^{n}\exp\left(x_{j}-x_{max}\right)}
 $$
 
-这样分子的额最大值就是1了，分母由于存在某个\\(x _{k}=x_{max}\\)，所以整个分母的值至少大于1，这样就解决了上溢出和下溢出的问题。
+这样分子的额最大值就是1了，分母由于存在某个$x _{k}=x_{max}$，所以整个分母的值至少大于1，这样就解决了上溢出和下溢出的问题。
 
 # logsoftmax
 实际中多将softmax转换到log空间当作损失函数。
@@ -33,7 +33,7 @@ logsoftmax\left(x_{i}\right)
 &= x_{i} - \log\sum  _{j} ^{n}\exp\left(x_{j}\right) \\
 \end{align}
 $$
-其中\\(\log\sum  _{j} ^{n}\exp\left(x_{j}\right)\\) 的计算有上溢出的问题，同样可以使用上述的简单的技巧。
+其中$\log\sum  _{j} ^{n}\exp\left(x_{j}\right)$ 的计算有上溢出的问题，同样可以使用上述的简单的技巧。
 $$
 x_{max} = \max(x)\\
 \begin{align}
@@ -70,12 +70,12 @@ torch.logsumexp(x, dim=0)
 # tensor(6.0550)
 ```
 
-对于\\(log(X+\delta)\\)，若\\(\delta\\)远小于\\(X\\)，则根据泰勒展开到一阶：
+对于$log(X+\delta)$，若$\delta$远小于$X$，则根据泰勒展开到一阶：
 $$
 \log(X+\delta) \approx \log(X) + \frac{\delta}{X} \approx \log(X)
 $$
 
-同理：若\\(\exp\left(x_{max}\right)\\) 远大于\\(\sum_{other} \exp\left(x_{j}\right)\\)，则：
+同理：若$\exp\left(x_{max}\right)$ 远大于$\sum_{other} \exp\left(x_{j}\right)$，则：
 $$
 \begin{align}
 LSE(x)
@@ -86,7 +86,7 @@ LSE(x)
 \end{align}
 $$
 
-所以\\(LSE(x)\\)又叫smooth maximum，实际上
+所以$LSE(x)$又叫smooth maximum，实际上
 $$
 \max\left\{x_{1}\dots,x_{n} \right\} < LSE(x) \leq \max\left\{x_{1}\dots,x_{n} \right\} + \log(n)
 $$
@@ -103,7 +103,7 @@ $$
 \end{align}
 $$
 
- 下界当\\(n=1\\)时取得，上界当\\(x_{1}=x_{2}=\dots=x_{n}\\)时取得。
+ 下界当$n=1$时取得，上界当$x_{1}=x_{2}=\dots=x_{n}$时取得。
  此外：
  
 $$
@@ -190,4 +190,4 @@ $$
 \end{align}
 $$
 
-可以看出导数就是\\(S\left(x_{j}\right)\\)与\\(y_{j}\\)的距离
+可以看出导数就是$S\left(x_{j}\right)$与$y_{j}$的距离

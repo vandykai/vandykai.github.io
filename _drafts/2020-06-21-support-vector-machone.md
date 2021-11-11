@@ -19,7 +19,7 @@ kernal SVM
 ### 最大间隔思想
 对于二分类问题，找到能分割空间中的点的最鲁棒的那个超平面。
 
-具体来说，对于\\(n\\)维空间的\\(N\\)个样本点\\(\left \{x _{i}, y _{i} \right \} _{1} ^{N}\\) ，\\(x _{i} \in R ^{n},y_{i} \in \left \{-1,+1 \right \}\\) ,我们的目标是最大化离超平面最近的点到超平面的距离。即
+具体来说，对于$n$维空间的$N$个样本点$\left \{x _{i}, y _{i} \right \} _{1} ^{N}$ ，$x _{i} \in R ^{n},y_{i} \in \left \{-1,+1 \right \}$ ,我们的目标是最大化离超平面最近的点到超平面的距离。即
 
 $$
 \max_{w,b}\min _{x_{i}}\frac{1}{\left \|w \right \|}\left|w^{T}x_{i}+b\right|=\max_{w,b}\frac{1}{\left \|w \right \|}\min _{x_{i}}y _{i}\left(w^{T}x_{i}+b\right)
@@ -39,7 +39,7 @@ $$
 $$
 \exists r>0 \quad s.t\quad \min _{x_{i}}y _{i}\left(w^{T}x_{i}+b\right)=r
 $$
-由于最小距离\\(r\\)的的大小可以由成倍的扩大或则缩小\\(w\\)和\\(b\\)来控制，而缩放系数和优化目标函数无关，因此不妨设\\(r=1\\)，所以上述优化目标可以转化为
+由于最小距离$r$的的大小可以由成倍的扩大或则缩小$w$和$b$来控制，而缩放系数和优化目标函数无关，因此不妨设$r=1$，所以上述优化目标可以转化为
 $$
 \max_{w,b}\frac{1}{\left \|w \right \|}
 $$
@@ -99,7 +99,7 @@ $$
 $$
 \min_{w,b}\text{L} \left(w,b,\lambda\right)
 $$
-他是个无约束的凸优化问题，直接求导使得等于\\(0\\)可求解
+他是个无约束的凸优化问题，直接求导使得等于$0$可求解
 
 $$
 \frac{\partial \text{L} \left(w,b,\lambda\right)}{\partial b}=0
@@ -112,7 +112,7 @@ $$
 \Rightarrow
 w=\sum _{i=1}^{N}\lambda_{i}y_{i}x_{i}
 $$
-代入 \\(\text{L} \left(w,b,\lambda\right)\\)得：
+代入 $\text{L} \left(w,b,\lambda\right)$得：
 
 
 $$
@@ -151,5 +151,5 @@ s.t.\quad
 \end{matrix}\right.
 $$
 
-**最后别忘了对\\(b\\)求导使得等于0也是\\(\lambda\\)的一个约束**
+**最后别忘了对$b$求导使得等于0也是$\lambda$的一个约束**
 
