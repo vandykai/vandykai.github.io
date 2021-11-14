@@ -105,7 +105,7 @@ $$
 
  下界当$n=1$时取得，上界当$x_{1}=x_{2}=\dots=x_{n}$时取得。
  此外：
- 
+
 $$
 \frac{\partial LSE(X)}{\partial x_{i}} =\frac{\exp\left(x_{i}\right)}{\sum  _{j} ^{n}\exp\left(x_{j}\right)}= softmax\left(x_{i}\right)
 $$
@@ -172,19 +172,25 @@ $$
 \end{align}
 $$
 
- ## 附:交叉熵求导
+## 附:交叉熵求导
+
 $$
 \begin{align}
 loss(x)
-& =-\sum _{i}^{n}y_{i}\log\frac{\exp\left(x_{i}\right)}{\sum  _{j} ^{n}\exp\left(x_{j}\right)} \\
-&= -\sum _{i}^{n}y_{i}logS\left(x_{i}\right)
+& =-\sum _{i}^{K}y_{i}\log\frac{\exp\left(x_{i}\right)}{\sum  _{j} ^{K}\exp\left(x_{j}\right)} \\
+&= -\sum _{i}^{K}y_{i}logS\left(x_{i}\right)
 \end{align}
 $$
+
+
+
+其中$K$是多分类类别数
+
 
 $$
 \begin{align}
 \frac{\partial loss(x)}{\partial x_{j}}
-&= -\sum _{i}^{n}y_{i}\frac{\partial logS\left(x_{i}\right)}{\partial x_{j}} \\
+&= -\sum _{i}^{K}y_{i}\frac{\partial logS\left(x_{i}\right)}{\partial x_{j}} \\
 &= -\sum _{i \neq j}y_{i}\left(-S\left(x_{j}\right)\right) -y_{j}\left(1-S\left(x_{j}\right)\right) \\
 &=S\left(x_{j}\right)-y_{j}
 \end{align}
