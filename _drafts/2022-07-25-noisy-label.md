@@ -11,15 +11,15 @@ Deep networks tend to learn clean samples faster than noisy samples, leading to 
 蓝：既不是正确的label也不是故意标记成的噪声label
 红：故意标记的错误label
 
-![picture 2](../assets/images/2022-07-25-share/1.png)  
+![picture 2](../assets/images/2022-07-25-noisy-label/1.png)  
 
-![picture 3](../assets/images/2022-07-25-share/3.png)  
+![picture 3](../assets/images/2022-07-25-noisy-label/3.png)  
 
-![picture 4](../assets/images/2022-07-25-share/4.png)  
+![picture 4](../assets/images/2022-07-25-noisy-label/4.png)  
 
-![picture 5](../assets/images/2022-07-25-share/5.png)
+![picture 5](../assets/images/2022-07-25-noisy-label/5.png)
 
-![picture 6](../assets/images/2022-07-25-share/6.png)
+![picture 6](../assets/images/2022-07-25-noisy-label/6.png)
 
 
 #### 常见方法
@@ -33,11 +33,11 @@ symmetric label noise (i.e. uniformly random)
 asymmetric label noise (i.e. class-conditional)
 
 ## ELR方法
-![picture 7](../assets/images/2022-07-25-share/7.png)  
+![picture 7](../assets/images/2022-07-25-noisy-label/7.png)  
 
-![picture 16](../assets/images/2022-07-25-share/8.png)  
+![picture 16](../assets/images/2022-07-25-noisy-label/8.png)  
 为什么有效，求导分析：
-![picture 17](../assets/images/2022-07-25-share/9.png)  
+![picture 17](../assets/images/2022-07-25-noisy-label/9.png)  
 
 
 源代码：
@@ -86,17 +86,17 @@ MixMatch:
 ## DivideMix细节
 WarmUp阶段：
 对于非对称噪声来说，WarmUp阶段非常容易overfit噪声label，并且产生低墒的预测，为了解决这个问题：增加一部分loss
-![picture 10](../assets/images/2022-07-25-share/8.png)  
+![picture 10](../assets/images/2022-07-25-noisy-label/8.png)  
 
 增加后效果：
-![picture 11](../assets/images/2022-07-25-share/10.png)  
+![picture 11](../assets/images/2022-07-25-noisy-label/10.png)  
 
 MixUp阶段：
-![picture 13](../assets/images/2022-07-25-share/12.png)  
+![picture 13](../assets/images/2022-07-25-noisy-label/12.png)  
 
 
 对于高噪声比例的数据来说，很容易使得模型输出单一class的值，所以增加一个class分布的先验
-![picture 12](../assets/images/2022-07-25-share/11.png)  
+![picture 12](../assets/images/2022-07-25-noisy-label/11.png)  
 
 
 ```

@@ -4,3 +4,4 @@ yulib.config
 yulib.resource
 *.DS_Store
 .jekyll-cache
+Gemfile.lock
