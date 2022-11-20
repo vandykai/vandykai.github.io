@@ -68,9 +68,11 @@ tags: [AI, probabilistic-graphical-models]
 
 ### Markov Network
 
-因子分解：$p \left ( x _{1}, x _{2}, ... x _{p}\right ) = \frac{1}{Z}\prod _{c} \varphi _{c} \left ( x _{c}\right )$ 其中$ Z = \sum _{x}\prod _{c} \varphi _{c} \left ( x _{c}\right )$
+因子分解：$p \left ( x _{1}, x _{2}, ... x _{p}\right ) = \frac{1}{Z}\prod _{c} \varphi _{c} \left ( x _{c}\right )$ 其中$Z = \sum _{x}\prod _{c} \varphi _{c} \left ( x _{c}\right )$
 
-在CRF中势函数为 $ \varphi _{c} \left ( x _{c}\right ) = exp\left \{-E(x _{c})\right \} $
+在CRF中势函数为：
+
+$$w\varphi _{c} \left ( x _{c}\right ) = exp\left \{-E(x _{c})\right \}$$
 
 其中c是无向图的最大团
 - 全局马尔可夫性
@@ -105,10 +107,11 @@ Hammersley-Clifford定理证明了一个无向图模型的概率可以表示为�
     1.2 隐变量 EM
 
 2. 结构学习
+
 ## 道德图
-$ p(a,b,c)=p(a)p(b \mid a)p(c \mid b) $
+$p(a,b,c)=p(a)p(b \mid a)p(c \mid b)$
 
-$ p(a,b,c)=p(c)p(c \mid a)p(c \mid b) $
+$p(a,b,c)=p(c)p(c \mid a)p(c \mid b)$
 
-$ p(a,b,c)=p(a)p(b)p(c \mid a,b) $
+$p(a,b,c)=p(a)p(b)p(c \mid a,b)$
 

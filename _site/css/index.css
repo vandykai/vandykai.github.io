@@ -1,17 +1,54 @@
 body {
-    background-color: #f5f5d5;
+    background-color: #FFFFF8;
 }
-
-a {
-    width: auto;
-    font-size: 20px;
-    line-height: 1.5;
-    font-weight: 300;
-    color: #111;
+#main {
+    width: 1280px;
+    clear: both;
+    margin: 10px auto;
+    overflow: hidden;
 }
-
-.post-link {
+#left {
+    width: 10%;
+    height: 400px;
+    float: left;
+    font-size: 15px;
+    writing-mode: vertical-lr;
+    writing-mode: tb-lr;
+}
+#center {
+    width: 80%;
+    float: left;
+}
+#right {
+    width: 10%;
+    height: 400px;
+    float: left;
+    font-size: 15px;
+    writing-mode: vertical-lr;
+    writing-mode: tb-lr;
+}
+.center-row {
+    line-height: 2.5;
+    text-align: left;
+}
+.center-row-name {
+    font-weight:bold;
+    font-size: 15px;
+    display:inline-block;
+    text-align: center;
+    width: 100px;
+}
+.center-row-link {
+    display:inline-block;
+    text-align: center;
+    width: 120px;
+    background-color: #f2e8ea;
+}
+.href-link {
     position: relative;
+    font-size: 14px;
+    font-weight: 300;
+    color: #500a0a;
 }
 
 .inverse-color-font {

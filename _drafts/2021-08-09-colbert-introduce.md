@@ -8,6 +8,7 @@ tags: [AI，NLP，Rank, IR]
 
 ---
 ## ColBERT
+
 ### 效果：
 ColBert的效果可以媲美其它BERT-based的模型，但是执行比它们快两个数量级。每次query的查询少四个数量级的浮点运算。
 

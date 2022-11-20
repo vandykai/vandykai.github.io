@@ -7,7 +7,7 @@ categories: [Design-Pattern]
 tags: [design-pattern, oop]
 
 ---
-##面向对象的原则
+## 面向对象的原则
 
 **总的原则**-**高内聚，低耦合**
 
