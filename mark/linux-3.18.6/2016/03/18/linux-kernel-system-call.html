@@ -12,9 +12,42 @@
   <link rel="stylesheet" href="/mark/css/main.css">
   <link rel="stylesheet" href="/mark/css/syntax.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://www.dosrc.com/mark/linux-3.18.6/2016/03/18/linux-kernel-system-call.html">
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
-  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <link rel="canonical" href="http://localhost:4000/mark/linux-3.18.6/2016/03/18/linux-kernel-system-call.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/mark/feed.xml" title="Blog" />
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Linux Kernel - 系统调用和用户态内核态的转换 | Blog</title>
+<meta name="generator" content="Jekyll v4.2.1" />
+<meta property="og:title" content="Linux Kernel - 系统调用和用户态内核态的转换" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="重点知识总结 Intel X86 CPU 有四种不同的执行级别0-3，Linux只使用了其中的0级和3级，分别来表示内核态和用户态。 一般来说在32位X86机器上，Linux系统中，地址空间是一个显著的标志：0XC0000000以上的地址空间只能在内核态下访问，0X00000000-0XBFFFFFFF的地址空间在两种状态下都可以访问，这里所说的是逻辑地址而不是物理地址。所以寄存器的最低两位表明了当前代码所需的特权级。11代表需要内核态级别，否则只需要用户态级别。 中断处理是从用户态进入内核态主要的方式。系统调用是一种特殊的中断。 从用户态切换到内核态时，必须保存用户态的寄存器上下文。 中断/int指令会在堆栈上保存一些寄存器的值，如用户态栈顶指针，当时的状态字，当时的cs:eip的值，并恢复内核态的对应寄存器的值。 中断发生后第一件事就是保存现场到自己（内核态)的堆栈中,这就正好衔接了之前保存和恢复栈顶指针的动作，保护现场就是进入中断程序保存需要用到的寄存器的数据，也可以简单保存其他所有寄存器的值即定义一个SAVE_ALL的代码块供调用。恢复现场同理。 iret指令与中断信号（包括int指令）发生时CPU做的动作正好相反 中断一般模版" />
+<meta property="og:description" content="重点知识总结 Intel X86 CPU 有四种不同的执行级别0-3，Linux只使用了其中的0级和3级，分别来表示内核态和用户态。 一般来说在32位X86机器上，Linux系统中，地址空间是一个显著的标志：0XC0000000以上的地址空间只能在内核态下访问，0X00000000-0XBFFFFFFF的地址空间在两种状态下都可以访问，这里所说的是逻辑地址而不是物理地址。所以寄存器的最低两位表明了当前代码所需的特权级。11代表需要内核态级别，否则只需要用户态级别。 中断处理是从用户态进入内核态主要的方式。系统调用是一种特殊的中断。 从用户态切换到内核态时，必须保存用户态的寄存器上下文。 中断/int指令会在堆栈上保存一些寄存器的值，如用户态栈顶指针，当时的状态字，当时的cs:eip的值，并恢复内核态的对应寄存器的值。 中断发生后第一件事就是保存现场到自己（内核态)的堆栈中,这就正好衔接了之前保存和恢复栈顶指针的动作，保护现场就是进入中断程序保存需要用到的寄存器的数据，也可以简单保存其他所有寄存器的值即定义一个SAVE_ALL的代码块供调用。恢复现场同理。 iret指令与中断信号（包括int指令）发生时CPU做的动作正好相反 中断一般模版" />
+<link rel="canonical" href="http://localhost:4000/mark/linux-3.18.6/2016/03/18/linux-kernel-system-call.html" />
+<meta property="og:url" content="http://localhost:4000/mark/linux-3.18.6/2016/03/18/linux-kernel-system-call.html" />
+<meta property="og:site_name" content="Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2016-03-18T20:13:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Linux Kernel - 系统调用和用户态内核态的转换" />
+<script type="application/ld+json">
+{"description":"重点知识总结 Intel X86 CPU 有四种不同的执行级别0-3，Linux只使用了其中的0级和3级，分别来表示内核态和用户态。 一般来说在32位X86机器上，Linux系统中，地址空间是一个显著的标志：0XC0000000以上的地址空间只能在内核态下访问，0X00000000-0XBFFFFFFF的地址空间在两种状态下都可以访问，这里所说的是逻辑地址而不是物理地址。所以寄存器的最低两位表明了当前代码所需的特权级。11代表需要内核态级别，否则只需要用户态级别。 中断处理是从用户态进入内核态主要的方式。系统调用是一种特殊的中断。 从用户态切换到内核态时，必须保存用户态的寄存器上下文。 中断/int指令会在堆栈上保存一些寄存器的值，如用户态栈顶指针，当时的状态字，当时的cs:eip的值，并恢复内核态的对应寄存器的值。 中断发生后第一件事就是保存现场到自己（内核态)的堆栈中,这就正好衔接了之前保存和恢复栈顶指针的动作，保护现场就是进入中断程序保存需要用到的寄存器的数据，也可以简单保存其他所有寄存器的值即定义一个SAVE_ALL的代码块供调用。恢复现场同理。 iret指令与中断信号（包括int指令）发生时CPU做的动作正好相反 中断一般模版","headline":"Linux Kernel - 系统调用和用户态内核态的转换","dateModified":"2016-03-18T20:13:00+08:00","datePublished":"2016-03-18T20:13:00+08:00","url":"http://localhost:4000/mark/linux-3.18.6/2016/03/18/linux-kernel-system-call.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/mark/linux-3.18.6/2016/03/18/linux-kernel-system-call.html"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$', '$'], ["$", "$"] ],
+        displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+      //,
+      //displayAlign: "left",
+      //displayIndent: "2em"
+    });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
 
 </head>
 
@@ -40,6 +73,10 @@
         
           
           <a class="page-link" href="/mark/about/">About</a>
+          
+        
+          
+        
           
         
           

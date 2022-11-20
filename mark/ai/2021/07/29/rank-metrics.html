@@ -12,9 +12,42 @@
   <link rel="stylesheet" href="/mark/css/main.css">
   <link rel="stylesheet" href="/mark/css/syntax.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://www.dosrc.com/mark/ai/2021/07/29/rank-metrics.html">
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
-  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <link rel="canonical" href="http://localhost:4000/mark/ai/2021/07/29/rank-metrics.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/mark/feed.xml" title="Blog" />
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Rank Metrics&amp;Loss | Blog</title>
+<meta name="generator" content="Jekyll v4.2.1" />
+<meta property="og:title" content="Rank Metrics&amp;Loss" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="排序评价 Precision@K" />
+<meta property="og:description" content="排序评价 Precision@K" />
+<link rel="canonical" href="http://localhost:4000/mark/ai/2021/07/29/rank-metrics.html" />
+<meta property="og:url" content="http://localhost:4000/mark/ai/2021/07/29/rank-metrics.html" />
+<meta property="og:site_name" content="Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-07-29T00:19:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Rank Metrics&amp;Loss" />
+<script type="application/ld+json">
+{"description":"排序评价 Precision@K","headline":"Rank Metrics&amp;Loss","dateModified":"2021-07-29T00:19:00+08:00","datePublished":"2021-07-29T00:19:00+08:00","url":"http://localhost:4000/mark/ai/2021/07/29/rank-metrics.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/mark/ai/2021/07/29/rank-metrics.html"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$', '$'], ["$", "$"] ],
+        displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+      //,
+      //displayAlign: "left",
+      //displayIndent: "2em"
+    });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
 
 </head>
 
@@ -50,6 +83,10 @@
         
           
         
+          
+        
+          
+        
       </div>
     </nav>
 
@@ -73,32 +110,32 @@
 
 \[precision@k=\frac{count_{pos}}{k}\]
 
-<p>其中\(count_{pos}\)为topk中正例个数，是否是正例使用threshold来判别。</p>
+<p>其中$count_{pos}$为topk中正例个数，是否是正例使用threshold来判别。</p>
 
 \[\begin{cases}
  &amp; pos, &amp;\text{if} &amp; label &gt;threshold \\ 
  &amp; neg, &amp;\text{if} &amp; label&lt;= threshold
 \end{cases}\]
 
-<p>取值范围\([0,1]\)</p>
+<p>取值范围$[0,1]$</p>
 
 <h3 id="averageprecision">AveragePrecision</h3>
 
 \[AveragePrecision = \frac{1}{N}\sum_{k=1}^{N} precision@k\]
 
-<p>取值范围\([0,1]\)</p>
+<p>取值范围$[0,1]$</p>
 
 <h3 id="meanaverageprecision">MeanAveragePrecision</h3>
 
 \[MeanAveragePrecision = \frac{1}{N}\sum_{k\in position_{label=pos}}^{N} precision@k\]
 
-<p>其中\(  position_{label&gt;threshold} \)为所有正例被排序的位置</p>
+<p>其中$  position_{label&gt;threshold} $为所有正例被排序的位置</p>
 
 <p>含义：分别计算precision@k（k为推荐序列中正例被排序的位置）的平均值。
 例如：排序了5个，其中1，3，5为正例，则
 MeanAveragePrecision=mean([precision@1,precision@3,precision@5])</p>
 
-<p>取值范围\([0,1]\)</p>
+<p>取值范围$[0,1]$</p>
 
 <h3 id="meanreciprocalrank">MeanReciprocalRank</h3>
 
@@ -106,14 +143,14 @@ MeanAveragePrecision=mean([precision@1,precision@3,precision@5])</p>
 
 <p>k为排序中第一个正例位置</p>
 
-<p>取值范围\((0,1]\)</p>
+<p>取值范围$(0,1]$</p>
 <h3 id="cumulativegain">CumulativeGain</h3>
 
 \[CG_{k} = \sum_{i=1}^{k}rel_{i}\]
 
-<p>\(rel_{i}\)是第\( i \)个位置的评分</p>
+<p>$rel_{i}$是第$ i $个位置的评分</p>
 
-<p>取值范围\([0,+\propto)\)</p>
+<p>取值范围$[0,+\propto)$</p>
 
 <p>缺点：前后位置得分未做区分</p>
 
@@ -121,9 +158,9 @@ MeanAveragePrecision=mean([precision@1,precision@3,precision@5])</p>
 
 \[DCG_{k} = \sum_{i=1}^{k}\frac{2^{rel_{i}}-1}{\log_{2}\left(i+1\right)}\]
 
-<p>\(rel_{i}\)是第\( i \)个位置的评分</p>
+<p>$rel_{i}$是第$ i $个位置的评分</p>
 
-<p>取值范围\([0,+\propto)\)</p>
+<p>取值范围$[0,+\propto)$</p>
 
 <p>缺点：不同算法得分不好做比较</p>
 
@@ -131,7 +168,7 @@ MeanAveragePrecision=mean([precision@1,precision@3,precision@5])</p>
 
 \[nDCG_{k} = \frac{DCG_{k}}{IDCG_{k}}\]
 
-<p>\(IDCG_{k}\)是按评分rank的理想得分，相当于做得分的归一化</p>
+<p>$IDCG_{k}$是按评分rank的理想得分，相当于做得分的归一化</p>
 
 \[IDCG_{k} = \sum_{i=1}^{\left|  REL_{k}\right|}\frac{2^{rel_{i}}-1}{\log_{2}\left(i+1\right)}\]
 
@@ -152,7 +189,7 @@ MeanAveragePrecision=mean([precision@1,precision@3,precision@5])</p>
 \end{cases} \\
 loss(x1,x2,y)=\max(0,−y∗(x1−x2)+margin)\]
 
-<p>这里\(x_{1}^{\ast}, x_{2}^{\ast}\)表示实际的label得分，\(x_{1}, x_{2}\)表示预测得分</p>
+<p>这里$x_{1}^{\ast}, x_{2}^{\ast}$表示实际的label得分，$x_{1}, x_{2}$表示预测得分</p>
 
 
   </article>

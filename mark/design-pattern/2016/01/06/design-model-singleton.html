@@ -7,14 +7,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Design Pattern - Singleton</title>
-  <meta name="description" content="##单例模式">
+  <meta name="description" content="单例模式">
 
   <link rel="stylesheet" href="/mark/css/main.css">
   <link rel="stylesheet" href="/mark/css/syntax.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://www.dosrc.com/mark/design-pattern/2016/01/06/design-model-singleton.html">
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
-  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <link rel="canonical" href="http://localhost:4000/mark/design-pattern/2016/01/06/design-model-singleton.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/mark/feed.xml" title="Blog" />
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Design Pattern - Singleton | Blog</title>
+<meta name="generator" content="Jekyll v4.2.1" />
+<meta property="og:title" content="Design Pattern - Singleton" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="单例模式" />
+<meta property="og:description" content="单例模式" />
+<link rel="canonical" href="http://localhost:4000/mark/design-pattern/2016/01/06/design-model-singleton.html" />
+<meta property="og:url" content="http://localhost:4000/mark/design-pattern/2016/01/06/design-model-singleton.html" />
+<meta property="og:site_name" content="Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2016-01-06T03:50:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Design Pattern - Singleton" />
+<script type="application/ld+json">
+{"description":"单例模式","headline":"Design Pattern - Singleton","dateModified":"2016-01-06T03:50:00+08:00","datePublished":"2016-01-06T03:50:00+08:00","url":"http://localhost:4000/mark/design-pattern/2016/01/06/design-model-singleton.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/mark/design-pattern/2016/01/06/design-model-singleton.html"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$', '$'], ["$", "$"] ],
+        displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+      //,
+      //displayAlign: "left",
+      //displayIndent: "2em"
+    });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
 
 </head>
 
@@ -50,6 +83,10 @@
         
           
         
+          
+        
+          
+        
       </div>
     </nav>
 
@@ -68,7 +105,7 @@
   </header>
 
   <article class="post-content">
-    <p>##单例模式</p>
+    <h2 id="单例模式">单例模式</h2>
 
 <ol>
   <li><strong>适用范围</strong>：当一个类只需要一个实例时，可以考虑采用单例模式，但并不是所有的类都适合做成单例，如果一个类含有数据（也即是有状态的类），那么将该类做成单例时可能会引发线程安全问题（多个线程同时对数据操作），此时的解决之道是要么将该数据做成只读（创建时写入数据），要么不做成单例，做成单例的类要尽量保证是无状态的。</li>

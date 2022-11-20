@@ -12,9 +12,42 @@
   <link rel="stylesheet" href="/mark/css/main.css">
   <link rel="stylesheet" href="/mark/css/syntax.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://www.dosrc.com/mark/machine-learning/2017/06/14/machine-learning-linear-regression.html">
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
-  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <link rel="canonical" href="http://localhost:4000/mark/machine-learning/2017/06/14/machine-learning-linear-regression.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/mark/feed.xml" title="Blog" />
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Machine Learning - 线性回归 | Blog</title>
+<meta name="generator" content="Jekyll v4.2.1" />
+<meta property="og:title" content="Machine Learning - 线性回归" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="假设函数" />
+<meta property="og:description" content="假设函数" />
+<link rel="canonical" href="http://localhost:4000/mark/machine-learning/2017/06/14/machine-learning-linear-regression.html" />
+<meta property="og:url" content="http://localhost:4000/mark/machine-learning/2017/06/14/machine-learning-linear-regression.html" />
+<meta property="og:site_name" content="Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-06-14T23:06:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Machine Learning - 线性回归" />
+<script type="application/ld+json">
+{"description":"假设函数","headline":"Machine Learning - 线性回归","dateModified":"2017-06-14T23:06:00+08:00","datePublished":"2017-06-14T23:06:00+08:00","url":"http://localhost:4000/mark/machine-learning/2017/06/14/machine-learning-linear-regression.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/mark/machine-learning/2017/06/14/machine-learning-linear-regression.html"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$', '$'], ["$", "$"] ],
+        displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+      //,
+      //displayAlign: "left",
+      //displayIndent: "2em"
+    });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
 
 </head>
 
@@ -50,6 +83,10 @@
         
           
         
+          
+        
+          
+        
       </div>
     </nav>
 
@@ -70,26 +107,26 @@
   <article class="post-content">
     <h3 id="假设函数">假设函数</h3>
 
-<p>\( h _ {\theta } \left ( x \right ) = \theta _ {0}x _ {0} + \theta _ {1}x _ {1} + \theta _ {2}x _ {2} + … + \theta _ {n}x _ {n}\)</p>
+<p>$ h _ {\theta } \left ( x \right ) = \theta _ {0}x _ {0} + \theta _ {1}x _ {1} + \theta _ {2}x _ {2} + … + \theta _ {n}x _ {n}$</p>
 
-<p>这里\( x _{0} \)恒等于1，表示为常数项。</p>
+<p>这里$ x _{0} $恒等于1，表示为常数项。</p>
 
 <h3 id="损失函数">损失函数</h3>
 
-<p>\( J \left ( \theta  \right )= \frac{1}{2m} \sum_{i=1}^{m} \left ( h _{\theta} \left ( x^{\left (i  \right )} \right ) - y^{\left (i  \right )} \right ) ^{2} \)</p>
+<p>$ J \left ( \theta  \right )= \frac{1}{2m} \sum_{i=1}^{m} \left ( h _{\theta} \left ( x^{\left (i  \right )} \right ) - y^{\left (i  \right )} \right ) ^{2} $</p>
 
 <p>其中<code class="language-plaintext highlighter-rouge">m</code>为样本数量</p>
 
 <h3 id="目标">目标</h3>
 
-<p>\( \min J\left ( \theta  \right ) \)</p>
+<p>$ \min J\left ( \theta  \right ) $</p>
 
 <ul>
   <li>梯度下降法
     <ul>
       <li>正统的方法是需要同步更新每个θ</li>
-      <li>\( \theta _ {j} = \theta _ {j} - \alpha \frac {1}{m} \sum_{i=1}^{m} \left ( h _ {\theta} \left ( x^{\left (i  \right )} \right ) - y^{\left (i  \right )} \right ) x _{j}^{\left (i  \right )} \)
-其中\( \alpha \) 为学习率</li>
+      <li>$ \theta _ {j} = \theta _ {j} - \alpha \frac {1}{m} \sum_{i=1}^{m} \left ( h _ {\theta} \left ( x^{\left (i  \right )} \right ) - y^{\left (i  \right )} \right ) x _{j}^{\left (i  \right )} $
+其中$ \alpha $ 为学习率</li>
       <li>matlab代码如下
         <div class="language-matlab highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">theta</span><span class="o">=</span><span class="n">theta</span><span class="o">-</span><span class="p">(</span><span class="nb">alpha</span><span class="p">/</span><span class="n">m</span><span class="o">*</span><span class="n">X</span><span class="o">'*</span><span class="p">(</span><span class="n">X</span><span class="o">*</span><span class="n">theta</span><span class="o">-</span><span class="n">y</span><span class="p">));</span>
 </code></pre></div>        </div>
@@ -98,7 +135,7 @@
   </li>
   <li>正规方程法
     <ul>
-      <li>也就是利用数学的方法，根据最小值在导数等于0的地方取得可直接求得结果，但是由于求n×n矩阵的逆运算复杂度为\( O\left ( n^{3} \right ) \),所以当特征很多时不宜用此方法，一般要求n小于10000</li>
+      <li>也就是利用数学的方法，根据最小值在导数等于0的地方取得可直接求得结果，但是由于求n×n矩阵的逆运算复杂度为$ O\left ( n^{3} \right ) $,所以当特征很多时不宜用此方法，一般要求n小于10000</li>
       <li>matlab代码如下
         <div class="language-matlab highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">theta</span><span class="o">=</span><span class="nb">pinv</span><span class="p">(</span><span class="n">X</span><span class="s1">'*X)*X'</span><span class="o">*</span><span class="n">y</span><span class="p">;</span>
 </code></pre></div>        </div>

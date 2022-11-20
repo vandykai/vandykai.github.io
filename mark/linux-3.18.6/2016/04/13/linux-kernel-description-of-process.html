@@ -12,9 +12,42 @@
   <link rel="stylesheet" href="/mark/css/main.css">
   <link rel="stylesheet" href="/mark/css/syntax.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://www.dosrc.com/mark/linux-3.18.6/2016/04/13/linux-kernel-description-of-process.html">
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
-  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <link rel="canonical" href="http://localhost:4000/mark/linux-3.18.6/2016/04/13/linux-kernel-description-of-process.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/mark/feed.xml" title="Blog" />
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Linux Kernel - 进程结构和进程的克隆 | Blog</title>
+<meta name="generator" content="Jekyll v4.2.1" />
+<meta property="og:title" content="Linux Kernel - 进程结构和进程的克隆" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="重点知识总结 进程结构定义struct task_struct volatile long state;记录进程的状态，进程状态的定义链接，值得注意的是操作系统进程状态概念中的就绪态和运行态在这里都表示为TASK_RUNNING状态，若获得CPU的执行就为运行态，否则为就绪态。 Linux为每个进程分配一个8KB大小的内存区域，用于存放该进程两个不同的数据结构：Thread_info和进程的内核堆栈" />
+<meta property="og:description" content="重点知识总结 进程结构定义struct task_struct volatile long state;记录进程的状态，进程状态的定义链接，值得注意的是操作系统进程状态概念中的就绪态和运行态在这里都表示为TASK_RUNNING状态，若获得CPU的执行就为运行态，否则为就绪态。 Linux为每个进程分配一个8KB大小的内存区域，用于存放该进程两个不同的数据结构：Thread_info和进程的内核堆栈" />
+<link rel="canonical" href="http://localhost:4000/mark/linux-3.18.6/2016/04/13/linux-kernel-description-of-process.html" />
+<meta property="og:url" content="http://localhost:4000/mark/linux-3.18.6/2016/04/13/linux-kernel-description-of-process.html" />
+<meta property="og:site_name" content="Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2016-04-13T22:32:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Linux Kernel - 进程结构和进程的克隆" />
+<script type="application/ld+json">
+{"description":"重点知识总结 进程结构定义struct task_struct volatile long state;记录进程的状态，进程状态的定义链接，值得注意的是操作系统进程状态概念中的就绪态和运行态在这里都表示为TASK_RUNNING状态，若获得CPU的执行就为运行态，否则为就绪态。 Linux为每个进程分配一个8KB大小的内存区域，用于存放该进程两个不同的数据结构：Thread_info和进程的内核堆栈","headline":"Linux Kernel - 进程结构和进程的克隆","dateModified":"2016-04-13T22:32:00+08:00","datePublished":"2016-04-13T22:32:00+08:00","url":"http://localhost:4000/mark/linux-3.18.6/2016/04/13/linux-kernel-description-of-process.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/mark/linux-3.18.6/2016/04/13/linux-kernel-description-of-process.html"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$', '$'], ["$", "$"] ],
+        displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+      //,
+      //displayAlign: "left",
+      //displayIndent: "2em"
+    });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
 
 </head>
 
@@ -40,6 +73,10 @@
         
           
           <a class="page-link" href="/mark/about/">About</a>
+          
+        
+          
+        
           
         
           

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Probabilistic Graphical Models - 简介</title>
+  <meta name="description" content="如何计算联合概率分布困难点：联合概率分布$p \left ( x _{1}, x _{2}, … x _{p}\right )$纬度高，计算复杂，所以一般要对其进行简化。">
+
+  <link rel="stylesheet" href="/mark/css/main.css">
+  <link rel="stylesheet" href="/mark/css/syntax.css">
+  <link rel="shortcut icon" href="/mark/favicon.ico">
+  <link rel="canonical" href="http://localhost:4000/mark/probabilistic-graphical-models/2017/06/14/probabilistic-graphical-models.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/mark/feed.xml" title="Blog" />
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Probabilistic Graphical Models - 简介 | Blog</title>
+<meta name="generator" content="Jekyll v4.2.1" />
+<meta property="og:title" content="Probabilistic Graphical Models - 简介" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="如何计算联合概率分布 困难点：联合概率分布$p \left ( x _{1}, x _{2}, … x _{p}\right )$纬度高，计算复杂，所以一般要对其进行简化。" />
+<meta property="og:description" content="如何计算联合概率分布 困难点：联合概率分布$p \left ( x _{1}, x _{2}, … x _{p}\right )$纬度高，计算复杂，所以一般要对其进行简化。" />
+<link rel="canonical" href="http://localhost:4000/mark/probabilistic-graphical-models/2017/06/14/probabilistic-graphical-models.html" />
+<meta property="og:url" content="http://localhost:4000/mark/probabilistic-graphical-models/2017/06/14/probabilistic-graphical-models.html" />
+<meta property="og:site_name" content="Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-06-14T23:06:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Probabilistic Graphical Models - 简介" />
+<script type="application/ld+json">
+{"description":"如何计算联合概率分布 困难点：联合概率分布$p \\left ( x _{1}, x _{2}, … x _{p}\\right )$纬度高，计算复杂，所以一般要对其进行简化。","headline":"Probabilistic Graphical Models - 简介","dateModified":"2017-06-14T23:06:00+08:00","datePublished":"2017-06-14T23:06:00+08:00","url":"http://localhost:4000/mark/probabilistic-graphical-models/2017/06/14/probabilistic-graphical-models.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/mark/probabilistic-graphical-models/2017/06/14/probabilistic-graphical-models.html"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$', '$'], ["$", "$"] ],
+        displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+      //,
+      //displayAlign: "left",
+      //displayIndent: "2em"
+    });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/mark/">Blog</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/mark/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Probabilistic Graphical Models - 简介</h1>
+    <p class="post-meta">Jun 14, 2017</p>
+  </header>
+
+  <article class="post-content">
+    <h2 id="如何计算联合概率分布">如何计算联合概率分布</h2>
+<p>困难点：联合概率分布$p \left ( x _{1}, x _{2}, … x _{p}\right )$纬度高，计算复杂，所以一般要对其进行简化。</p>
+
+<h2 id="简化">简化：</h2>
+
+<ul>
+  <li>
+    <p><strong>相互独立</strong>：</p>
+
+    <p>$p \left ( x _{1}, x _{2}, … x _{p} \right ) = \prod _{1} ^{p} p \left ( x _{i}\right )$</p>
+
+    <p>比如朴素贝叶斯(Navive Bayes)给定标签的情况下，各属性相互独立</p>
+  </li>
+  <li>
+    <p><strong>Markov Property(马尔可夫性质)</strong>：</p>
+
+    <p>比如HMM里面的齐次马尔可夫假设，观测独立假设，马尔可夫链有1阶，2阶，n阶</p>
+  </li>
+  <li>
+    <p><strong>条件独立性假设</strong>:</p>
+
+    <p>条件独立性假设是马氏性质的推广，即：$x _{A} \perp x _{B} \mid x _{C}$ 其中$x _{A}, x _{B}, x _{C}$是集合，且不相交</p>
+  </li>
+</ul>
+
+<h2 id="概率图模型简介">概率图模型简介</h2>
+<p>概率图模型从字面来说分为两部分，一个是概率，一个是图，图是一种工具，因此也可以叫概率模型。</p>
+
+<p>概率模型关心多维的随机变量，或者说是联合概率分布$p \left ( x _{1}, x _{2}, … x _{p}\right )$。</p>
+
+<p>条件独立性假设是概率图模型中的一个核心概念，无论是有向图还是无向图都要有效表达出条件独立性。</p>
+
+<p>概率图模型的</p>
+
+<ul>
+  <li>Representation</li>
+  <li>Inference</li>
+  <li>Learning</li>
+</ul>
+
+<h2 id="representation">Representation</h2>
+
+<ol>
+  <li>有向图 <strong>Beyesian Network</strong></li>
+  <li>无向图 <strong>Markov Network</strong></li>
+  <li>高斯图 连续</li>
+</ol>
+
+<p>这两种表示都给出了独立关系和因子分解的对偶型</p>
+
+<h3 id="bayesian-network">Bayesian Network</h3>
+
+<p>链式法则：$p \left ( x _{1}, x _{2}, … x _{p}\right ) = p \left ( x _{1} \right ) \prod _{2} ^{p} p \left ( x _{i} \mid x _{1 \cdots i-1}\right )$</p>
+
+<p>因子分解：$p \left ( x _{1}, x _{2}, … x _{p}\right ) = \prod _{1} ^{p} p \left ( x _{i} \mid x _{pa(i)}\right )$</p>
+
+<p>如何从联合概率分布构建图：利用拓扑排序，若联合概率中存在$p \left (x _{i} \mid x _{j} \right )$则$j$是$i$父节点， 即在图中，条件概率用图的父节点和子节点的关系表示</p>
+
+<h4 id="如何从图中看出条件独立性">如何从图中看出条件独立性</h4>
+<h4 id="d-seperation">D Seperation</h4>
+<h4 id="markov-blanket马尔可夫毯">Markov Blanket(马尔可夫毯)</h4>
+<p>三种结构了解一下</p>
+
+<h4 id="hmm">HMM</h4>
+
+<ol>
+  <li>齐次马尔科夫性假设：即假设隐藏的马尔科夫链在任意时刻t的状态只依赖于其前一时刻的状态，与其他时刻的状态及观测无关，也与时刻t无关；齐次的意思是每一个状态和前一个状态之间服从同一个离散分布</li>
+  <li>观测独立性假设：即假设任意时刻的观测只依赖于该时刻的马尔科夫链的状态，与其他观测即状态无关。</li>
+</ol>
+
+<h3 id="markov-network">Markov Network</h3>
+
+<p>因子分解：$p \left ( x _{1}, x _{2}, … x _{p}\right ) = \frac{1}{Z}\prod _{c} \varphi _{c} \left ( x _{c}\right )$ 其中$Z = \sum _{x}\prod _{c} \varphi _{c} \left ( x _{c}\right )$</p>
+
+<p>在CRF中势函数为：</p>
+
+\[w\varphi _{c} \left ( x _{c}\right ) = exp\left \{-E(x _{c})\right \}\]
+
+<p>其中c是无向图的最大团</p>
+<ul>
+  <li>全局马尔可夫性</li>
+  <li>局部马尔可夫性</li>
+  <li>成对马尔可夫性</li>
+</ul>
+
+<p>Hammersley-Clifford定理证明了一个无向图模型的概率可以表示为定义在图上所有最大团上的势函数的乘积</p>
+
+<h2 id="inference">Inference</h2>
+
+<ol>
+  <li>精确推断
+    <ul>
+      <li>Variable Elimanation(VE)</li>
+      <li>Belief Propagation(BP) -&gt;sum-product algorithm-&gt;针对树的结构</li>
+      <li>Junction Tree Algorithm -&gt;普通图的结构</li>
+    </ul>
+  </li>
+  <li>
+    <p>近似推断</p>
+
+    <p>2.2 确定性近似 Variational Inference(变分推断)</p>
+
+    <p>2.3 随机性近似 Monte Carlo Inference Sampling -&gt;Importance Sampling -&gt;MCMC</p>
+  </li>
+</ol>
+
+<p>推断的目标：</p>
+
+<ul>
+  <li>求边缘概率</li>
+  <li>求条件概率</li>
+  <li>MAP Inference</li>
+</ul>
+
+<h2 id="learning">Learning</h2>
+<ol>
+  <li>
+    <p>参数学习</p>
+
+    <p>1.1 完备数据</p>
+
+    <p>1.2 隐变量 EM</p>
+  </li>
+  <li>
+    <p>结构学习</p>
+  </li>
+</ol>
+
+<h2 id="道德图">道德图</h2>
+<p>$p(a,b,c)=p(a)p(b \mid a)p(c \mid b)$</p>
+
+<p>$p(a,b,c)=p(c)p(c \mid a)p(c \mid b)$</p>
+
+<p>$p(a,b,c)=p(a)p(b)p(c \mid a,b)$</p>
+
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>Blog</li>
+          <li><a href="mailto:wdkrgst@gmail.com">wdkrgst@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text"></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

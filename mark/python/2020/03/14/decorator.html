@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>python 装饰器</title>
+  <meta name="description" content="python中的函数和变量一样，可以赋值给一个变量如：def func():    print("hello")fun_p = func">
+
+  <link rel="stylesheet" href="/mark/css/main.css">
+  <link rel="stylesheet" href="/mark/css/syntax.css">
+  <link rel="shortcut icon" href="/mark/favicon.ico">
+  <link rel="canonical" href="http://localhost:4000/mark/python/2020/03/14/decorator.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/mark/feed.xml" title="Blog" />
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>python 装饰器 | Blog</title>
+<meta name="generator" content="Jekyll v4.2.1" />
+<meta property="og:title" content="python 装饰器" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="python中的函数和变量一样，可以赋值给一个变量如： def func(): print(&quot;hello&quot;) fun_p = func" />
+<meta property="og:description" content="python中的函数和变量一样，可以赋值给一个变量如： def func(): print(&quot;hello&quot;) fun_p = func" />
+<link rel="canonical" href="http://localhost:4000/mark/python/2020/03/14/decorator.html" />
+<meta property="og:url" content="http://localhost:4000/mark/python/2020/03/14/decorator.html" />
+<meta property="og:site_name" content="Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-03-14T06:49:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="python 装饰器" />
+<script type="application/ld+json">
+{"description":"python中的函数和变量一样，可以赋值给一个变量如： def func(): print(&quot;hello&quot;) fun_p = func","headline":"python 装饰器","dateModified":"2020-03-14T06:49:00+08:00","datePublished":"2020-03-14T06:49:00+08:00","url":"http://localhost:4000/mark/python/2020/03/14/decorator.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/mark/python/2020/03/14/decorator.html"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$', '$'], ["$", "$"] ],
+        displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+      //,
+      //displayAlign: "left",
+      //displayIndent: "2em"
+    });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/mark/">Blog</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/mark/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">python 装饰器</h1>
+    <p class="post-meta">Mar 14, 2020</p>
+  </header>
+
+  <article class="post-content">
+    <p>python中的函数和变量一样，可以赋值给一个变量如：</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">func</span><span class="p">():</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"hello"</span><span class="p">)</span>
+<span class="n">fun_p</span> <span class="o">=</span> <span class="n">func</span>
+</code></pre></div></div>
+
+<p>所以python中的函数也可以当作函数的参数传入。</p>
+
+<p>python 中的函数也可以嵌套定义</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">func1</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">func2</span><span class="p">():</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"func2:"</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">func2</span>
+
+<span class="n">fun_p</span> <span class="o">=</span> <span class="n">func1</span><span class="p">(</span><span class="s">"go"</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">fun_p</span><span class="p">())</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">&gt; func2: go</code></p>
+
+<p>并且内部的函数还可以使用外部函数的变量</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">wrap_func</span><span class="p">():</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"before"</span><span class="p">)</span>
+        <span class="n">func</span><span class="p">()</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"after"</span><span class="p">)</span>  
+    <span class="k">return</span> <span class="n">wrap_func</span>
+</code></pre></div></div>
+
+<p>这里已经实现了一个装饰者的设计模式了。</p>
+
+<p>这样调用：</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">func</span> <span class="o">=</span> <span class="n">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>fun 就被装饰了，python提供了一个更好的简便写法来写上述语句那就是</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">@</span><span class="n">decorator</span>
+<span class="k">def</span> <span class="nf">func</span><span class="p">():</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"hello"</span><span class="p">)</span>
+<span class="n">fun_p</span> <span class="o">=</span> <span class="n">func</span>
+</code></pre></div></div>
+<p><code class="language-plaintext highlighter-rouge">@</code>符号是装饰器的语法糖，</p>
+
+<p>但是这样的装饰器还有一点点问题，那就是</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">print</span><span class="p">(</span><span class="n">fun_p</span><span class="p">.</span><span class="n">__name__</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">&gt; wrap_func</code></p>
+
+<p>为了解决这个问题，python的functools里有一个装饰器@wraps(func)，我们只要这样定义装饰器就没问题了：</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="o">@</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrap_func</span><span class="p">():</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"before"</span><span class="p">)</span>
+        <span class="n">func</span><span class="p">()</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"after"</span><span class="p">)</span>  
+    <span class="k">return</span> <span class="n">wrap_func</span>
+</code></pre></div></div>
+
+<p>@wraps接受的是传入的函数变量，并加入了复制函数名称、注释文档、参数列表等等的功能。这可以让我们在被装饰的函数拥有装饰之前的函数的属性。</p>
+
+<p>如果装饰器是要装饰一个带有参数的函数，那么定义如下：</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="o">@</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrap_func</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"before"</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">func</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"after"</span><span class="p">)</span>  
+    <span class="k">return</span> <span class="n">wrap_func</span>
+<span class="o">@</span><span class="n">decorator</span>
+<span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"func"</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+<span class="n">func</span><span class="p">(</span><span class="s">"go"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt;before
+&gt;go
+&gt;func go
+&gt;after
+</code></pre></div></div>
+
+<p>可以看到上面定义的装饰器在使用时是不带参数的，如@decorator， 但是@wraps 确可以接受一个参数，这是怎么做到的呢，定义decorator时已经传递了一个函数作为参数，难道再传递一个？可以试试会发生什么，^_^。
+一个有效的做法是，再包裹一层就可以了</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span class="k">def</span> <span class="nf">decorator_out</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">"decorator_out"</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="o">@</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">wrap_func</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">"before"</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">func</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">"after"</span><span class="p">)</span>  
+        <span class="k">return</span> <span class="n">wrap_func</span>
+    <span class="k">return</span> <span class="n">decorator</span>
+<span class="o">@</span><span class="n">decorator_out</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">"decorator_out"</span><span class="p">)</span> <span class="c1"># 此处name参数为可选
+</span><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"func"</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+<span class="n">func</span><span class="p">(</span><span class="s">"go"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt;before
+&gt;go
+&gt;decorator_out
+&gt;func go
+&gt;after
+</code></pre></div></div>
+
+<p>此外也有更加灵活的装饰器类</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+ 
+<span class="k">class</span> <span class="nc">logit</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logfile</span><span class="o">=</span><span class="s">'out.log'</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">logfile</span> <span class="o">=</span> <span class="n">logfile</span>
+ 
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+        <span class="o">@</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">wrapped_function</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="n">log_string</span> <span class="o">=</span> <span class="n">func</span><span class="p">.</span><span class="n">__name__</span> <span class="o">+</span> <span class="s">" was called"</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">log_string</span><span class="p">)</span>
+            <span class="c1"># 打开logfile并写入
+</span>            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">logfile</span><span class="p">,</span> <span class="s">'a'</span><span class="p">)</span> <span class="k">as</span> <span class="n">opened_file</span><span class="p">:</span>
+                <span class="c1"># 现在将日志打到指定的文件
+</span>                <span class="n">opened_file</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">log_string</span> <span class="o">+</span> <span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="p">)</span>
+            <span class="c1"># 现在，发送一个通知
+</span>            <span class="bp">self</span><span class="p">.</span><span class="n">notify</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">wrapped_function</span>
+ 
+    <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># logit只打日志，不做别的
+</span>        <span class="k">pass</span>
+</code></pre></div></div>
+
+<p>并且它可以被继承：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">email_logit</span><span class="p">(</span><span class="n">logit</span><span class="p">):</span>
+    <span class="s">'''
+    一个logit的实现版本，可以在函数调用时发送email给管理员
+    '''</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s">'admin@myproject.com'</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">email</span> <span class="o">=</span> <span class="n">email</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">email_logit</span><span class="p">,</span> <span class="bp">self</span><span class="p">).</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+ 
+    <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># 发送一封email到self.email
+</span>        <span class="c1"># 这里就不做实现了
+</span>        <span class="k">pass</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">@</span><span class="n">logit</span><span class="p">()</span> <span class="c1"># 此处logfile参数为可选，相当于构造logit
+</span><span class="k">def</span> <span class="nf">myfunc1</span><span class="p">():</span>
+    <span class="k">pass</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">myfunc1</span><span class="p">()</span>
+</code></pre></div></div>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>Blog</li>
+          <li><a href="mailto:wdkrgst@gmail.com">wdkrgst@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text"></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

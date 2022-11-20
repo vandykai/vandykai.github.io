@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Multi Label Encoder</title>
+  <meta name="description" content="Multi-Hot 编码效率对比">
+
+  <link rel="stylesheet" href="/mark/css/main.css">
+  <link rel="stylesheet" href="/mark/css/syntax.css">
+  <link rel="shortcut icon" href="/mark/favicon.ico">
+  <link rel="canonical" href="http://localhost:4000/mark/ai/2021/02/24/multi-label-encoder.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/mark/feed.xml" title="Blog" />
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Multi Label Encoder | Blog</title>
+<meta name="generator" content="Jekyll v4.2.1" />
+<meta property="og:title" content="Multi Label Encoder" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Multi-Hot 编码效率对比" />
+<meta property="og:description" content="Multi-Hot 编码效率对比" />
+<link rel="canonical" href="http://localhost:4000/mark/ai/2021/02/24/multi-label-encoder.html" />
+<meta property="og:url" content="http://localhost:4000/mark/ai/2021/02/24/multi-label-encoder.html" />
+<meta property="og:site_name" content="Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-02-24T01:00:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Multi Label Encoder" />
+<script type="application/ld+json">
+{"description":"Multi-Hot 编码效率对比","headline":"Multi Label Encoder","dateModified":"2021-02-24T01:00:00+08:00","datePublished":"2021-02-24T01:00:00+08:00","url":"http://localhost:4000/mark/ai/2021/02/24/multi-label-encoder.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/mark/ai/2021/02/24/multi-label-encoder.html"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$', '$'], ["$", "$"] ],
+        displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+      //,
+      //displayAlign: "left",
+      //displayIndent: "2em"
+    });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/mark/">Blog</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/mark/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Multi Label Encoder</h1>
+    <p class="post-meta">Feb 24, 2021</p>
+  </header>
+
+  <article class="post-content">
+    <h3 id="multi-hot-编码效率对比">Multi-Hot 编码效率对比</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="n">n_class</span> <span class="o">=</span> <span class="mi">800</span>
+<span class="n">arr</span> <span class="o">=</span> <span class="p">[[</span><span class="n">random</span><span class="p">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">n_class</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">random</span><span class="p">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">))]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">random</span><span class="p">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">1000</span><span class="p">))]</span>
+<span class="k">def</span> <span class="nf">f1</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">n_class</span><span class="p">):</span>
+    <span class="n">arr</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ex</span> <span class="k">else</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_class</span><span class="p">)]</span> <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="n">arr</span><span class="p">]</span>
+    <span class="n">var</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="p">.</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">var</span>
+
+<span class="k">def</span> <span class="nf">f2</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">n_class</span><span class="p">):</span>
+    <span class="n">var</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">arr</span><span class="p">),</span> <span class="n">n_class</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">arr</span><span class="p">)):</span>
+        <span class="n">var</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">var</span>
+
+<span class="k">def</span> <span class="nf">f3</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">n_class</span><span class="p">):</span>
+    <span class="n">arr</span> <span class="o">=</span> <span class="p">[</span><span class="n">torch</span><span class="p">.</span><span class="n">LongTensor</span><span class="p">([</span><span class="n">ex</span><span class="p">])</span> <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="n">arr</span><span class="p">]</span>
+    <span class="n">var</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">cat</span><span class="p">([</span><span class="n">torch</span><span class="p">.</span><span class="n">nn</span><span class="p">.</span><span class="n">functional</span><span class="p">.</span><span class="n">one_hot</span><span class="p">(</span><span class="n">ex</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="n">n_class</span><span class="p">).</span><span class="nb">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">).</span><span class="nb">float</span><span class="p">()</span> <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="n">arr</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">var</span>
+
+<span class="o">%</span><span class="n">timeit</span> <span class="n">f1</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">n_class</span><span class="p">)</span>
+<span class="o">%</span><span class="n">timeit</span> <span class="n">f2</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">n_class</span><span class="p">)</span>
+<span class="o">%</span><span class="n">timeit</span> <span class="n">f3</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">n_class</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># output
+</span><span class="mf">29.6</span> <span class="n">ms</span> <span class="err">±</span> <span class="mi">403</span> <span class="n">µs</span> <span class="n">per</span> <span class="n">loop</span> <span class="p">(</span><span class="n">mean</span> <span class="err">±</span> <span class="n">std</span><span class="p">.</span> <span class="n">dev</span><span class="p">.</span> <span class="n">of</span> <span class="mi">7</span> <span class="n">runs</span><span class="p">,</span> <span class="mi">10</span> <span class="n">loops</span> <span class="n">each</span><span class="p">)</span>
+<span class="mf">2.76</span> <span class="n">ms</span> <span class="err">±</span> <span class="mi">144</span> <span class="n">µs</span> <span class="n">per</span> <span class="n">loop</span> <span class="p">(</span><span class="n">mean</span> <span class="err">±</span> <span class="n">std</span><span class="p">.</span> <span class="n">dev</span><span class="p">.</span> <span class="n">of</span> <span class="mi">7</span> <span class="n">runs</span><span class="p">,</span> <span class="mi">100</span> <span class="n">loops</span> <span class="n">each</span><span class="p">)</span>
+<span class="mf">8.25</span> <span class="n">ms</span> <span class="err">±</span> <span class="mi">139</span> <span class="n">µs</span> <span class="n">per</span> <span class="n">loop</span> <span class="p">(</span><span class="n">mean</span> <span class="err">±</span> <span class="n">std</span><span class="p">.</span> <span class="n">dev</span><span class="p">.</span> <span class="n">of</span> <span class="mi">7</span> <span class="n">runs</span><span class="p">,</span> <span class="mi">100</span> <span class="n">loops</span> <span class="n">each</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h1 id="结论">结论</h1>
+<p>可以看出第二种方法最好</p>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>Blog</li>
+          <li><a href="mailto:wdkrgst@gmail.com">wdkrgst@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text"></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

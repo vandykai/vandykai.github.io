@@ -12,9 +12,42 @@
   <link rel="stylesheet" href="/mark/css/main.css">
   <link rel="stylesheet" href="/mark/css/syntax.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://www.dosrc.com/mark/linux-3.18.6/2016/02/25/linux-kernel-working-process-of-assembly-code.html">
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
-  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <link rel="canonical" href="http://localhost:4000/mark/linux-3.18.6/2016/02/25/linux-kernel-working-process-of-assembly-code.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
+  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/mark/feed.xml" title="Blog" />
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Linux Kernel - C语言对应汇编源代码分析 | Blog</title>
+<meta name="generator" content="Jekyll v4.2.1" />
+<meta property="og:title" content="Linux Kernel - C语言对应汇编源代码分析" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="重点知识总结 CS(code segment register)是代码段寄存器,CPU在实际取指令时根据cs:eip来准确定位一个指令。 b，w，l，p，分别指8位，16位，32位，64位，如movl指移动32位的数据。 AT&amp;T汇编格式与Intel汇编格式略有不同，Linux使用的是AT&amp;T汇编格式。 eip寄存器不能被直接修改，只能通过特殊指令间接修改，如通过call与ret指令。 函数的返回值默认使用eax寄存器存储返回给上一级函数 汇编中对应的方法过程如下" />
+<meta property="og:description" content="重点知识总结 CS(code segment register)是代码段寄存器,CPU在实际取指令时根据cs:eip来准确定位一个指令。 b，w，l，p，分别指8位，16位，32位，64位，如movl指移动32位的数据。 AT&amp;T汇编格式与Intel汇编格式略有不同，Linux使用的是AT&amp;T汇编格式。 eip寄存器不能被直接修改，只能通过特殊指令间接修改，如通过call与ret指令。 函数的返回值默认使用eax寄存器存储返回给上一级函数 汇编中对应的方法过程如下" />
+<link rel="canonical" href="http://localhost:4000/mark/linux-3.18.6/2016/02/25/linux-kernel-working-process-of-assembly-code.html" />
+<meta property="og:url" content="http://localhost:4000/mark/linux-3.18.6/2016/02/25/linux-kernel-working-process-of-assembly-code.html" />
+<meta property="og:site_name" content="Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2016-02-25T18:42:00+08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Linux Kernel - C语言对应汇编源代码分析" />
+<script type="application/ld+json">
+{"description":"重点知识总结 CS(code segment register)是代码段寄存器,CPU在实际取指令时根据cs:eip来准确定位一个指令。 b，w，l，p，分别指8位，16位，32位，64位，如movl指移动32位的数据。 AT&amp;T汇编格式与Intel汇编格式略有不同，Linux使用的是AT&amp;T汇编格式。 eip寄存器不能被直接修改，只能通过特殊指令间接修改，如通过call与ret指令。 函数的返回值默认使用eax寄存器存储返回给上一级函数 汇编中对应的方法过程如下","headline":"Linux Kernel - C语言对应汇编源代码分析","dateModified":"2016-02-25T18:42:00+08:00","datePublished":"2016-02-25T18:42:00+08:00","url":"http://localhost:4000/mark/linux-3.18.6/2016/02/25/linux-kernel-working-process-of-assembly-code.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/mark/linux-3.18.6/2016/02/25/linux-kernel-working-process-of-assembly-code.html"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$', '$'], ["$", "$"] ],
+        displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+      //,
+      //displayAlign: "left",
+      //displayIndent: "2em"
+    });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
 
 </head>
 
@@ -40,6 +73,10 @@
         
           
           <a class="page-link" href="/mark/about/">About</a>
+          
+        
+          
+        
           
         
           
