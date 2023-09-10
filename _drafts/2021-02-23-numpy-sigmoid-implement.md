@@ -8,7 +8,7 @@ tags: [AI， NLP]
 
 ---
 
-```python
+~~~python
 import random
 import numpy as np
 
@@ -57,10 +57,10 @@ def sigmoid_f4(x):
 %timeit sigmoid_f2(arr)
 %timeit sigmoid_f3(arr)
 %timeit sigmoid_f4(arr)
-```
+~~~
 
 
-```python
+~~~python
 # output
 45.9 ms ± 644 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
 635 µs ± 11.7 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
@@ -69,7 +69,7 @@ def sigmoid_f4(x):
 /lib/python3.6/site-packages/ipykernel_launcher.py:42: RuntimeWarning: overflow encountered in exp
 /lib/python3.6/site-packages/ipykernel_launcher.py:42: RuntimeWarning: invalid value encountered in true_divide
 1.03 ms ± 14.5 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
-```
+~~~
 
 # 结论
 可以看出第二种方法最好，且方法四由于`np.where`两个分支的值都会计算，所以会导致警告，虽然对结果没影响

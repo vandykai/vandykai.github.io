@@ -22,7 +22,7 @@ TextTiling 将一整个无段落的文章，分割成语意群。
 2. 计算相似度
   2.1. 对步骤1得到的等长的虚拟句子列表，按照超参数k，从第一句开始以2*k大小进行滑窗，分别计算前k句和后k句的相似度。具体实现如下：
  
- ```python3
+ ~~~python3
   import collections
   import numpy as np
   def calculate_sims(pseudosents):
@@ -51,7 +51,7 @@ TextTiling 将一整个无段落的文章，分割成语意群。
       return sims
   # pseudosents = np.random.randint(0,9,(10,5))
   # calculate_sims(pseudosents)
-```
+  ~~~
 
 3. 切分点计算
   3.1.  通过步骤2 可以得到一个长度等于滑窗次数的一纬相似度列表，对于该相似度列表，寻找谷底或者叫局部最小值，即值小于左右两边数的位置。该位置就是切分点

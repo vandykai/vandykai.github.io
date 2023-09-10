@@ -41,7 +41,7 @@ asymmetric label noise (i.e. class-conditional)
 
 
 源代码：
-```
+~~~
 class ELRLoss(nn.Module):
     def __init__(self, num_examp, n_classes, lambda_ = 3, beta=0.7, device=None):
         super().__init__()
@@ -59,7 +59,7 @@ class ELRLoss(nn.Module):
         elr_reg = ((1-(self.target[index] * y_pred).sum(dim=1)).log()).mean()
         final_loss = ce_loss +  self.lambda_ *elr_reg
         return final_loss
-```
+~~~
 
 It has been shown that DNNs tend to learn simple patterns first before fitting label noise 
 
@@ -99,7 +99,7 @@ MixUp阶段：
 ![picture 12](../assets/images/2022-07-25-noisy-label/11.png)  
 
 
-```
+~~~
 def linear_rampup(current, warm_up, rampup_length=16):
     current = np.clip((current-warm_up) / rampup_length, 0.0, 1.0)
     return args.lambda_u*float(current)
@@ -224,4 +224,4 @@ def train(epoch,net,net2,optimizer,labeled_trainloader,unlabeled_trainloader):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-```
+~~~

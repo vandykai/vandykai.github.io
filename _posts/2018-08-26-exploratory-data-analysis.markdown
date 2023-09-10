@@ -9,7 +9,7 @@ tags: [AI, machine-learning]
 ---
 
 ## 基本分析
-```
+~~~
 root_path =r'/home/kesci/input/titanic/'
 train = pd.read_csv(root_path + 'train.csv')
 test = pd.read_excel(root_path + 'test.csv')
@@ -18,7 +18,7 @@ train.describe()
 train.count() != train.count().max() 看那些值有缺失
 train.describe().loc['count']==train.describe().loc['count'].max() # 看那些数值属性值有缺失
 train.describe().loc['min']==train.describe().loc['max'] # 查看那些数值属性是固定值
-```
+~~~
 ## 缺失值填充
 １. 对于Category型数据用众数进行填充
 

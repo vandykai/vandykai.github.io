@@ -21,8 +21,8 @@ tags: [AI， NLP]
   `#font.sans-serif: Microsoft YaHei Mono, DejaVu Sans,.......`
   4.2.  临时修改：
   设置
-  ```
+  ~~~
     import matplotlib.pyplot as plt
     plt.rcParams['font.sans-serif'] = ['Microsoft YaHei Mono']
     plt.rcParams['axes.unicode_minus'] = False
-  ```
+  ~~~

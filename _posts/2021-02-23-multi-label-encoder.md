@@ -10,7 +10,7 @@ tags: [AI， NLP]
 
 ### Multi-Hot 编码效率对比
 
-```python
+~~~python
 import random
 import torch
 
@@ -35,14 +35,14 @@ def f3(arr, n_class):
 %timeit f1(arr, n_class)
 %timeit f2(arr, n_class)
 %timeit f3(arr, n_class)
-```
+~~~
 
-```python
+~~~python
 # output
 29.6 ms ± 403 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
 2.76 ms ± 144 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 8.25 ms ± 139 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
-```
+~~~
 
 # 结论
 可以看出第二种方法最好

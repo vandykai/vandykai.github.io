@@ -48,25 +48,25 @@ tags: [linux, linux-kernel, experiment]
 
 ### 使用gdb跟踪调试内核，其中的rootfs.img 为自制的根文件系统
 
-```
+~~~
 qemu -kernel linux-3.18.6/arch/x86/boot/bzImage -initrd rootfs.img -s -S # 关于-s和-S选项的说明：
 # -S freeze CPU at startup (use ’c’ to start execution)
 # -s shorthand for -gdb tcp::1234 若不想使用1234端口，则可以使用-gdb tcp:xxxx来取代-s选项
-```
+~~~
 
 另开一个shell窗口
 
-```
+~~~
 gdb
 （gdb）file linux-3.18.6/vmlinux # 在gdb界面中targe remote之前加载符号表
 （gdb）target remote:1234 # 建立gdb和gdbserver之间的连接,按c 让qemu上的Linux继续运行
 （gdb）break start_kernel # 断点的设置可以在target remote之前，也可以在之后
-```
+~~~
 
 ## 实验分析
 ### main.c的部分代码如下（省略号为略去的代码）
 
-```C
+~~~c
 asmlinkage __visible void __init start_kernel(void)
 {
     ...
@@ -79,11 +79,11 @@ asmlinkage __visible void __init start_kernel(void)
     ...
     rest_init();
 }
-```
+~~~
 
 ### rest_init 函数代码如下
 
-```C
+~~~c
 static noinline void __init_refok rest_init(void)
 {
     int pid;
@@ -111,7 +111,7 @@ static noinline void __init_refok rest_init(void)
     /* Call into cpu_idle with preempt disabled */
     cpu_startup_entry(CPUHP_ONLINE);
 }
-```
+~~~
 
 ### 代码分析
 

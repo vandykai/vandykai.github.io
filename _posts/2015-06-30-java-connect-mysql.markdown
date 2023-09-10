@@ -10,7 +10,7 @@ tags: [j2ee, mysql]
 2. 添加jar包
 3. 完整代码如下
 
-    ~~~Java
+    ~~~java
 
     import java.sql.Connection;
     import java.sql.DriverManager;

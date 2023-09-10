@@ -12,7 +12,7 @@ tags: [gramar, c]
 
 ### GCC
 
-~~~C
+~~~c
  __asm__(
     汇编语句模版：
     输出部分：
@@ -31,40 +31,40 @@ tags: [gramar, c]
 
 ### Visual C++
 
-```
+~~~
 __asm 汇编指令 [ ; ]
 __asm { 汇编指令 } [ ; ]
-```
+~~~
 同样asm前面是两条下划线，后面的方括号内容表示分号可有可无。
 
 1. 组成一块地用
 
-    ```
+    ~~~
     __asm {
        mov al, 2
        mov dx, 0xD007
        out dx, al
     }
-    ```
+    ~~~
 2. 分条的使用
 
-    ```
+    ~~~
     __asm mov al, 2
     __asm mov dx, 0xD007
     __asm out dx, al
-    ```
+    ~~~
 
     也可以写在同一行
 
-    ```
+    ~~~
     __asm mov al, 2   __asm mov dx, 0xD007   __asm out dx, al
-    ```
+    ~~~
 
 ### Turbo C
 
 1. 使用预处理程序的伪指令`#asm`和`#endasm`,`#asm`用来开始一个汇编程序块，而`#endasm`指令用于该块的结束。
 
-    ```
+    ~~~
     mul(a,b)
     int a,b;
     {
@@ -73,19 +73,19 @@ __asm { 汇编指令 } [ ; ]
            imul ax word ptr 10[bp]
        #endasm
     }
-    ```
+    ~~~
 
 2. 使用asm语句
 格式：`asm<汇编语句>`
 
-    ```
+    ~~~
     mul(a,b)
     int a,b;
     {
         asm   mov ax,word ptr 8[bp]
         asm   imul ax word ptr 10[bp]
     }
-    ```
+    ~~~
 
 > Visual C++ 和 Turbo C语法转自[http://bbs.51cto.com/thread-652061-1.html][1]
 

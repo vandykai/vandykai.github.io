@@ -60,7 +60,7 @@ LSE(x)
 $$
 
 有一种比较有意思的想法，softmax其实是在求最大值的位置，其名字应该是softargmax，logsumexp其实是在类似于求最大值:
-```python
+~~~python
 x = torch.tensor([1.0,3.0,6.0])
 torch.argmax(x),torch.softmax(x, dim=0)
 # output
@@ -68,7 +68,7 @@ torch.argmax(x),torch.softmax(x, dim=0)
 torch.logsumexp(x, dim=0)
 # output
 # tensor(6.0550)
-```
+~~~
 
 对于$log(X+\delta)$，若$\delta$远小于$X$，则根据泰勒展开到一阶：
 $$

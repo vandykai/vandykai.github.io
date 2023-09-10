@@ -14,7 +14,7 @@ tags: [design-pattern, singleton]
 3. 多线程安全强制型单例模式的实现方式  
     饿汉式：
 
-    ~~~ Java
+    ~~~java
     // 饿汉式
     public class Singleton {
 
@@ -30,7 +30,7 @@ tags: [design-pattern, singleton]
     ~~~
     双检测锁机制的单例模式：
 
-    ~~~ Java
+    ~~~java
     // 双检测锁机制的单例模式
     public class Singleton {
 
@@ -55,14 +55,14 @@ tags: [design-pattern, singleton]
 
 4. 多线程安全非强制性单例模式的实现方式
 
-    ~~~~ Java
+    ~~~java
     public class Singleton {
         // empty
     }
 
-    ~~~~
+    ~~~
 
-    ~~~~ Java
+    ~~~java
     import java.util.HashMap;
     import java.util.Map;
 

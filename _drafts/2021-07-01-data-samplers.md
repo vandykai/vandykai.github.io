@@ -11,7 +11,7 @@ tags: [AI，NLP，Sampler]
 
 train和test有类别平衡，每个mini batch也可以做类别平衡
 
-```
+~~~
 from torch.utils.data import Sampler,SequentialSampler,RandomSampler,SubsetRandomSampler
 
 class weightedsampler(Sampler):
@@ -33,7 +33,7 @@ class weightedsampler(Sampler):
 
     def __len__(self):
         return self.num_samples
-```
+~~~
     
 
 

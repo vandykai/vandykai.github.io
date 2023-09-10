@@ -12,31 +12,31 @@ tags: [web, ruby, ruby-on-rails]
 1. 安装ruby
 2. 安装sqlite3
 
-    ```
+    ~~~
     sudo apt-get install sqlite3
     sudo apt-get install libsqlite3-dev
-    ```
+    ~~~
 
 3. 安装rails
 
-    ```
+    ~~~
     gem install rails
     rails --version
-    ```
+    ~~~
 4. 使用rails创建博客
 
-    ```
+    ~~~
     rails new blog
-    ```
+    ~~~
 5. 启动web服务器
 
-    ```
+    ~~~
     cd blog
     bin/rails server
-    ```
+    ~~~
 
 ## 错误及处理
-```
+~~~
 /var/lib/gems/2.3.0/gems/bundler-1.16.1/lib/bundler/runtime.rb:84:in `rescue in block (2 levels) in require': There was an error while trying to load the gem 'uglifier'. (Bundler::GemRequireError)
 Gem Load Error is: Could not find a JavaScript runtime. See https://github.com/rails/execjs for a list of available runtimes.
 Backtrace for gem load error is:
@@ -57,8 +57,8 @@ Backtrace for gem load error is:
 ...
 ...
 
-```
-```
+~~~
+~~~
 原因：没有JavaScript runtime
 解决方法：sudo apt-get install nodejs
-```
+~~~

@@ -19,7 +19,7 @@ tags: [j2ee, web-note, exception]
 方法三实际代码如下：
 
 
-~~~Java
+~~~java
 public class UserService {
 
     public User login(String name, String password) throws IllegalParamterException, ServiceException {
@@ -46,7 +46,7 @@ public class UserService {
 
 ~~~
 
-~~~Java
+~~~java
 protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
     String name = request.getParameter("name");

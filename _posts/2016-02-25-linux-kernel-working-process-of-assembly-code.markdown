@@ -16,13 +16,13 @@ tags: [linux, linux-kernel, experiment]
 - 函数的返回值默认使用eax寄存器存储返回给上一级函数
 - 汇编中对应的方法过程如下
 
-    ```C
+    ~~~c
     method:
         enter
         // Real Code Here
         leave
         ret
-    ```
+    ~~~
 
 - 指令实际做的事情列表：
 
@@ -55,13 +55,13 @@ C程序源代码如下图
 ![main.s][2]
 从图中可以看出，C程序方法对应的汇编方法一般过程如下：
 
-``` C
+~~~c
 method:
         enter
         // Real Code Here
         leave
         ret
-```
+~~~
 若方法中不再调用另一方法也即汇编代码中不调用call语句，那么`leave`语句可优化为`popl %ebp`。
 
 参数传递通过堆栈完成，一个参数，则通过`8(%ebp)`取参数，两个参数则通过`12(%ebp)`, `8(*ebp)`分别取出第一和第二个参数。

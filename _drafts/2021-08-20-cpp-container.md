@@ -11,7 +11,7 @@ tags: [C++, CPP]
 ## 顺序容器
 ### vector
 
-```cpp
+~~~cpp
 #include <vector>
 #include <iostream>
 using namespace std;
@@ -35,7 +35,7 @@ int main() {
     cout<<vVector[1]<<endl; // 获取任意位置元素
     cout<<vVector.at(1)<<endl; // 获取任意位置元素
 }
-```
+~~~
 
 ### deque
 
@@ -43,7 +43,7 @@ int main() {
 
 ## 关联容器
 ### set
-```cpp
+~~~cpp
 #include <set>
 #include <iostream>
 using namespace std;
@@ -60,9 +60,9 @@ int main() {
     cout<<*sSet.begin()<<endl; // 集合中最小的值
     cout<<*sSet.rbegin()<<endl; // 集合中最大的值
 }
-```
+~~~
 ### multiset
-```cpp
+~~~cpp
 #include <set>
 #include <iostream>
 using namespace std;
@@ -78,13 +78,13 @@ int main() {
     cout<<*sSet.begin()<<endl; // 集合中最小的值
     cout<<*sSet.rbegin()<<endl; // 集合中最大的值
 }
-```
+~~~
 ### map
 ### multimap
 
 ## 容器适配器
 ### stack
-```cpp
+~~~cpp
 #include <stack>
 #include <iostream>
 using namespace std;
@@ -97,11 +97,11 @@ int main() {
     cout<<sStack.empty()<<endl; // 队列是否为空
     sStack.pop(); // 删除堆栈首元素
 }
-```
+~~~
 
 ### queue
 
-```cpp
+~~~cpp
 #include  <queue>
 #include  <iostream>
     using  namespace  std;
@@ -115,11 +115,11 @@ int main() {
     cout<<qQueue.empty()<<endl; // 队列是否为空
     qQueue.pop(); // 删除队首元素
 }
-```
+~~~
 
 ### priority_queue (优先队列，大顶堆)
 
-```cpp
+~~~cpp
 #include <queue>
 #include <iostream>
 using namespace std;
@@ -133,4 +133,4 @@ int main() {
     pqQueue.pop(); // 删除大顶堆最大元素
     cout<<pqQueue.top()<<endl; // 获取大顶堆最大元素，不删除
 }
-```
+~~~

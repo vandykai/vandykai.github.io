@@ -14,7 +14,7 @@ tags: [gramar, c]
 
 **libexample.h**
 
-``` C
+~~~c
 #ifndef _LIB_EXAMPLE_H_
 #define _LIB_EXAMPLE_H_
 #define SUCCESS 0
@@ -27,18 +27,18 @@ int LibApi();
 }
 #endif
 #endif /* _LIB_EXAMPLE_H_ */
-```
+~~~
 
 **libexample.c**
 
-```C
+~~~c
 #include <stdio.h>
 #include "libexample.h"
 int LibApi() {
     printf("This Is A Library Api!\n");
     return SUCCESS;
 }
-```
+~~~
 
 `gcc -shared libexample.c -o liblibexample.so -m32`
 
@@ -47,7 +47,7 @@ int LibApi() {
 
 **装载时的动态链接举例**
 
-``` C
+~~~c
 #include <stdio.h>
 #include "libexample.h"
 int main() {
@@ -55,19 +55,19 @@ int main() {
   LibApi();
   return SUCCESS;
 }
-```
-```
+~~~
+~~~
 gcc main.c -o main -L/path/to/your/dir -llibexample -m32
 # 编译main，/path/to/your/dir可用.代替。
 # 注意这里只提供libexample的-L（库对应的接口头文件所在目录）和-l（库名，如liblibexample.so去掉lib和.so的部分）。
 $ export LD_LIBRARY_PATH=$PWD
 # 将当前目录加入默认路径，否则main找不到依赖的库文件，当然也可以将库文件copy到默认路径下。
 $ ./main
-```
+~~~
 
 **运行时的动态链接举例**
 
-``` C
+~~~c
 #include <stdio.h>
 #include <dlfcn.h>
 
@@ -90,11 +90,11 @@ int main() {
     dlclose(handle);
     return SUCCESS;
 }
-```
-```
+~~~
+~~~
 gcc main.c -o main -ldl -m32
 # -ldl选项，表示生成的对象模块使用运行时动态链接。
 $ export LD_LIBRARY_PATH=$PWD
 # 将当前目录加入默认路径，否则main找不到依赖的库文件，当然也可以将库文件copy到默认路径下。
 $ ./main
-```
+~~~

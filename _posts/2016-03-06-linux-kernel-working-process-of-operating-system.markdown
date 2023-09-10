@@ -16,7 +16,7 @@ tags: [linux, linux-kernel, experiment]
 
 ## 实验分析
 ### 自定义进程定义的代码如下
-```C
+~~~c
 #define MAX_TASK_NUM        4
 #define KERNEL_STACK_SIZE   1024*8
 
@@ -35,9 +35,9 @@ typedef struct PCB{
     unsigned long    task_entry;
     struct PCB *next;
 }tPCB;
-```
+~~~
 ### 自定义进程切换的核心代码如下
-```C
+~~~c
 if(next->state == 0) {
     /* -1 unrunnable, 0 runnable, >0 stopped */
     my_current_task = next;
@@ -72,7 +72,7 @@ if(next->state == 0) {
             : "m" (next->thread.sp),"m" (next->thread.ip)
     );
 }
-```
+~~~
 ### 自定义进程切换代码简析
 计算机硬件三大法宝：存储程序计算机，函数调用堆栈，中断
 

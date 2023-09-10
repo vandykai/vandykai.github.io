@@ -28,7 +28,7 @@ $$
 
 **相关代码**：
 
-```python
+~~~python
 from scipy.misc import derivative
 def focal_loss(gamma, alpha=None):
     def custom_loss(y_true, y_pred):
@@ -57,11 +57,11 @@ def ce_loss():
         hess = derivative(partial_CE, y_pred, n=2, dx=1e-6)
         return grad, hess
     return custom_loss
-```
+~~~
 
 **绘图代码**
 
-```python
+~~~python
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -87,5 +87,5 @@ plt.ylabel('gradient')
 plt.xlabel('x_out')
 plt.title('FocalLoss gradient align end')
 plt.legend()
-```
+~~~
 

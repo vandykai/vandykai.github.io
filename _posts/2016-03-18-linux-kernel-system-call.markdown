@@ -18,18 +18,18 @@ tags: [linux, linux-kernel, experiment]
 - iret指令与中断信号（包括int指令）发生时CPU做的动作正好相反
 - 中断一般模版
 
-    ```
+    ~~~
     ;进入中断
     int指令进入到中断/系统调用
-    ```
+    ~~~
 
-    ```
+    ~~~
     ;中断处理程序一般步骤
     SAVE_ALL调用
     中断处理程序
     RESTORE_ALL调用
     iret指令
-    ```
+    ~~~
 
 - Libc库定义的一些API引用了封装例程（wrapper routine，唯一的目的就是发布系统调用），一般每个系统调用对应一个封装例程，库再用这些封装例程定义出给用户的API
 - 系统调用的三层皮`xyz`、`system_call`和`sys_xyz`,库函数中一般有trap指令或int指令，类似于一个系统中断，而系统调用是一个特殊的中断处理函数（inerrupt handler）。
@@ -65,7 +65,7 @@ tags: [linux, linux-kernel, experiment]
 
     **mkdir.c**
 
-    ```C
+    ~~~c
     #include <sys/stat.h>
     #include <sys/types.h>
     #include <stdio.h>
@@ -77,11 +77,11 @@ tags: [linux, linux-kernel, experiment]
            printf("directory test make failure");
        }
     }
-    ```
+    ~~~
 
     **mkdir-asm.c**
 
-    ```C
+    ~~~c
     #include <sys/stat.h>
     #include <sys/types.h>
     #include <stdio.h>
@@ -105,7 +105,7 @@ tags: [linux, linux-kernel, experiment]
            printf("directory test make failure");
        }
     }
-    ```
+    ~~~
 mkdir.c 和 mkdir-asm.c 功能一致都是在当前目录下创建test文件夹，mkdir.c是通过调用库函数`int mkdir(const char *pathname,mode_t mode);`创建test文件夹，而mkdir-asm.c是通过中断程序创建test文件夹。
 
 ## 后记
@@ -116,7 +116,7 @@ mkdir.c 和 mkdir-asm.c 功能一致都是在当前目录下创建test文件夹�
 
 **fork-test.c**
 
-```C
+~~~c
 #include <unistd.h>
 #include <stdio.h>
 int main() {
@@ -139,7 +139,7 @@ int main() {
         while(1);
     }
 }
-```
+~~~
 
 运行结果为
 

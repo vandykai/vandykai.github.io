@@ -13,23 +13,23 @@ tags: [linux, linux-kernel, experiment]
 - `volatile long state;`记录进程的状态，进程状态的定义[**链接**][2]，值得注意的是操作系统进程状态概念中的就绪态和运行态在这里都表示为TASK_RUNNING状态，若获得CPU的执行就为运行态，否则为就绪态。
 - Linux为每个进程分配一个8KB大小的内存区域，用于存放该进程两个不同的数据结构：`Thread_info`和进程的内核堆栈
 
-    ``` C
+    ~~~c
     union thread_union {
     	struct thread_info thread_info;
     	unsigned long stack[THREAD_SIZE/sizeof(long)];
     };
-    ```
+    ~~~
 
     可能会有点奇怪，为什么这两个数据结构要共用一个内存空间呢，其实这是有原因的，早在以前，`thread_union`中存放的并不是`thread_info`,而是`thread_struct`，只是后来变成了新的数据结构`thread_info`，将`thread_struct`或`thread_info`放在内核栈的尾端（因为共用了一块内存）可以通过esp指针屏蔽末尾的若干位方便的得到当前运行进程的进程描述结构指针。
 
 - `void *stack;`指向内核态堆栈。其实应该就是指向上面的8kb大小的共用内存区域。
 - `struct list_head tasks;`所有进程的链表，将所有当前进程链接起来。`list_head`中有两个指针域`next`和`prev`，分别指向下一个和前一个进程。
 
-    ``` C
+    ~~~c
     struct list_head {
         struct list_head *next, *prev;
     };
-    ```
+    ~~~
 
 - `struct mm_struct *mm, *active_mm;`内存管理，进程的地址空间相关，如代码段，数据段等。
 - `struct thread_struct thread;`执行进程的CPU相关的状态，定义[**链接**][3]，里面包括`sp`，`ip`等地址变量，。
@@ -44,7 +44,7 @@ tags: [linux, linux-kernel, experiment]
 
 [`ret_from_fork`源码][6]
 
-``` C
+~~~c
 long do_fork(...) {
     ...
     p = copy_process(clone_flags, stack_start, stack_size, child_tidptr, NULL, trace);
@@ -110,7 +110,7 @@ static inline void setup_thread_stack(struct task_struct *p, struct task_struct 
     *task_thread_info(p) = *task_thread_info(org);
     task_thread_info(p)->task = p;
 }
-```
+~~~
 
 
 wdk 原创作品转载请注明出处  

@@ -22,7 +22,7 @@ git 旨在创建一个分布式版本控制工具，满足以下一些需求：
 
 ### Git 工作运行的目录结构
 
-```
+~~~
 hooks                                   │hooks
     - applypatch-msg.sample             │    - applypatch-msg.sample
     - commit-msg.sample                 │    - commit-msg.sample
@@ -59,7 +59,7 @@ config                                  │config
 description                             │description
 HEAD                                    │HEAD
                                         │index
-```
+~~~
 
 左上边是新建的一个仓库的目录结构，未提交任何东西，右上边是提交了一次文件后的仓库目录结构。把它们放在一起方便对比新增了哪些文件。
 
@@ -83,7 +83,7 @@ HEAD                                    │HEAD
 #### Git 记录文件探索
 前面已经说了，git的所有操作记录都会保存在objects目录下的文件中，那么这些文件中到底都存储了些什么内容呢，直接以文本方式打开这些文件都是乱码，后来发现这些文件要使用`git cat-file -p (SHA-1)`命令来查看，其中可以不写完整（实测至少4位），只要能唯一标识文件即可。针对上述的第一次提交我们分别查看objects下增加的三个文件夹下的三个文件，SHA-1值是等于文件夹名加上文件名,在objects目录下（只要git目录下都可以）打开bash或命令提示窗口
 
-```
+~~~
 $ git cat-file -p 80865964295ae2f11d27383e5f9c0b58a8ef21da
 100644 blob d670460b4b4aece5915caf5c68d12f560a9fe3e4    test.txt
 
@@ -97,13 +97,13 @@ test comment
 $ git cat-file -p d670460b4b4aece5915caf5c68d12f560a9fe3e4
 test content
 
-```
+~~~
 
 第一次提交的是test.txt文件，该文本文件中的内容是test content，提交时的comment是test comment
 
 在text.txtw文件中换行添加内容added text再次提交，提交comment为added comment，提交后又新增了三个文件夹和三个文件，分别使用`git cat-file -p (SHA-1)`命令来查看这三个文件的内容结果如下
 
-```
+~~~
 $ git cat-file -p 2ce18c9a25e15f30d684274b89d0ef29d032491e
 tree 5a1e99b76770966d5975d2ba8aadf32c2bf550ea
 parent b042d75a51e77fdac111e85eda5331470781b9de
@@ -119,7 +119,7 @@ added text
 $ git cat-file -p 5a1e99b76770966d5975d2ba8aadf32c2bf550ea
 100644 blob 3a35a3b22ba503b003bbdf6066163a14d75b9a41    test.txt
 
-```
+~~~
 可以看到SHA-1值为2ce18c9a25e15f30d684274b89d0ef29d032491e的文件信息中有一个tree值和parent值，parent值就是上次提交的SHA-1值，链接起来就形成了单个分支的列表，多个分支形成了一棵git数。通过tree的值指向的文件里里面的记录可以找到更新的文件被存储在哪个文件里面，现在的tree值为5a1e99b76770966d5975d2ba8aadf32c2bf550ea，查看这个文件，发现更新的文件被存储在了3a35a3b22ba503b003bbdf6066163a14d75b9a41这个文件里面，提交的文件名是test.txt，100644是文件模式，查看3a35a3b22ba503b003bbdf6066163a14d75b9a41这个文件发现它存储了最新文件的内容，没有采取差异存储，与预计有点出路，后面私下再次实验了一把，更新（增加数行）了一个5MB多的文本文件，发现每次更新提交都会增加3MB多的文件，看来确实没有采用差异存储，只是压缩了文件，这一点还是很奇怪的。后来查了下[资料][2]发现要手工调用`git gc`命令来实现这种目的，当objects中的对象过多时，也会自动调用这个过程。这部分和index文件的作用留待以后研究。
 
 

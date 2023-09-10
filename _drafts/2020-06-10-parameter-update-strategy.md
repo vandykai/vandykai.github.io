@@ -19,42 +19,42 @@ tags: [AI]
 为了解决这个问题，可以使用一些退火算法来动态调整训练时候的学习率，也就是根据预先设定的表或者当损失函数多轮batch后仍然不在下降时降低学习率。
 常用的一些退火策略有：
 
-```python3
+~~~python3
 StepLR(optimizer, step_size, gamma=0.1, last_epoch=-1)
 固定步长衰减，每隔一定epoch，学习率就减少为上一次的gamma分之一
-```
+~~~
 
 $$
 new\_lr = init\_lr\times \gamma^{epoch//step\_size}
 $$
 
-```python3
+~~~python3
 MultiStepLR(optimizer, milestones, gamma=0.1, last_epoch=-1)
 多步长衰减，_milestones_ 为数组，是衰减的epoch节点，如[30,50,80],每到一个设定的epoch节点，学习率就减少为上一次的gamma分之一
-```
+~~~
 
 $$
 new\_lr = init\_lr*\times \gamma^{bisect\_right\left(milestones,epoch\right)}
 $$
 
-```python3
+~~~python3
 CosineAnnealingLR(optimizer, T_max, eta_min=0, last_epoch=-1)
 余弦退火：
-```
+~~~
 
 $$
 new\_lr = \eta _{min} + \frac{1}{2} \left(init\_lr-\eta _{min}\right)\left(1+\cos\left(\frac{T_{cur}}{T_{max}}\pi\right)\right)
 $$
 
-```python3
+~~~python3
 ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=10, verbose=False, threshold=0.0001, threshold_mode='rel', cooldown=0, min_lr=0, eps=1e-08)
 当性能指标_patience次不再提升后，学习率就减少为上一次的factor分之一
-```
+~~~
 
-```python3
+~~~python3
 CyclicLR(optimizer, base_lr, max_lr, step_size_up=2000, step_size_down=None, mode='triangular', gamma=1.0, scale_fn=None, scale_mode='cycle', cycle_momentum=True, base_momentum=0.8, max_momentum=0.9, last_epoch=-1)
 类似于余弦退火，从cos变成在最大最小值之间折线来回震荡，且可以设置震荡越来越小
-```
+~~~
 
 如下图所示：
 ![CyclicLR][2]

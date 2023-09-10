@@ -14,7 +14,7 @@ tags: [design-pattern, factory-method]
 
 2. 工厂方法模式的实现方式  
 
-    ~~~Java
+    ~~~java
     public class Product {
 
         public void commonMethod() {
@@ -24,25 +24,25 @@ tags: [design-pattern, factory-method]
     }
     ~~~
 
-    ~~~Java
+    ~~~java
     public class ProductOne extends Product{
         // empty
     }
     ~~~
 
-    ~~~Java
+    ~~~java
     public class ProductTwo extends Product{
         //empty
     }
     ~~~
-    ~~~Java
+    ~~~java
     public abstract class Creator {
 
         public abstract Product getProduct();
 
     }
     ~~~
-    ~~~Java
+    ~~~java
     public class ProductOneCreator extends Creator {
 
         @Override
@@ -54,7 +54,7 @@ tags: [design-pattern, factory-method]
 
     }
     ~~~
-    ~~~Java
+    ~~~java
     public class ProductTwoCreator extends Creator {
 
         @Override
@@ -66,7 +66,7 @@ tags: [design-pattern, factory-method]
 
     }
     ~~~
-    ~~~Java
+    ~~~java
     public class Client {
 
         public static void main(String args[]) {
