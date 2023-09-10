@@ -10,11 +10,10 @@
   <meta name="description" content="重点知识总结  CS(code segment register)是代码段寄存器,CPU在实际取指令时根据cs:eip来准确定位一个指令。  b，w，l，p，分别指8位，16位，32位，64位，如movl指移动32位的数据。  AT&amp;T汇编格式与Intel汇编格式略有不同，Linux使用的是AT&amp;...">
 
   <link rel="stylesheet" href="/mark/css/main.css">
-  <link rel="stylesheet" href="/mark/css/syntax.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://localhost:4000/mark/linux-3.18.6/2016/02/25/linux-kernel-working-process-of-assembly-code.html">
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
-  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/mark/feed.xml" title="Blog" />
+  <link rel="canonical" href="http://www.dosrc.com/mark/linux-3.18.6/2016/02/25/linux-kernel-working-process-of-assembly-code.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
+  <link type="application/atom+xml" rel="alternate" href="http://www.dosrc.com/mark/feed.xml" title="Blog" />
   <!-- Begin Jekyll SEO tag v2.7.1 -->
 <title>Linux Kernel - C语言对应汇编源代码分析 | Blog</title>
 <meta name="generator" content="Jekyll v4.2.1" />
@@ -22,15 +21,15 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="重点知识总结 CS(code segment register)是代码段寄存器,CPU在实际取指令时根据cs:eip来准确定位一个指令。 b，w，l，p，分别指8位，16位，32位，64位，如movl指移动32位的数据。 AT&amp;T汇编格式与Intel汇编格式略有不同，Linux使用的是AT&amp;T汇编格式。 eip寄存器不能被直接修改，只能通过特殊指令间接修改，如通过call与ret指令。 函数的返回值默认使用eax寄存器存储返回给上一级函数 汇编中对应的方法过程如下" />
 <meta property="og:description" content="重点知识总结 CS(code segment register)是代码段寄存器,CPU在实际取指令时根据cs:eip来准确定位一个指令。 b，w，l，p，分别指8位，16位，32位，64位，如movl指移动32位的数据。 AT&amp;T汇编格式与Intel汇编格式略有不同，Linux使用的是AT&amp;T汇编格式。 eip寄存器不能被直接修改，只能通过特殊指令间接修改，如通过call与ret指令。 函数的返回值默认使用eax寄存器存储返回给上一级函数 汇编中对应的方法过程如下" />
-<link rel="canonical" href="http://localhost:4000/mark/linux-3.18.6/2016/02/25/linux-kernel-working-process-of-assembly-code.html" />
-<meta property="og:url" content="http://localhost:4000/mark/linux-3.18.6/2016/02/25/linux-kernel-working-process-of-assembly-code.html" />
+<link rel="canonical" href="http://www.dosrc.com/mark/linux-3.18.6/2016/02/25/linux-kernel-working-process-of-assembly-code.html" />
+<meta property="og:url" content="http://www.dosrc.com/mark/linux-3.18.6/2016/02/25/linux-kernel-working-process-of-assembly-code.html" />
 <meta property="og:site_name" content="Blog" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2016-02-25T18:42:00+08:00" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Linux Kernel - C语言对应汇编源代码分析" />
 <script type="application/ld+json">
-{"description":"重点知识总结 CS(code segment register)是代码段寄存器,CPU在实际取指令时根据cs:eip来准确定位一个指令。 b，w，l，p，分别指8位，16位，32位，64位，如movl指移动32位的数据。 AT&amp;T汇编格式与Intel汇编格式略有不同，Linux使用的是AT&amp;T汇编格式。 eip寄存器不能被直接修改，只能通过特殊指令间接修改，如通过call与ret指令。 函数的返回值默认使用eax寄存器存储返回给上一级函数 汇编中对应的方法过程如下","headline":"Linux Kernel - C语言对应汇编源代码分析","dateModified":"2016-02-25T18:42:00+08:00","datePublished":"2016-02-25T18:42:00+08:00","url":"http://localhost:4000/mark/linux-3.18.6/2016/02/25/linux-kernel-working-process-of-assembly-code.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/mark/linux-3.18.6/2016/02/25/linux-kernel-working-process-of-assembly-code.html"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
+{"description":"重点知识总结 CS(code segment register)是代码段寄存器,CPU在实际取指令时根据cs:eip来准确定位一个指令。 b，w，l，p，分别指8位，16位，32位，64位，如movl指移动32位的数据。 AT&amp;T汇编格式与Intel汇编格式略有不同，Linux使用的是AT&amp;T汇编格式。 eip寄存器不能被直接修改，只能通过特殊指令间接修改，如通过call与ret指令。 函数的返回值默认使用eax寄存器存储返回给上一级函数 汇编中对应的方法过程如下","headline":"Linux Kernel - C语言对应汇编源代码分析","dateModified":"2016-02-25T18:42:00+08:00","datePublished":"2016-02-25T18:42:00+08:00","url":"http://www.dosrc.com/mark/linux-3.18.6/2016/02/25/linux-kernel-working-process-of-assembly-code.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.dosrc.com/mark/linux-3.18.6/2016/02/25/linux-kernel-working-process-of-assembly-code.html"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
   <script type="text/x-mathjax-config">
@@ -48,6 +47,20 @@
     });
   </script>
   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+  
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+      (i[r].q = i[r].q || []).push(arguments)
+    }, i[r].l = 1 * new Date(); a = s.createElement(o),
+      m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+  })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+  ga('create', 'G-VJKY6C6TGC', 'auto');
+  ga('send', 'pageview');
+</script>
+<!-- End Google Analytics -->
+
 
 </head>
 
@@ -115,12 +128,12 @@
   <li>
     <p>汇编中对应的方法过程如下</p>
 
-    <pre><code class="language-C">  method:
-      enter
-      // Real Code Here
-      leave
-      ret
-</code></pre>
+    <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nl">method:</span>
+      <span class="n">enter</span>
+      <span class="c1">// Real Code Here</span>
+      <span class="n">leave</span>
+      <span class="n">ret</span>
+</code></pre></div>    </div>
   </li>
   <li>
     <p>指令实际做的事情列表：</p>
@@ -155,12 +168,12 @@
 <p><img src="/mark/assets/images/2016-02-25-linux-kernel-working-process-of-assembly-code/main-s.png" alt="main.s" />
 从图中可以看出，C程序方法对应的汇编方法一般过程如下：</p>
 
-<pre><code class="language-C">method:
-        enter
-        // Real Code Here
-        leave
-        ret
-</code></pre>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">method:</span>
+        <span class="n">enter</span>
+        <span class="c1">// Real Code Here</span>
+        <span class="n">leave</span>
+        <span class="n">ret</span>
+</code></pre></div></div>
 <p>若方法中不再调用另一方法也即汇编代码中不调用call语句，那么<code class="language-plaintext highlighter-rouge">leave</code>语句可优化为<code class="language-plaintext highlighter-rouge">popl %ebp</code>。</p>
 
 <p>参数传递通过堆栈完成，一个参数，则通过<code class="language-plaintext highlighter-rouge">8(%ebp)</code>取参数，两个参数则通过<code class="language-plaintext highlighter-rouge">12(%ebp)</code>, <code class="language-plaintext highlighter-rouge">8(*ebp)</code>分别取出第一和第二个参数。</p>
@@ -170,6 +183,43 @@
 
 
   </article>
+  
+  
+
+<script src="https://giscus.app/client.js"
+        data-repo="vandykai/vandykai.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzNTE5OTI1NQ=="
+        data-category="Announcements"
+        data-category-id="DIC_kwDOAhkZF84CUJ-X"
+        data-mapping="pathname"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-theme="light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+<script src="https://giscus.app/client.js"
+        data-repo="vandykai/vandykai.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzNTE5OTI1NQ=="
+        data-category="Announcements"
+        data-category-id="DIC_kwDOAhkZF84CUJ-X"
+        data-mapping="pathname"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="light"
+        data-lang=""
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+
+  
+
+
 
 </div>
 

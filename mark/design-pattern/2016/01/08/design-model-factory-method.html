@@ -10,11 +10,10 @@
   <meta name="description" content="工厂方法模式">
 
   <link rel="stylesheet" href="/mark/css/main.css">
-  <link rel="stylesheet" href="/mark/css/syntax.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://localhost:4000/mark/design-pattern/2016/01/08/design-model-factory-method.html">
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
-  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/mark/feed.xml" title="Blog" />
+  <link rel="canonical" href="http://www.dosrc.com/mark/design-pattern/2016/01/08/design-model-factory-method.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
+  <link type="application/atom+xml" rel="alternate" href="http://www.dosrc.com/mark/feed.xml" title="Blog" />
   <!-- Begin Jekyll SEO tag v2.7.1 -->
 <title>Design Pattern - Factory Method | Blog</title>
 <meta name="generator" content="Jekyll v4.2.1" />
@@ -22,15 +21,15 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="工厂方法模式" />
 <meta property="og:description" content="工厂方法模式" />
-<link rel="canonical" href="http://localhost:4000/mark/design-pattern/2016/01/08/design-model-factory-method.html" />
-<meta property="og:url" content="http://localhost:4000/mark/design-pattern/2016/01/08/design-model-factory-method.html" />
+<link rel="canonical" href="http://www.dosrc.com/mark/design-pattern/2016/01/08/design-model-factory-method.html" />
+<meta property="og:url" content="http://www.dosrc.com/mark/design-pattern/2016/01/08/design-model-factory-method.html" />
 <meta property="og:site_name" content="Blog" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2016-01-08T03:50:00+08:00" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Design Pattern - Factory Method" />
 <script type="application/ld+json">
-{"description":"工厂方法模式","headline":"Design Pattern - Factory Method","dateModified":"2016-01-08T03:50:00+08:00","datePublished":"2016-01-08T03:50:00+08:00","url":"http://localhost:4000/mark/design-pattern/2016/01/08/design-model-factory-method.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/mark/design-pattern/2016/01/08/design-model-factory-method.html"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
+{"description":"工厂方法模式","headline":"Design Pattern - Factory Method","dateModified":"2016-01-08T03:50:00+08:00","datePublished":"2016-01-08T03:50:00+08:00","url":"http://www.dosrc.com/mark/design-pattern/2016/01/08/design-model-factory-method.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.dosrc.com/mark/design-pattern/2016/01/08/design-model-factory-method.html"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
   <script type="text/x-mathjax-config">
@@ -48,6 +47,20 @@
     });
   </script>
   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+  
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+      (i[r].q = i[r].q || []).push(arguments)
+    }, i[r].l = 1 * new Date(); a = s.createElement(o),
+      m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+  })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+  ga('create', 'G-VJKY6C6TGC', 'auto');
+  ga('send', 'pageview');
+</script>
+<!-- End Google Analytics -->
+
 
 </head>
 
@@ -115,68 +128,105 @@
   <li>
     <p>工厂方法模式的实现方式</p>
 
-    <pre><code class="language-Java"> public class Product {
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Product</span> <span class="o">{</span>
 
-     public void commonMethod() {
-         return;
-     }
+     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">commonMethod</span><span class="o">()</span> <span class="o">{</span>
+         <span class="k">return</span><span class="o">;</span>
+     <span class="o">}</span>
 
- }
-</code></pre>
+ <span class="o">}</span>
+</code></pre></div>    </div>
 
-    <pre><code class="language-Java"> public class ProductOne extends Product{
-     // empty
- }
-</code></pre>
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">ProductOne</span> <span class="kd">extends</span> <span class="nc">Product</span><span class="o">{</span>
+     <span class="c1">// empty</span>
+ <span class="o">}</span>
+</code></pre></div>    </div>
 
-    <pre><code class="language-Java"> public class ProductTwo extends Product{
-     //empty
- }
-</code></pre>
-    <pre><code class="language-Java"> public abstract class Creator {
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">ProductTwo</span> <span class="kd">extends</span> <span class="nc">Product</span><span class="o">{</span>
+     <span class="c1">//empty</span>
+ <span class="o">}</span>
+</code></pre></div>    </div>
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Creator</span> <span class="o">{</span>
 
-     public abstract Product getProduct();
+     <span class="kd">public</span> <span class="kd">abstract</span> <span class="nc">Product</span> <span class="nf">getProduct</span><span class="o">();</span>
 
- }
-</code></pre>
-    <pre><code class="language-Java"> public class ProductOneCreator extends Creator {
+ <span class="o">}</span>
+</code></pre></div>    </div>
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">ProductOneCreator</span> <span class="kd">extends</span> <span class="nc">Creator</span> <span class="o">{</span>
 
-     @Override
-     public ProductOne getProduct() {
-         ProductOne productOne = new ProductOne();
-         // Initial productOne here
-         return productOne;
-     }
+     <span class="nd">@Override</span>
+     <span class="kd">public</span> <span class="nc">ProductOne</span> <span class="nf">getProduct</span><span class="o">()</span> <span class="o">{</span>
+         <span class="nc">ProductOne</span> <span class="n">productOne</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ProductOne</span><span class="o">();</span>
+         <span class="c1">// Initial productOne here</span>
+         <span class="k">return</span> <span class="n">productOne</span><span class="o">;</span>
+     <span class="o">}</span>
 
- }
-</code></pre>
-    <pre><code class="language-Java"> public class ProductTwoCreator extends Creator {
+ <span class="o">}</span>
+</code></pre></div>    </div>
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">ProductTwoCreator</span> <span class="kd">extends</span> <span class="nc">Creator</span> <span class="o">{</span>
 
-     @Override
-     public ProductTwo getProduct() {
-         ProductTwo productTwo = new ProductTwo();
-         // Initial productTwo here
-         return productTwo;
-     }
+     <span class="nd">@Override</span>
+     <span class="kd">public</span> <span class="nc">ProductTwo</span> <span class="nf">getProduct</span><span class="o">()</span> <span class="o">{</span>
+         <span class="nc">ProductTwo</span> <span class="n">productTwo</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ProductTwo</span><span class="o">();</span>
+         <span class="c1">// Initial productTwo here</span>
+         <span class="k">return</span> <span class="n">productTwo</span><span class="o">;</span>
+     <span class="o">}</span>
 
- }
-</code></pre>
-    <pre><code class="language-Java"> public class Client {
+ <span class="o">}</span>
+</code></pre></div>    </div>
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Client</span> <span class="o">{</span>
 
-     public static void main(String args[]) {
-         Product productOne = new ProductOneCreator().getProduct();
-         Product productTwo = new ProductTwoCreator().getProduct();
-         productOne.commonMethod();
-         productTwo.commonMethod();
-     }
- }
-</code></pre>
+     <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span> <span class="n">args</span><span class="o">[])</span> <span class="o">{</span>
+         <span class="nc">Product</span> <span class="n">productOne</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ProductOneCreator</span><span class="o">().</span><span class="na">getProduct</span><span class="o">();</span>
+         <span class="nc">Product</span> <span class="n">productTwo</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ProductTwoCreator</span><span class="o">().</span><span class="na">getProduct</span><span class="o">();</span>
+         <span class="n">productOne</span><span class="o">.</span><span class="na">commonMethod</span><span class="o">();</span>
+         <span class="n">productTwo</span><span class="o">.</span><span class="na">commonMethod</span><span class="o">();</span>
+     <span class="o">}</span>
+ <span class="o">}</span>
+</code></pre></div>    </div>
     <p>窃以为实现工厂方法模式时如需要则可以把工厂做成单例，或工厂中产生对象的方法做成静态方法，当然静态方法可能是不妥的，待以后想到再来修改此处。</p>
   </li>
   <li>与工厂方法模式类似的还有一种叫做简单工厂的模式，这种模式通过一个工厂类来根据传入的参数来选择生成不同的产品对象，所有的产品都继承一个公共的产品抽象类，这种模式的缺点是当生产的产品过多时，将导致工厂类较复杂，不利于后期维护，这种模式不属于经典的二十三种模式之一。工厂方法模式就是把简单工厂的一个大工厂创建所有的类的形式拆分成许多小工厂，并抽象出一个抽象工厂类，这个抽象工厂类只负责定义创建的方式，具体创建的内容有继承它的小工厂类来实现。</li>
 </ol>
 
   </article>
+  
+  
+
+<script src="https://giscus.app/client.js"
+        data-repo="vandykai/vandykai.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzNTE5OTI1NQ=="
+        data-category="Announcements"
+        data-category-id="DIC_kwDOAhkZF84CUJ-X"
+        data-mapping="pathname"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-theme="light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+<script src="https://giscus.app/client.js"
+        data-repo="vandykai/vandykai.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzNTE5OTI1NQ=="
+        data-category="Announcements"
+        data-category-id="DIC_kwDOAhkZF84CUJ-X"
+        data-mapping="pathname"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="light"
+        data-lang=""
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+
+  
+
+
 
 </div>
 

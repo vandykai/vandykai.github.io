@@ -10,11 +10,10 @@
   <meta name="description" content="动态链接：">
 
   <link rel="stylesheet" href="/mark/css/main.css">
-  <link rel="stylesheet" href="/mark/css/syntax.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://localhost:4000/mark/gramar/2016/05/13/c-dynamical-loading.html">
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
-  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/mark/feed.xml" title="Blog" />
+  <link rel="canonical" href="http://www.dosrc.com/mark/gramar/2016/05/13/c-dynamical-loading.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
+  <link type="application/atom+xml" rel="alternate" href="http://www.dosrc.com/mark/feed.xml" title="Blog" />
   <!-- Begin Jekyll SEO tag v2.7.1 -->
 <title>C - Dynamical Loading | Blog</title>
 <meta name="generator" content="Jekyll v4.2.1" />
@@ -22,15 +21,15 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="动态链接：" />
 <meta property="og:description" content="动态链接：" />
-<link rel="canonical" href="http://localhost:4000/mark/gramar/2016/05/13/c-dynamical-loading.html" />
-<meta property="og:url" content="http://localhost:4000/mark/gramar/2016/05/13/c-dynamical-loading.html" />
+<link rel="canonical" href="http://www.dosrc.com/mark/gramar/2016/05/13/c-dynamical-loading.html" />
+<meta property="og:url" content="http://www.dosrc.com/mark/gramar/2016/05/13/c-dynamical-loading.html" />
 <meta property="og:site_name" content="Blog" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2016-05-13T22:58:00+08:00" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="C - Dynamical Loading" />
 <script type="application/ld+json">
-{"description":"动态链接：","headline":"C - Dynamical Loading","dateModified":"2016-05-13T22:58:00+08:00","datePublished":"2016-05-13T22:58:00+08:00","url":"http://localhost:4000/mark/gramar/2016/05/13/c-dynamical-loading.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/mark/gramar/2016/05/13/c-dynamical-loading.html"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
+{"description":"动态链接：","headline":"C - Dynamical Loading","dateModified":"2016-05-13T22:58:00+08:00","datePublished":"2016-05-13T22:58:00+08:00","url":"http://www.dosrc.com/mark/gramar/2016/05/13/c-dynamical-loading.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.dosrc.com/mark/gramar/2016/05/13/c-dynamical-loading.html"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
   <script type="text/x-mathjax-config">
@@ -48,6 +47,20 @@
     });
   </script>
   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+  
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+      (i[r].q = i[r].q || []).push(arguments)
+    }, i[r].l = 1 * new Date(); a = s.createElement(o),
+      m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+  })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+  ga('create', 'G-VJKY6C6TGC', 'auto');
+  ga('send', 'pageview');
+</script>
+<!-- End Google Analytics -->
+
 
 </head>
 
@@ -111,29 +124,29 @@
 
 <p><strong>libexample.h</strong></p>
 
-<pre><code class="language-C">#ifndef _LIB_EXAMPLE_H_
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#ifndef _LIB_EXAMPLE_H_
 #define _LIB_EXAMPLE_H_
 #define SUCCESS 0
 #define FAILURE (-1)
 #ifdef __cplusplus
-extern "C" {
-#endif
-int LibApi();
-#ifdef __cplusplus
-}
-#endif
-#endif /* _LIB_EXAMPLE_H_ */
-</code></pre>
+</span><span class="k">extern</span> <span class="s">"C"</span> <span class="p">{</span>
+<span class="cp">#endif
+</span><span class="kt">int</span> <span class="n">LibApi</span><span class="p">();</span>
+<span class="cp">#ifdef __cplusplus
+</span><span class="p">}</span>
+<span class="cp">#endif
+#endif </span><span class="cm">/* _LIB_EXAMPLE_H_ */</span><span class="cp">
+</span></code></pre></div></div>
 
 <p><strong>libexample.c</strong></p>
 
-<pre><code class="language-C">#include &lt;stdio.h&gt;
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
 #include "libexample.h"
-int LibApi() {
-    printf("This Is A Library Api!\n");
-    return SUCCESS;
-}
-</code></pre>
+</span><span class="kt">int</span> <span class="nf">LibApi</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"This Is A Library Api!</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p><code class="language-plaintext highlighter-rouge">gcc -shared libexample.c -o liblibexample.so -m32</code></p>
 
@@ -142,14 +155,14 @@ int LibApi() {
 
 <p><strong>装载时的动态链接举例</strong></p>
 
-<pre><code class="language-C">#include &lt;stdio.h&gt;
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
 #include "libexample.h"
-int main() {
-  printf("This is a main program!\n");
-  LibApi();
-  return SUCCESS;
-}
-</code></pre>
+</span><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">printf</span><span class="p">(</span><span class="s">"This is a main program!</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+  <span class="n">LibApi</span><span class="p">();</span>
+  <span class="k">return</span> <span class="n">SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcc main.c -o main -L/path/to/your/dir -llibexample -m32
 # 编译main，/path/to/your/dir可用.代替。
 # 注意这里只提供libexample的-L（库对应的接口头文件所在目录）和-l（库名，如liblibexample.so去掉lib和.so的部分）。
@@ -160,29 +173,29 @@ $ ./main
 
 <p><strong>运行时的动态链接举例</strong></p>
 
-<pre><code class="language-C">#include &lt;stdio.h&gt;
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
 #include &lt;dlfcn.h&gt;
-
-#define SUCCESS 0
+</span>
+<span class="cp">#define SUCCESS 0
 #define FAILURE (-1)
-int main() {
-    printf("This is a main program!\n");
-    void * handle = dlopen("liblibexample.so",RTLD_NOW);
-    if(handle == NULL) {
-        printf("open lib liblibexample.so error :%s\n",dlerror());
-        return FAILURE;
-    }
-    int (*func)(void);
-    char * error;
-    func = dlsym(handle,"LibApi");
-    if ((error = dlerror()) != NULL) {
-        printf("LibApi not found:%s\n",error);
-    }
-    func();
-    dlclose(handle);
-    return SUCCESS;
-}
-</code></pre>
+</span><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"This is a main program!</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="o">*</span> <span class="n">handle</span> <span class="o">=</span> <span class="n">dlopen</span><span class="p">(</span><span class="s">"liblibexample.so"</span><span class="p">,</span><span class="n">RTLD_NOW</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">handle</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"open lib liblibexample.so error :%s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="n">dlerror</span><span class="p">());</span>
+        <span class="k">return</span> <span class="n">FAILURE</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">func</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
+    <span class="kt">char</span> <span class="o">*</span> <span class="n">error</span><span class="p">;</span>
+    <span class="n">func</span> <span class="o">=</span> <span class="n">dlsym</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span><span class="s">"LibApi"</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">((</span><span class="n">error</span> <span class="o">=</span> <span class="n">dlerror</span><span class="p">())</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"LibApi not found:%s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="n">error</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">func</span><span class="p">();</span>
+    <span class="n">dlclose</span><span class="p">(</span><span class="n">handle</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">SUCCESS</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcc main.c -o main -ldl -m32
 # -ldl选项，表示生成的对象模块使用运行时动态链接。
 $ export LD_LIBRARY_PATH=$PWD
@@ -191,6 +204,43 @@ $ ./main
 </code></pre></div></div>
 
   </article>
+  
+  
+
+<script src="https://giscus.app/client.js"
+        data-repo="vandykai/vandykai.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzNTE5OTI1NQ=="
+        data-category="Announcements"
+        data-category-id="DIC_kwDOAhkZF84CUJ-X"
+        data-mapping="pathname"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-theme="light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+<script src="https://giscus.app/client.js"
+        data-repo="vandykai/vandykai.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzNTE5OTI1NQ=="
+        data-category="Announcements"
+        data-category-id="DIC_kwDOAhkZF84CUJ-X"
+        data-mapping="pathname"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="light"
+        data-lang=""
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+
+  
+
+
 
 </div>
 

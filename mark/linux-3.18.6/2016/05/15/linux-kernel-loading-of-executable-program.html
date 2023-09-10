@@ -10,11 +10,10 @@
   <meta name="description" content="重点知识总结  可执行文件的装载也是一个系统调用（execve），只不过和fork系统调用一样有一些特殊。  Shell会调用execve将命令行参数和环境参数传递给可执行程序的main函数。  库函数exec*都是execve的封装例程。">
 
   <link rel="stylesheet" href="/mark/css/main.css">
-  <link rel="stylesheet" href="/mark/css/syntax.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://localhost:4000/mark/linux-3.18.6/2016/05/15/linux-kernel-loading-of-executable-program.html">
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
-  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/mark/feed.xml" title="Blog" />
+  <link rel="canonical" href="http://www.dosrc.com/mark/linux-3.18.6/2016/05/15/linux-kernel-loading-of-executable-program.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
+  <link type="application/atom+xml" rel="alternate" href="http://www.dosrc.com/mark/feed.xml" title="Blog" />
   <!-- Begin Jekyll SEO tag v2.7.1 -->
 <title>Linux Kernel - 可执行程序的加载过程 | Blog</title>
 <meta name="generator" content="Jekyll v4.2.1" />
@@ -22,15 +21,15 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="重点知识总结 可执行文件的装载也是一个系统调用（execve），只不过和fork系统调用一样有一些特殊。 Shell会调用execve将命令行参数和环境参数传递给可执行程序的main函数。 库函数exec*都是execve的封装例程。" />
 <meta property="og:description" content="重点知识总结 可执行文件的装载也是一个系统调用（execve），只不过和fork系统调用一样有一些特殊。 Shell会调用execve将命令行参数和环境参数传递给可执行程序的main函数。 库函数exec*都是execve的封装例程。" />
-<link rel="canonical" href="http://localhost:4000/mark/linux-3.18.6/2016/05/15/linux-kernel-loading-of-executable-program.html" />
-<meta property="og:url" content="http://localhost:4000/mark/linux-3.18.6/2016/05/15/linux-kernel-loading-of-executable-program.html" />
+<link rel="canonical" href="http://www.dosrc.com/mark/linux-3.18.6/2016/05/15/linux-kernel-loading-of-executable-program.html" />
+<meta property="og:url" content="http://www.dosrc.com/mark/linux-3.18.6/2016/05/15/linux-kernel-loading-of-executable-program.html" />
 <meta property="og:site_name" content="Blog" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2016-05-15T04:31:00+08:00" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Linux Kernel - 可执行程序的加载过程" />
 <script type="application/ld+json">
-{"description":"重点知识总结 可执行文件的装载也是一个系统调用（execve），只不过和fork系统调用一样有一些特殊。 Shell会调用execve将命令行参数和环境参数传递给可执行程序的main函数。 库函数exec*都是execve的封装例程。","headline":"Linux Kernel - 可执行程序的加载过程","dateModified":"2016-05-15T04:31:00+08:00","datePublished":"2016-05-15T04:31:00+08:00","url":"http://localhost:4000/mark/linux-3.18.6/2016/05/15/linux-kernel-loading-of-executable-program.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/mark/linux-3.18.6/2016/05/15/linux-kernel-loading-of-executable-program.html"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
+{"description":"重点知识总结 可执行文件的装载也是一个系统调用（execve），只不过和fork系统调用一样有一些特殊。 Shell会调用execve将命令行参数和环境参数传递给可执行程序的main函数。 库函数exec*都是execve的封装例程。","headline":"Linux Kernel - 可执行程序的加载过程","dateModified":"2016-05-15T04:31:00+08:00","datePublished":"2016-05-15T04:31:00+08:00","url":"http://www.dosrc.com/mark/linux-3.18.6/2016/05/15/linux-kernel-loading-of-executable-program.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.dosrc.com/mark/linux-3.18.6/2016/05/15/linux-kernel-loading-of-executable-program.html"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
   <script type="text/x-mathjax-config">
@@ -48,6 +47,20 @@
     });
   </script>
   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+  
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+      (i[r].q = i[r].q || []).push(arguments)
+    }, i[r].l = 1 * new Date(); a = s.createElement(o),
+      m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+  })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+  ga('create', 'G-VJKY6C6TGC', 'auto');
+  ga('send', 'pageview');
+</script>
+<!-- End Google Analytics -->
+
 
 </head>
 
@@ -132,34 +145,34 @@
 
     <p><a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/exec.c#search_binary_handler"><code class="language-plaintext highlighter-rouge">search_binary_handler</code></a>根据文件头部信息寻找对应的文件格式解析模块。</p>
 
-    <pre><code class="language-C">  list_for_each_entry(fmt, &amp;formats, lh) {
-      if (!try_module_get(fmt-&gt;module))
-        continue;
-      read_unlock(&amp;binfmt_lock);
-      bprm-&gt;recursion_depth++;
-      retval = fmt-&gt;load_binary(bprm);
-      read_lock(&amp;binfmt_lock);
-      ...
-    }
-</code></pre>
+    <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="n">list_for_each_entry</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">formats</span><span class="p">,</span> <span class="n">lh</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">try_module_get</span><span class="p">(</span><span class="n">fmt</span><span class="o">-&gt;</span><span class="n">module</span><span class="p">))</span>
+          <span class="k">continue</span><span class="p">;</span>
+      <span class="n">read_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">binfmt_lock</span><span class="p">);</span>
+      <span class="n">bprm</span><span class="o">-&gt;</span><span class="n">recursion_depth</span><span class="o">++</span><span class="p">;</span>
+      <span class="n">retval</span> <span class="o">=</span> <span class="n">fmt</span><span class="o">-&gt;</span><span class="n">load_binary</span><span class="p">(</span><span class="n">bprm</span><span class="p">);</span>
+      <span class="n">read_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">binfmt_lock</span><span class="p">);</span>
+      <span class="p">...</span>
+  <span class="p">}</span>
+</code></pre></div>    </div>
 
     <p>对于ELF格式的可执行文件，语句<code class="language-plaintext highlighter-rouge">fmt-&gt;load_binary(bprm);</code>执行的应该是<a href="http://codelab.shiyanlou.com/xref/linux-3.18.6/fs/binfmt_elf.c#load_elf_binary"><code class="language-plaintext highlighter-rouge">load_elf_binary(bprm);</code></a>。
   <code class="language-plaintext highlighter-rouge">load_binary</code>是个函数指针。寻找对应的文件格式解析模块采用了设计模式中的<strong>观察者模式</strong>。如下为ELF格式的观察者初始化的过程：</p>
 
-    <pre><code class="language-C">  static struct linux_binfmt elf_format = {
-      .module     = THIS_MODULE,
-      .load_binary    = load_elf_binary,
-      .load_shlib = load_elf_library,
-      .core_dump  = elf_core_dump,
-      .min_coredump   = ELF_EXEC_PAGESIZE,
-  };
-</code></pre>
-    <pre><code class="language-C">  static int __init init_elf_binfmt(void)
-  {
-      register_binfmt(&amp;elf_format);
-      return 0;
-  }
-</code></pre>
+    <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">static</span> <span class="k">struct</span> <span class="n">linux_binfmt</span> <span class="n">elf_format</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="p">.</span><span class="n">module</span>     <span class="o">=</span> <span class="n">THIS_MODULE</span><span class="p">,</span>
+      <span class="p">.</span><span class="n">load_binary</span>    <span class="o">=</span> <span class="n">load_elf_binary</span><span class="p">,</span>
+      <span class="p">.</span><span class="n">load_shlib</span> <span class="o">=</span> <span class="n">load_elf_library</span><span class="p">,</span>
+      <span class="p">.</span><span class="n">core_dump</span>  <span class="o">=</span> <span class="n">elf_core_dump</span><span class="p">,</span>
+      <span class="p">.</span><span class="n">min_coredump</span>   <span class="o">=</span> <span class="n">ELF_EXEC_PAGESIZE</span><span class="p">,</span>
+  <span class="p">};</span>
+</code></pre></div>    </div>
+    <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">static</span> <span class="kt">int</span> <span class="n">__init</span> <span class="nf">init_elf_binfmt</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+  <span class="p">{</span>
+      <span class="n">register_binfmt</span><span class="p">(</span><span class="o">&amp;</span><span class="n">elf_format</span><span class="p">);</span>
+      <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="p">}</span>
+</code></pre></div>    </div>
 
     <p>这里不同的文件格式解析模块就是观察者，可执行文件就是被观察者，<code class="language-plaintext highlighter-rouge">list_for_each_entry</code>遍历文件格式解析模块向其发送通知，通知文件格式解析模块来解析当前的可执行文件，只不过这里只通知对应的文件解析模块（对应的观察者），而不是所有的文件格式解析模块（所有的观察者）。</p>
   </li>
@@ -174,16 +187,16 @@
   <li>
     <p>对于静态链接的可执行文件<code class="language-plaintext highlighter-rouge">elf_entry</code>就是ELF头中定义的起点，对于动态链接的可执行文件，先加载连接器ld，将CPU控制权交给ld来加载依赖库并完成动态链接，这部分不由内核完成，源代码如下：</p>
 
-    <pre><code class="language-C">  if (elf_interpreter) {//需要动态链接
-      unsigned long interp_map_addr = 0;
+    <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">if</span> <span class="p">(</span><span class="n">elf_interpreter</span><span class="p">)</span> <span class="p">{</span><span class="c1">//需要动态链接</span>
+      <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">interp_map_addr</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 
-      elf_entry = load_elf_interp(&amp;loc-&gt;interp_elf_ex,
-              interpreter, &amp;interp_map_addr, load_bias);
-      ...
-  } else {//不需要动态链接
-      elf_entry = loc-&gt;elf_ex.e_entry;
-  }
-</code></pre>
+      <span class="n">elf_entry</span> <span class="o">=</span> <span class="n">load_elf_interp</span><span class="p">(</span><span class="o">&amp;</span><span class="n">loc</span><span class="o">-&gt;</span><span class="n">interp_elf_ex</span><span class="p">,</span>
+              <span class="n">interpreter</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">interp_map_addr</span><span class="p">,</span> <span class="n">load_bias</span><span class="p">);</span>
+      <span class="p">...</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span><span class="c1">//不需要动态链接</span>
+      <span class="n">elf_entry</span> <span class="o">=</span> <span class="n">loc</span><span class="o">-&gt;</span><span class="n">elf_ex</span><span class="p">.</span><span class="n">e_entry</span><span class="p">;</span>
+  <span class="p">}</span>
+</code></pre></div>    </div>
   </li>
 </ul>
 
@@ -192,6 +205,43 @@
 
 
   </article>
+  
+  
+
+<script src="https://giscus.app/client.js"
+        data-repo="vandykai/vandykai.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzNTE5OTI1NQ=="
+        data-category="Announcements"
+        data-category-id="DIC_kwDOAhkZF84CUJ-X"
+        data-mapping="pathname"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-theme="light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+<script src="https://giscus.app/client.js"
+        data-repo="vandykai/vandykai.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzNTE5OTI1NQ=="
+        data-category="Announcements"
+        data-category-id="DIC_kwDOAhkZF84CUJ-X"
+        data-mapping="pathname"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="light"
+        data-lang=""
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+
+  
+
+
 
 </div>
 

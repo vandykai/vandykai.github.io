@@ -1,1 +1,1 @@
-Sitemap: http://localhost:4000/mark/sitemap.xml
+Sitemap: http://www.dosrc.com/mark/sitemap.xml

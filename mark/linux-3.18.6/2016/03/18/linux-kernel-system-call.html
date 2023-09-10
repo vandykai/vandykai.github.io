@@ -10,11 +10,10 @@
   <meta name="description" content="重点知识总结  Intel X86 CPU 有四种不同的执行级别0-3，Linux只使用了其中的0级和3级，分别来表示内核态和用户态。  一般来说在32位X86机器上，Linux系统中，地址空间是一个显著的标志：0XC0000000以上的地址空间只能在内核态下访问，0X00000000-0XBFFFFFFF的地址...">
 
   <link rel="stylesheet" href="/mark/css/main.css">
-  <link rel="stylesheet" href="/mark/css/syntax.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://localhost:4000/mark/linux-3.18.6/2016/03/18/linux-kernel-system-call.html">
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
-  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/mark/feed.xml" title="Blog" />
+  <link rel="canonical" href="http://www.dosrc.com/mark/linux-3.18.6/2016/03/18/linux-kernel-system-call.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
+  <link type="application/atom+xml" rel="alternate" href="http://www.dosrc.com/mark/feed.xml" title="Blog" />
   <!-- Begin Jekyll SEO tag v2.7.1 -->
 <title>Linux Kernel - 系统调用和用户态内核态的转换 | Blog</title>
 <meta name="generator" content="Jekyll v4.2.1" />
@@ -22,15 +21,15 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="重点知识总结 Intel X86 CPU 有四种不同的执行级别0-3，Linux只使用了其中的0级和3级，分别来表示内核态和用户态。 一般来说在32位X86机器上，Linux系统中，地址空间是一个显著的标志：0XC0000000以上的地址空间只能在内核态下访问，0X00000000-0XBFFFFFFF的地址空间在两种状态下都可以访问，这里所说的是逻辑地址而不是物理地址。所以寄存器的最低两位表明了当前代码所需的特权级。11代表需要内核态级别，否则只需要用户态级别。 中断处理是从用户态进入内核态主要的方式。系统调用是一种特殊的中断。 从用户态切换到内核态时，必须保存用户态的寄存器上下文。 中断/int指令会在堆栈上保存一些寄存器的值，如用户态栈顶指针，当时的状态字，当时的cs:eip的值，并恢复内核态的对应寄存器的值。 中断发生后第一件事就是保存现场到自己（内核态)的堆栈中,这就正好衔接了之前保存和恢复栈顶指针的动作，保护现场就是进入中断程序保存需要用到的寄存器的数据，也可以简单保存其他所有寄存器的值即定义一个SAVE_ALL的代码块供调用。恢复现场同理。 iret指令与中断信号（包括int指令）发生时CPU做的动作正好相反 中断一般模版" />
 <meta property="og:description" content="重点知识总结 Intel X86 CPU 有四种不同的执行级别0-3，Linux只使用了其中的0级和3级，分别来表示内核态和用户态。 一般来说在32位X86机器上，Linux系统中，地址空间是一个显著的标志：0XC0000000以上的地址空间只能在内核态下访问，0X00000000-0XBFFFFFFF的地址空间在两种状态下都可以访问，这里所说的是逻辑地址而不是物理地址。所以寄存器的最低两位表明了当前代码所需的特权级。11代表需要内核态级别，否则只需要用户态级别。 中断处理是从用户态进入内核态主要的方式。系统调用是一种特殊的中断。 从用户态切换到内核态时，必须保存用户态的寄存器上下文。 中断/int指令会在堆栈上保存一些寄存器的值，如用户态栈顶指针，当时的状态字，当时的cs:eip的值，并恢复内核态的对应寄存器的值。 中断发生后第一件事就是保存现场到自己（内核态)的堆栈中,这就正好衔接了之前保存和恢复栈顶指针的动作，保护现场就是进入中断程序保存需要用到的寄存器的数据，也可以简单保存其他所有寄存器的值即定义一个SAVE_ALL的代码块供调用。恢复现场同理。 iret指令与中断信号（包括int指令）发生时CPU做的动作正好相反 中断一般模版" />
-<link rel="canonical" href="http://localhost:4000/mark/linux-3.18.6/2016/03/18/linux-kernel-system-call.html" />
-<meta property="og:url" content="http://localhost:4000/mark/linux-3.18.6/2016/03/18/linux-kernel-system-call.html" />
+<link rel="canonical" href="http://www.dosrc.com/mark/linux-3.18.6/2016/03/18/linux-kernel-system-call.html" />
+<meta property="og:url" content="http://www.dosrc.com/mark/linux-3.18.6/2016/03/18/linux-kernel-system-call.html" />
 <meta property="og:site_name" content="Blog" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2016-03-18T20:13:00+08:00" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Linux Kernel - 系统调用和用户态内核态的转换" />
 <script type="application/ld+json">
-{"description":"重点知识总结 Intel X86 CPU 有四种不同的执行级别0-3，Linux只使用了其中的0级和3级，分别来表示内核态和用户态。 一般来说在32位X86机器上，Linux系统中，地址空间是一个显著的标志：0XC0000000以上的地址空间只能在内核态下访问，0X00000000-0XBFFFFFFF的地址空间在两种状态下都可以访问，这里所说的是逻辑地址而不是物理地址。所以寄存器的最低两位表明了当前代码所需的特权级。11代表需要内核态级别，否则只需要用户态级别。 中断处理是从用户态进入内核态主要的方式。系统调用是一种特殊的中断。 从用户态切换到内核态时，必须保存用户态的寄存器上下文。 中断/int指令会在堆栈上保存一些寄存器的值，如用户态栈顶指针，当时的状态字，当时的cs:eip的值，并恢复内核态的对应寄存器的值。 中断发生后第一件事就是保存现场到自己（内核态)的堆栈中,这就正好衔接了之前保存和恢复栈顶指针的动作，保护现场就是进入中断程序保存需要用到的寄存器的数据，也可以简单保存其他所有寄存器的值即定义一个SAVE_ALL的代码块供调用。恢复现场同理。 iret指令与中断信号（包括int指令）发生时CPU做的动作正好相反 中断一般模版","headline":"Linux Kernel - 系统调用和用户态内核态的转换","dateModified":"2016-03-18T20:13:00+08:00","datePublished":"2016-03-18T20:13:00+08:00","url":"http://localhost:4000/mark/linux-3.18.6/2016/03/18/linux-kernel-system-call.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/mark/linux-3.18.6/2016/03/18/linux-kernel-system-call.html"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
+{"description":"重点知识总结 Intel X86 CPU 有四种不同的执行级别0-3，Linux只使用了其中的0级和3级，分别来表示内核态和用户态。 一般来说在32位X86机器上，Linux系统中，地址空间是一个显著的标志：0XC0000000以上的地址空间只能在内核态下访问，0X00000000-0XBFFFFFFF的地址空间在两种状态下都可以访问，这里所说的是逻辑地址而不是物理地址。所以寄存器的最低两位表明了当前代码所需的特权级。11代表需要内核态级别，否则只需要用户态级别。 中断处理是从用户态进入内核态主要的方式。系统调用是一种特殊的中断。 从用户态切换到内核态时，必须保存用户态的寄存器上下文。 中断/int指令会在堆栈上保存一些寄存器的值，如用户态栈顶指针，当时的状态字，当时的cs:eip的值，并恢复内核态的对应寄存器的值。 中断发生后第一件事就是保存现场到自己（内核态)的堆栈中,这就正好衔接了之前保存和恢复栈顶指针的动作，保护现场就是进入中断程序保存需要用到的寄存器的数据，也可以简单保存其他所有寄存器的值即定义一个SAVE_ALL的代码块供调用。恢复现场同理。 iret指令与中断信号（包括int指令）发生时CPU做的动作正好相反 中断一般模版","headline":"Linux Kernel - 系统调用和用户态内核态的转换","dateModified":"2016-03-18T20:13:00+08:00","datePublished":"2016-03-18T20:13:00+08:00","url":"http://www.dosrc.com/mark/linux-3.18.6/2016/03/18/linux-kernel-system-call.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.dosrc.com/mark/linux-3.18.6/2016/03/18/linux-kernel-system-call.html"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
   <script type="text/x-mathjax-config">
@@ -48,6 +47,20 @@
     });
   </script>
   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+  
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+      (i[r].q = i[r].q || []).push(arguments)
+    }, i[r].l = 1 * new Date(); a = s.createElement(o),
+      m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+  })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+  ga('create', 'G-VJKY6C6TGC', 'auto');
+  ga('send', 'pageview');
+</script>
+<!-- End Google Analytics -->
+
 
 </head>
 
@@ -177,45 +190,45 @@
 
     <p><strong>mkdir.c</strong></p>
 
-    <pre><code class="language-C"> #include &lt;sys/stat.h&gt;
- #include &lt;sys/types.h&gt;
- #include &lt;stdio.h&gt;
- int main() {
-    int result =  mkdir("test", 0777);
-    if (result == 0) {
-        printf("directory test make success");
-    } else {
-        printf("directory test make failure");
-    }
- }
-</code></pre>
+    <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="cp">#include &lt;sys/stat.h&gt;
+</span> <span class="cp">#include &lt;sys/types.h&gt;
+</span> <span class="cp">#include &lt;stdio.h&gt;
+</span> <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">result</span> <span class="o">=</span>  <span class="n">mkdir</span><span class="p">(</span><span class="s">"test"</span><span class="p">,</span> <span class="mo">0777</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">result</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"directory test make success"</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"directory test make failure"</span><span class="p">);</span>
+    <span class="p">}</span>
+ <span class="p">}</span>
+</code></pre></div>    </div>
 
     <p><strong>mkdir-asm.c</strong></p>
 
-    <pre><code class="language-C"> #include &lt;sys/stat.h&gt;
- #include &lt;sys/types.h&gt;
- #include &lt;stdio.h&gt;
- int main() {
-     int result = 0;
-     const char *filePath = "test";
-     mode_t mode = 0777;
-     asm volatile(
-             "movl $0X27,%%eax\n\t"
-             "movl %1,%%ebx\n\t"
-             "movl %2,%%ecx\n\t"
-             "int $0X80\n\t"
-             "movl %%eax,%0\n\t"
-             :"=m"(result)
-             :"r"(filePath),"r"(mode)
-             :"%eax","%ebx","%ecx"
-     );
-    if (result == 0) {
-        printf("directory test make success");
-    } else {
-        printf("directory test make failure");
-    }
- }
-</code></pre>
+    <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="cp">#include &lt;sys/stat.h&gt;
+</span> <span class="cp">#include &lt;sys/types.h&gt;
+</span> <span class="cp">#include &lt;stdio.h&gt;
+</span> <span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+     <span class="kt">int</span> <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+     <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">filePath</span> <span class="o">=</span> <span class="s">"test"</span><span class="p">;</span>
+     <span class="n">mode_t</span> <span class="n">mode</span> <span class="o">=</span> <span class="mo">0777</span><span class="p">;</span>
+     <span class="n">asm</span> <span class="k">volatile</span><span class="p">(</span>
+             <span class="s">"movl $0X27,%%eax</span><span class="se">\n\t</span><span class="s">"</span>
+             <span class="s">"movl %1,%%ebx</span><span class="se">\n\t</span><span class="s">"</span>
+             <span class="s">"movl %2,%%ecx</span><span class="se">\n\t</span><span class="s">"</span>
+             <span class="s">"int $0X80</span><span class="se">\n\t</span><span class="s">"</span>
+             <span class="s">"movl %%eax,%0</span><span class="se">\n\t</span><span class="s">"</span>
+             <span class="o">:</span><span class="s">"=m"</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+             <span class="o">:</span><span class="s">"r"</span><span class="p">(</span><span class="n">filePath</span><span class="p">),</span><span class="s">"r"</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+             <span class="o">:</span><span class="s">"%eax"</span><span class="p">,</span><span class="s">"%ebx"</span><span class="p">,</span><span class="s">"%ecx"</span>
+     <span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">result</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"directory test make success"</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"directory test make failure"</span><span class="p">);</span>
+    <span class="p">}</span>
+ <span class="p">}</span>
+</code></pre></div>    </div>
     <p>mkdir.c 和 mkdir-asm.c 功能一致都是在当前目录下创建test文件夹，mkdir.c是通过调用库函数<code class="language-plaintext highlighter-rouge">int mkdir(const char *pathname,mode_t mode);</code>创建test文件夹，而mkdir-asm.c是通过中断程序创建test文件夹。</p>
   </li>
 </ol>
@@ -228,29 +241,29 @@
 
 <p><strong>fork-test.c</strong></p>
 
-<pre><code class="language-C">#include &lt;unistd.h&gt;
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;unistd.h&gt;
 #include &lt;stdio.h&gt;
-int main() {
-    pid_t sonPid = 0;
-    sonPid = fork();
-    if (sonPid == 0) {
-        printf("process %d -&gt; parent pid: %d\n", getpid(), getppid());
-        printf("process %d -&gt; before excute fork's fork pid: %d\n", getpid(), sonPid);
-        sonPid = fork();
-        if (sonPid == 0) {
-            sleep(5);
-            printf("process %d -&gt; parent pid: %d\n", getpid(), getppid());
-            printf("process %d -&gt; fork pid: %d\n", getpid(), sonPid);
-        } else {
-            printf("process %d -&gt; after excute fork's fork pid: %d\n", getpid(), sonPid);
-        }
-    } else {
-        printf("process %d -&gt; parent pid: %d\n", getpid(), getppid());
-        printf("process %d -&gt; fork pid: %d\n", getpid(), sonPid);
-        while(1);
-    }
-}
-</code></pre>
+</span><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">pid_t</span> <span class="n">sonPid</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">sonPid</span> <span class="o">=</span> <span class="n">fork</span><span class="p">();</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">sonPid</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"process %d -&gt; parent pid: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">getpid</span><span class="p">(),</span> <span class="n">getppid</span><span class="p">());</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"process %d -&gt; before excute fork's fork pid: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">getpid</span><span class="p">(),</span> <span class="n">sonPid</span><span class="p">);</span>
+        <span class="n">sonPid</span> <span class="o">=</span> <span class="n">fork</span><span class="p">();</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">sonPid</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s">"process %d -&gt; parent pid: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">getpid</span><span class="p">(),</span> <span class="n">getppid</span><span class="p">());</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s">"process %d -&gt; fork pid: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">getpid</span><span class="p">(),</span> <span class="n">sonPid</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s">"process %d -&gt; after excute fork's fork pid: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">getpid</span><span class="p">(),</span> <span class="n">sonPid</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"process %d -&gt; parent pid: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">getpid</span><span class="p">(),</span> <span class="n">getppid</span><span class="p">());</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"process %d -&gt; fork pid: %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">getpid</span><span class="p">(),</span> <span class="n">sonPid</span><span class="p">);</span>
+        <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
 <p>运行结果为</p>
 
@@ -277,6 +290,43 @@ int main() {
 
 
   </article>
+  
+  
+
+<script src="https://giscus.app/client.js"
+        data-repo="vandykai/vandykai.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzNTE5OTI1NQ=="
+        data-category="Announcements"
+        data-category-id="DIC_kwDOAhkZF84CUJ-X"
+        data-mapping="pathname"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-theme="light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+<script src="https://giscus.app/client.js"
+        data-repo="vandykai/vandykai.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzNTE5OTI1NQ=="
+        data-category="Announcements"
+        data-category-id="DIC_kwDOAhkZF84CUJ-X"
+        data-mapping="pathname"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="light"
+        data-lang=""
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+
+  
+
+
 
 </div>
 

@@ -10,11 +10,10 @@
   <meta name="description" content="用好异常获取调用方法信息的方式：">
 
   <link rel="stylesheet" href="/mark/css/main.css">
-  <link rel="stylesheet" href="/mark/css/syntax.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://localhost:4000/mark/j2ee/2016/01/13/web-note-well-use-of-exception.html">
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
-  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/mark/feed.xml" title="Blog" />
+  <link rel="canonical" href="http://www.dosrc.com/mark/j2ee/2016/01/13/web-note-well-use-of-exception.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
+  <link type="application/atom+xml" rel="alternate" href="http://www.dosrc.com/mark/feed.xml" title="Blog" />
   <!-- Begin Jekyll SEO tag v2.7.1 -->
 <title>Web Note - Well Use Of Exception | Blog</title>
 <meta name="generator" content="Jekyll v4.2.1" />
@@ -22,15 +21,15 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="用好异常 获取调用方法信息的方式：" />
 <meta property="og:description" content="用好异常 获取调用方法信息的方式：" />
-<link rel="canonical" href="http://localhost:4000/mark/j2ee/2016/01/13/web-note-well-use-of-exception.html" />
-<meta property="og:url" content="http://localhost:4000/mark/j2ee/2016/01/13/web-note-well-use-of-exception.html" />
+<link rel="canonical" href="http://www.dosrc.com/mark/j2ee/2016/01/13/web-note-well-use-of-exception.html" />
+<meta property="og:url" content="http://www.dosrc.com/mark/j2ee/2016/01/13/web-note-well-use-of-exception.html" />
 <meta property="og:site_name" content="Blog" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2016-01-13T01:10:00+08:00" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Web Note - Well Use Of Exception" />
 <script type="application/ld+json">
-{"description":"用好异常 获取调用方法信息的方式：","headline":"Web Note - Well Use Of Exception","dateModified":"2016-01-13T01:10:00+08:00","datePublished":"2016-01-13T01:10:00+08:00","url":"http://localhost:4000/mark/j2ee/2016/01/13/web-note-well-use-of-exception.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/mark/j2ee/2016/01/13/web-note-well-use-of-exception.html"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
+{"description":"用好异常 获取调用方法信息的方式：","headline":"Web Note - Well Use Of Exception","dateModified":"2016-01-13T01:10:00+08:00","datePublished":"2016-01-13T01:10:00+08:00","url":"http://www.dosrc.com/mark/j2ee/2016/01/13/web-note-well-use-of-exception.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.dosrc.com/mark/j2ee/2016/01/13/web-note-well-use-of-exception.html"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
   <script type="text/x-mathjax-config">
@@ -48,6 +47,20 @@
     });
   </script>
   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+  
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+      (i[r].q = i[r].q || []).push(arguments)
+    }, i[r].l = 1 * new Date(); a = s.createElement(o),
+      m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+  })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+  ga('create', 'G-VJKY6C6TGC', 'auto');
+  ga('send', 'pageview');
+</script>
+<!-- End Google Analytics -->
+
 
 </head>
 
@@ -116,57 +129,94 @@
 
 <p>方法三实际代码如下：</p>
 
-<pre><code class="language-Java">public class UserService {
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserService</span> <span class="o">{</span>
 
-    public User login(String name, String password) throws IllegalParamterException, ServiceException {
-        IllegalParamterException illegalParamterException = new IllegalParamterException();
-        if (StringUtils.isNullOrEmpty(name)) {
-            illegalParamterException.addIllegalFields("name", "name is required");
-        }
+    <span class="kd">public</span> <span class="nc">User</span> <span class="nf">login</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">,</span> <span class="nc">String</span> <span class="n">password</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">IllegalParamterException</span><span class="o">,</span> <span class="nc">ServiceException</span> <span class="o">{</span>
+        <span class="nc">IllegalParamterException</span> <span class="n">illegalParamterException</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">IllegalParamterException</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isNullOrEmpty</span><span class="o">(</span><span class="n">name</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">illegalParamterException</span><span class="o">.</span><span class="na">addIllegalFields</span><span class="o">(</span><span class="s">"name"</span><span class="o">,</span> <span class="s">"name is required"</span><span class="o">);</span>
+        <span class="o">}</span>
 
-        if (StringUtils.isNullOrEmpty(password)) {
-            illegalParamterException.addIllegalFields("password", "password is required");
-        }
+        <span class="k">if</span> <span class="o">(</span><span class="nc">StringUtils</span><span class="o">.</span><span class="na">isNullOrEmpty</span><span class="o">(</span><span class="n">password</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">illegalParamterException</span><span class="o">.</span><span class="na">addIllegalFields</span><span class="o">(</span><span class="s">"password"</span><span class="o">,</span> <span class="s">"password is required"</span><span class="o">);</span>
+        <span class="o">}</span>
 
-        if (illegalParamterException.hasIllegalField()) {
-            throw illegalParamterException;
-        }
-        User user = new UserDao().getUserByName(name);
-        if (user == null || !password.equals(user.getPassword())) {
-            throw new ServiceException(1000, "Name or password wrong");
-        } else {
-            return user;
-        }
-    }
-}
+        <span class="k">if</span> <span class="o">(</span><span class="n">illegalParamterException</span><span class="o">.</span><span class="na">hasIllegalField</span><span class="o">())</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="n">illegalParamterException</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="nc">User</span> <span class="n">user</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">UserDao</span><span class="o">().</span><span class="na">getUserByName</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">user</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="o">!</span><span class="n">password</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">getPassword</span><span class="o">()))</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">ServiceException</span><span class="o">(</span><span class="mi">1000</span><span class="o">,</span> <span class="s">"Name or password wrong"</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">user</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
 
-</code></pre>
+</code></pre></div></div>
 
-<pre><code class="language-Java">protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doPost</span><span class="o">(</span><span class="nc">HttpServletRequest</span> <span class="n">request</span><span class="o">,</span> <span class="nc">HttpServletResponse</span> <span class="n">response</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">ServletException</span><span class="o">,</span> <span class="nc">IOException</span> <span class="o">{</span>
 
-    String name = request.getParameter("name");
-    String password = request.getParameter("password");
+    <span class="nc">String</span> <span class="n">name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getParameter</span><span class="o">(</span><span class="s">"name"</span><span class="o">);</span>
+    <span class="nc">String</span> <span class="n">password</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getParameter</span><span class="o">(</span><span class="s">"password"</span><span class="o">);</span>
 
-    User user = null;
-    try {
-        user = new UserService().login(name, password);
-        user.setPassword(null);
-        HttpSession httpSession = request.getSession();
-        httpSession.setAttribute(Constants.USER, user);
-        response.sendRedirect(request.getContextPath()+ "/showmybook");;
-    } catch (IllegalParamterException e) {
-        Map&lt;String, String&gt; illegalFields = e.getIllegalFields();
-        request.setAttribute(Constants.ILLEGAL_FIELDS, illegalFields);
-        request.getRequestDispatcher(LOGIN_PAGE).forward(request, response);
-        return;
-    } catch (ServiceException e) {
-        request.setAttribute(Constants.TIP_MESSAGE, e.getMessage() + "[" + e.getCode() + "]");
-        request.getRequestDispatcher(LOGIN_PAGE).forward(request, response);
-    }
-}
-</code></pre>
+    <span class="nc">User</span> <span class="n">user</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">UserService</span><span class="o">().</span><span class="na">login</span><span class="o">(</span><span class="n">name</span><span class="o">,</span> <span class="n">password</span><span class="o">);</span>
+        <span class="n">user</span><span class="o">.</span><span class="na">setPassword</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
+        <span class="nc">HttpSession</span> <span class="n">httpSession</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="na">getSession</span><span class="o">();</span>
+        <span class="n">httpSession</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="nc">Constants</span><span class="o">.</span><span class="na">USER</span><span class="o">,</span> <span class="n">user</span><span class="o">);</span>
+        <span class="n">response</span><span class="o">.</span><span class="na">sendRedirect</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">getContextPath</span><span class="o">()+</span> <span class="s">"/showmybook"</span><span class="o">);;</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IllegalParamterException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">illegalFields</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">getIllegalFields</span><span class="o">();</span>
+        <span class="n">request</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="nc">Constants</span><span class="o">.</span><span class="na">ILLEGAL_FIELDS</span><span class="o">,</span> <span class="n">illegalFields</span><span class="o">);</span>
+        <span class="n">request</span><span class="o">.</span><span class="na">getRequestDispatcher</span><span class="o">(</span><span class="no">LOGIN_PAGE</span><span class="o">).</span><span class="na">forward</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
+        <span class="k">return</span><span class="o">;</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">ServiceException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">request</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="nc">Constants</span><span class="o">.</span><span class="na">TIP_MESSAGE</span><span class="o">,</span> <span class="n">e</span><span class="o">.</span><span class="na">getMessage</span><span class="o">()</span> <span class="o">+</span> <span class="s">"["</span> <span class="o">+</span> <span class="n">e</span><span class="o">.</span><span class="na">getCode</span><span class="o">()</span> <span class="o">+</span> <span class="s">"]"</span><span class="o">);</span>
+        <span class="n">request</span><span class="o">.</span><span class="na">getRequestDispatcher</span><span class="o">(</span><span class="no">LOGIN_PAGE</span><span class="o">).</span><span class="na">forward</span><span class="o">(</span><span class="n">request</span><span class="o">,</span> <span class="n">response</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
 
   </article>
+  
+  
+
+<script src="https://giscus.app/client.js"
+        data-repo="vandykai/vandykai.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzNTE5OTI1NQ=="
+        data-category="Announcements"
+        data-category-id="DIC_kwDOAhkZF84CUJ-X"
+        data-mapping="pathname"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-theme="light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+<script src="https://giscus.app/client.js"
+        data-repo="vandykai/vandykai.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzNTE5OTI1NQ=="
+        data-category="Announcements"
+        data-category-id="DIC_kwDOAhkZF84CUJ-X"
+        data-mapping="pathname"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="light"
+        data-lang=""
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+
+  
+
+
 
 </div>
 

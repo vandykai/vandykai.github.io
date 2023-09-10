@@ -10,11 +10,10 @@
   <meta name="description" content="重点知识总结">
 
   <link rel="stylesheet" href="/mark/css/main.css">
-  <link rel="stylesheet" href="/mark/css/syntax.css">
   <link rel="shortcut icon" href="/mark/favicon.ico">
-  <link rel="canonical" href="http://localhost:4000/mark/linux-3.18.6/2016/03/06/linux-kernel-working-process-of-operating-system.html">
-  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://localhost:4000/mark/feed.xml" />
-  <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/mark/feed.xml" title="Blog" />
+  <link rel="canonical" href="http://www.dosrc.com/mark/linux-3.18.6/2016/03/06/linux-kernel-working-process-of-operating-system.html">
+  <link rel="alternate" type="application/rss+xml" title="Blog" href="http://www.dosrc.com/mark/feed.xml" />
+  <link type="application/atom+xml" rel="alternate" href="http://www.dosrc.com/mark/feed.xml" title="Blog" />
   <!-- Begin Jekyll SEO tag v2.7.1 -->
 <title>Linux Kernel - 自定义进程切换 | Blog</title>
 <meta name="generator" content="Jekyll v4.2.1" />
@@ -22,15 +21,15 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="重点知识总结" />
 <meta property="og:description" content="重点知识总结" />
-<link rel="canonical" href="http://localhost:4000/mark/linux-3.18.6/2016/03/06/linux-kernel-working-process-of-operating-system.html" />
-<meta property="og:url" content="http://localhost:4000/mark/linux-3.18.6/2016/03/06/linux-kernel-working-process-of-operating-system.html" />
+<link rel="canonical" href="http://www.dosrc.com/mark/linux-3.18.6/2016/03/06/linux-kernel-working-process-of-operating-system.html" />
+<meta property="og:url" content="http://www.dosrc.com/mark/linux-3.18.6/2016/03/06/linux-kernel-working-process-of-operating-system.html" />
 <meta property="og:site_name" content="Blog" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2016-03-06T18:45:00+08:00" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Linux Kernel - 自定义进程切换" />
 <script type="application/ld+json">
-{"description":"重点知识总结","headline":"Linux Kernel - 自定义进程切换","dateModified":"2016-03-06T18:45:00+08:00","datePublished":"2016-03-06T18:45:00+08:00","url":"http://localhost:4000/mark/linux-3.18.6/2016/03/06/linux-kernel-working-process-of-operating-system.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/mark/linux-3.18.6/2016/03/06/linux-kernel-working-process-of-operating-system.html"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
+{"description":"重点知识总结","headline":"Linux Kernel - 自定义进程切换","dateModified":"2016-03-06T18:45:00+08:00","datePublished":"2016-03-06T18:45:00+08:00","url":"http://www.dosrc.com/mark/linux-3.18.6/2016/03/06/linux-kernel-working-process-of-operating-system.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://www.dosrc.com/mark/linux-3.18.6/2016/03/06/linux-kernel-working-process-of-operating-system.html"},"@type":"BlogPosting","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
   <script type="text/x-mathjax-config">
@@ -48,6 +47,20 @@
     });
   </script>
   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+  
+<!-- Google Analytics -->
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+      (i[r].q = i[r].q || []).push(arguments)
+    }, i[r].l = 1 * new Date(); a = s.createElement(o),
+      m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+  })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+  ga('create', 'G-VJKY6C6TGC', 'auto');
+  ga('send', 'pageview');
+</script>
+<!-- End Google Analytics -->
+
 
 </head>
 
@@ -113,61 +126,61 @@
 
 <h2 id="实验分析">实验分析</h2>
 <h3 id="自定义进程定义的代码如下">自定义进程定义的代码如下</h3>
-<pre><code class="language-C">#define MAX_TASK_NUM        4
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define MAX_TASK_NUM        4
 #define KERNEL_STACK_SIZE   1024*8
+</span>
+<span class="cm">/* CPU-specific state of this task */</span>
+<span class="k">struct</span> <span class="n">Thread</span> <span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span>        <span class="n">ip</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span>        <span class="n">sp</span><span class="p">;</span>
+<span class="p">};</span>
 
-/* CPU-specific state of this task */
-struct Thread {
-    unsigned long        ip;
-    unsigned long        sp;
-};
-
-typedef struct PCB{
-    int pid;
-    volatile long state;    /* -1 unrunnable, 0 runnable, &gt;0 stopped */
-    char stack[KERNEL_STACK_SIZE];
-    /* CPU-specific state of this task */
-    struct Thread thread;
-    unsigned long    task_entry;
-    struct PCB *next;
-}tPCB;
-</code></pre>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">PCB</span><span class="p">{</span>
+    <span class="kt">int</span> <span class="n">pid</span><span class="p">;</span>
+    <span class="k">volatile</span> <span class="kt">long</span> <span class="n">state</span><span class="p">;</span>    <span class="cm">/* -1 unrunnable, 0 runnable, &gt;0 stopped */</span>
+    <span class="kt">char</span> <span class="n">stack</span><span class="p">[</span><span class="n">KERNEL_STACK_SIZE</span><span class="p">];</span>
+    <span class="cm">/* CPU-specific state of this task */</span>
+    <span class="k">struct</span> <span class="n">Thread</span> <span class="kr">thread</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span>    <span class="n">task_entry</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">PCB</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+<span class="p">}</span><span class="n">tPCB</span><span class="p">;</span>
+</code></pre></div></div>
 <h3 id="自定义进程切换的核心代码如下">自定义进程切换的核心代码如下</h3>
-<pre><code class="language-C">if(next-&gt;state == 0) {
-    /* -1 unrunnable, 0 runnable, &gt;0 stopped */
-    my_current_task = next;
-    printk(KERN_NOTICE "&gt;&gt;&gt;switch %d to %d&lt;&lt;&lt;\n",prev-&gt;pid,next-&gt;pid);
-    /* switch to next process */
-    asm volatile(
-            "pushl %%ebp\n\t" /* save ebp */
-            "movl %%esp,%0\n\t" /* save esp */
-            "movl %2,%%esp\n\t" /* restore  esp */
-            "movl $1f,%1\n\t" /* save eip */
-            "pushl %3\n\t"
-            "ret\n\t" /* restore  eip */
-            "1:\t" /* next process start here */
-            "popl %%ebp\n\t"
-            : "=m" (prev-&gt;thread.sp),"=m" (prev-&gt;thread.ip)
-            : "m" (next-&gt;thread.sp),"m" (next-&gt;thread.ip)
-    );
-} else {
-    next-&gt;state = 0;
-    my_current_task = next;
-    printk(KERN_NOTICE "&gt;&gt;&gt;switch %d to %d&lt;&lt;&lt;\n",prev-&gt;pid,next-&gt;pid);
-    /* switch to new process */
-    asm volatile(
-            "pushl %%ebp\n\t" /* save ebp */
-            "movl %%esp,%0\n\t" /* save esp */
-            "movl %2,%%esp\n\t" /* restore  esp */
-            "movl %2,%%ebp\n\t" /* restore  ebp */
-            "movl $1f,%1\n\t" /* save eip */
-            "pushl %3\n\t"
-            "ret\n\t" /* restore  eip */
-            : "=m" (prev-&gt;thread.sp),"=m" (prev-&gt;thread.ip)
-            : "m" (next-&gt;thread.sp),"m" (next-&gt;thread.ip)
-    );
-}
-</code></pre>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span><span class="p">(</span><span class="n">next</span><span class="o">-&gt;</span><span class="n">state</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="cm">/* -1 unrunnable, 0 runnable, &gt;0 stopped */</span>
+    <span class="n">my_current_task</span> <span class="o">=</span> <span class="n">next</span><span class="p">;</span>
+    <span class="n">printk</span><span class="p">(</span><span class="n">KERN_NOTICE</span> <span class="s">"&gt;&gt;&gt;switch %d to %d&lt;&lt;&lt;</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="n">prev</span><span class="o">-&gt;</span><span class="n">pid</span><span class="p">,</span><span class="n">next</span><span class="o">-&gt;</span><span class="n">pid</span><span class="p">);</span>
+    <span class="cm">/* switch to next process */</span>
+    <span class="n">asm</span> <span class="k">volatile</span><span class="p">(</span>
+            <span class="s">"pushl %%ebp</span><span class="se">\n\t</span><span class="s">"</span> <span class="cm">/* save ebp */</span>
+            <span class="s">"movl %%esp,%0</span><span class="se">\n\t</span><span class="s">"</span> <span class="cm">/* save esp */</span>
+            <span class="s">"movl %2,%%esp</span><span class="se">\n\t</span><span class="s">"</span> <span class="cm">/* restore  esp */</span>
+            <span class="s">"movl $1f,%1</span><span class="se">\n\t</span><span class="s">"</span> <span class="cm">/* save eip */</span>
+            <span class="s">"pushl %3</span><span class="se">\n\t</span><span class="s">"</span>
+            <span class="s">"ret</span><span class="se">\n\t</span><span class="s">"</span> <span class="cm">/* restore  eip */</span>
+            <span class="s">"1:</span><span class="se">\t</span><span class="s">"</span> <span class="cm">/* next process start here */</span>
+            <span class="s">"popl %%ebp</span><span class="se">\n\t</span><span class="s">"</span>
+            <span class="o">:</span> <span class="s">"=m"</span> <span class="p">(</span><span class="n">prev</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="p">.</span><span class="n">sp</span><span class="p">),</span><span class="s">"=m"</span> <span class="p">(</span><span class="n">prev</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="p">.</span><span class="n">ip</span><span class="p">)</span>
+            <span class="o">:</span> <span class="s">"m"</span> <span class="p">(</span><span class="n">next</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="p">.</span><span class="n">sp</span><span class="p">),</span><span class="s">"m"</span> <span class="p">(</span><span class="n">next</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="p">.</span><span class="n">ip</span><span class="p">)</span>
+    <span class="p">);</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">next</span><span class="o">-&gt;</span><span class="n">state</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">my_current_task</span> <span class="o">=</span> <span class="n">next</span><span class="p">;</span>
+    <span class="n">printk</span><span class="p">(</span><span class="n">KERN_NOTICE</span> <span class="s">"&gt;&gt;&gt;switch %d to %d&lt;&lt;&lt;</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="n">prev</span><span class="o">-&gt;</span><span class="n">pid</span><span class="p">,</span><span class="n">next</span><span class="o">-&gt;</span><span class="n">pid</span><span class="p">);</span>
+    <span class="cm">/* switch to new process */</span>
+    <span class="n">asm</span> <span class="k">volatile</span><span class="p">(</span>
+            <span class="s">"pushl %%ebp</span><span class="se">\n\t</span><span class="s">"</span> <span class="cm">/* save ebp */</span>
+            <span class="s">"movl %%esp,%0</span><span class="se">\n\t</span><span class="s">"</span> <span class="cm">/* save esp */</span>
+            <span class="s">"movl %2,%%esp</span><span class="se">\n\t</span><span class="s">"</span> <span class="cm">/* restore  esp */</span>
+            <span class="s">"movl %2,%%ebp</span><span class="se">\n\t</span><span class="s">"</span> <span class="cm">/* restore  ebp */</span>
+            <span class="s">"movl $1f,%1</span><span class="se">\n\t</span><span class="s">"</span> <span class="cm">/* save eip */</span>
+            <span class="s">"pushl %3</span><span class="se">\n\t</span><span class="s">"</span>
+            <span class="s">"ret</span><span class="se">\n\t</span><span class="s">"</span> <span class="cm">/* restore  eip */</span>
+            <span class="o">:</span> <span class="s">"=m"</span> <span class="p">(</span><span class="n">prev</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="p">.</span><span class="n">sp</span><span class="p">),</span><span class="s">"=m"</span> <span class="p">(</span><span class="n">prev</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="p">.</span><span class="n">ip</span><span class="p">)</span>
+            <span class="o">:</span> <span class="s">"m"</span> <span class="p">(</span><span class="n">next</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="p">.</span><span class="n">sp</span><span class="p">),</span><span class="s">"m"</span> <span class="p">(</span><span class="n">next</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="p">.</span><span class="n">ip</span><span class="p">)</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
 <h3 id="自定义进程切换代码简析">自定义进程切换代码简析</h3>
 <p>计算机硬件三大法宝：存储程序计算机，函数调用堆栈，中断</p>
 
@@ -191,6 +204,43 @@ typedef struct PCB{
 
 
   </article>
+  
+  
+
+<script src="https://giscus.app/client.js"
+        data-repo="vandykai/vandykai.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzNTE5OTI1NQ=="
+        data-category="Announcements"
+        data-category-id="DIC_kwDOAhkZF84CUJ-X"
+        data-mapping="pathname"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-theme="light"
+        crossorigin="anonymous"
+        async>
+</script>
+
+<script src="https://giscus.app/client.js"
+        data-repo="vandykai/vandykai.github.io"
+        data-repo-id="MDEwOlJlcG9zaXRvcnkzNTE5OTI1NQ=="
+        data-category="Announcements"
+        data-category-id="DIC_kwDOAhkZF84CUJ-X"
+        data-mapping="pathname"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="light"
+        data-lang=""
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+
+  
+
+
 
 </div>
 
