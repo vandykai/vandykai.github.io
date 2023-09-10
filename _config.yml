@@ -4,10 +4,10 @@ email: wdkrgst@gmail.com
 description: > # this means to ignore newlines until "baseurl:"
 baseurl: "/mark" # the subpath of your site, e.g. /blog/
 url: "http://www.dosrc.com" # the base hostname & protocol for your site
-#twitter_username: vandykai
-#github_username:  vandykai
+# twitter_username: vandykai
+# github_username:  vandykai
 encoding: utf-8
-#timezone: Asia/Chongqing
+# timezone: Asia/Chongqing
 # Build settings
 destination: ./_site/mark
 sass:
@@ -21,6 +21,24 @@ text_skin: default
 highlight_theme: default
 #theme: jekyll-text-theme
 remote_theme: data4development/dataworkbench-jekyll-theme
+# disqus: "dosrc"
+giscus: # https://giscus.app
+  hostname: giscus.app
+  repository: vandykai/vandykai.github.io
+  repository-id: MDEwOlJlcG9zaXRvcnkzNTE5OTI1NQ==
+  category: Announcements
+  category-id: DIC_kwDOAhkZF84CUJ-X
+  mapping: pathname
+  reactions-enabled: 1
+  emit-metadata: 0
+  theme: light
+  input-position: top
+  data-theme: light
+  loading: lazy
+
+google_analytics: "G-VJKY6C6TGC"
+# Add a search button to the navbar
+post_search: true
 
 plugins:
   - jekyll-feed

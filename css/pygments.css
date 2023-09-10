@@ -134,4 +134,4 @@ pre .il { color: #40a070 } /* Literal.Number.Integer.Long */.syntax pre .hll { b
 .syntax pre .vg { color: #ff8844 } /* Name.Variable.Global */
 .syntax pre .vi { color: #aaaaff } /* Name.Variable.Instance */
 .syntax pre .vm { color: #003366 } /* Name.Variable.Magic */
-.syntax pre .il { color: #6666ff; font-weight: bold } /* Literal.Number.Integer.Long */
+.syntax pre .il { color: #6666ff; font-weight: bold } Literal.Number.Integer.Long

@@ -7,6 +7,10 @@ categories: [Essay]
 tags: [mind]
 
 ---
+* Training language models to follow instructions with human feedback
+  * https://arxiv.org/pdf/2203.02155.pdf
+  * []
+
 * DivideMix: Learning with Noisy Labels as Semi-supervised Learning
   * https://openreview.net/pdf?id=HJgExaVtwr
 
